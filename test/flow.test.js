@@ -1,0 +1,72 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { createStore } from '../src/store.js';
+import { createOrderService } from '../src/orders.js';
+
+function service() {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'escala-'));
+  const sent = [];
+  const svc = createOrderService({
+    store: createStore(dir),
+    issuePolicy: () => ({ number: 'ESC-TEST-000001', issued_at: new Date().toISOString(), pdf_token: 'x', email: { status: 'pending' } }),
+    sendPolicyEmail: async (o) => { sent.push(o.holder.email); o.policy.email = { status: 'sent', to: o.holder.email }; },
+  });
+  return { svc, sent };
+}
+
+const future = (d) => {
+  const t = new Date();
+  t.setUTCDate(t.getUTCDate() + d);
+  return t.toISOString().slice(0, 10);
+};
+
+test('compra completa por un agente, con controles antes de pagar', async () => {
+  const { svc, sent } = service();
+  const o = svc.createQuote({ destinations: ['Japón'], start_date: future(30), end_date: future(44), travelers: [{ age: 34 }, { age: 36 }] }, 'agent');
+  assert.equal(o.channel, 'agente_ia');
+  await assert.rejects(() => svc.pay(o.id, {}, 'agent'), { code: 'not_ready_to_pay' });
+  svc.selectPlan(o.id, 'completo', 'agent');
+  assert.throws(() => svc.setTravelers(o.id, { holder: { full_name: 'Ana López', email: 'ana@' }, travelers: [] }), { code: 'invalid_email' });
+  svc.setTravelers(o.id, { holder: { full_name: 'Ana López', email: 'ana@example.com' }, travelers: [{ full_name: 'Ana López', age: 34 }, { full_name: 'Juan Gil', age: 36 }] }, 'agent');
+  assert.throws(() => svc.acceptTerms(o.id, { accepted: true }), { code: 'review_required' });
+  const { order, summary } = svc.review(o.id, 'agent');
+  assert.throws(() => svc.acceptTerms(o.id, { accepted: true, review_token: 'nope' }), { code: 'review_outdated' });
+  svc.acceptTerms(o.id, { accepted: true, review_token: order.review.token, terms_version: summary.terms.version }, 'agent');
+  await assert.rejects(() => svc.pay(o.id, { amount_eur: summary.total_eur, card_number: '4242424242424242' }), { code: 'confirmation_required' });
+  await assert.rejects(() => svc.pay(o.id, { amount_eur: 1, card_number: '4242424242424242', user_confirmed: true }), { code: 'amount_mismatch' });
+  await assert.rejects(() => svc.pay(o.id, { amount_eur: summary.total_eur, card_number: '4111111111111111', user_confirmed: true }), { code: 'real_card_not_allowed' });
+  await assert.rejects(() => svc.pay(o.id, { amount_eur: summary.total_eur, card_number: '4000000000000002', user_confirmed: true }), { code: 'card_declined' });
+  const paid = await svc.pay(o.id, { amount_eur: summary.total_eur, card_number: '4242 4242 4242 4242', user_confirmed: true }, 'agent');
+  assert.equal(paid.order.status, 'paid');
+  assert.equal(paid.order.payment.card_last4, '4242');
+  assert.deepEqual(sent, ['ana@example.com']);
+  const again = await svc.pay(o.id, { amount_eur: summary.total_eur, card_number: '4242 4242 4242 4242', user_confirmed: true }, 'agent');
+  assert.equal(again.already_paid, true);
+  assert.equal(sent.length, 1, 'no se cobra ni se envía dos veces');
+});
+
+test('cambiar datos después de revisar obliga a revisar otra vez', () => {
+  const { svc } = service();
+  const o = svc.createQuote({ destinations: 'Francia', start_date: future(5), end_date: future(9), travelers: [30] });
+  svc.selectPlan(o.id, 'esencial');
+  svc.setTravelers(o.id, { holder: { full_name: 'Ana López', email: 'ana@example.com' }, travelers: [{ full_name: 'Ana López', age: 30 }] });
+  const { order } = svc.review(o.id);
+  const token = order.review.token;
+  svc.selectPlan(o.id, 'total');
+  assert.equal(svc.load(o.id).status, 'travelers_set');
+  assert.throws(() => svc.acceptTerms(o.id, { accepted: true, review_token: token }), { code: 'review_required' });
+});
+
+test('validaciones con mensajes útiles', () => {
+  const { svc } = service();
+  assert.throws(() => svc.createQuote({ destinations: ['Japón'], start_date: '2020-01-01', end_date: '2020-01-05', travelers: [{ age: 30 }] }), { code: 'start_in_past' });
+  assert.throws(() => svc.createQuote({ destinations: ['Japón'], start_date: future(10), end_date: future(5), travelers: [{ age: 30 }] }), { code: 'end_before_start' });
+  assert.throws(() => svc.createQuote({ destinations: ['Japón'], start_date: future(1), end_date: future(120), travelers: [{ age: 30 }] }), { code: 'trip_too_long' });
+  assert.throws(() => svc.createQuote({ destinations: ['Siria'], start_date: future(1), end_date: future(5), travelers: [{ age: 30 }] }), { code: 'destination_excluded' });
+  assert.throws(() => svc.createQuote({ destinations: ['Japón'], start_date: future(1), end_date: future(5), travelers: [{ age: 90 }] }), { code: 'age_not_insurable' });
+  const o = svc.createQuote({ destinations: ['Japón'], start_date: future(1), end_date: future(5), travelers: [{ age: 72 }] });
+  assert.throws(() => svc.selectPlan(o.id, 'esencial'), { code: 'plan_not_available' });
+});

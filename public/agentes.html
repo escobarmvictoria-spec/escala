@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Escala para agentes de IA (demo)</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/escala.css">
+</head>
+<body>
+  <div class="demo-band" role="note"><strong>Demo — no es un seguro real.</strong><span>No se cobra dinero y las pólizas no tienen validez.</span></div>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Escala, inicio">
+      <svg class="brand-mark" viewBox="0 0 64 22" aria-hidden="true"><line x1="6" y1="11" x2="58" y2="11"/><circle class="end" cx="6" cy="11" r="5.5"/><circle class="end" cx="58" cy="11" r="5.5"/><circle class="stop" cx="32" cy="11" r="7"/></svg>
+      <span class="brand-word">escala</span>
+    </a>
+  </header>
+  <main class="doc">
+    <h1>Escala para agentes de IA</h1>
+    <p>La página principal registra 10 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
+
+    <h2>El flujo de compra</h2>
+    <pre>get_quote → select_plan → set_travelers → review_order → accept_terms → pay → get_policy</pre>
+    <p>Herramientas de apoyo: <code>get_product_info</code> (coberturas y exclusiones), <code>get_order_status</code> (dónde está la compra y qué falta) y <code>resend_policy_email</code>.</p>
+
+    <h2>Controles antes de pagar</h2>
+    <ul>
+      <li>El orden es obligatorio: el servidor guarda el estado del pedido y rechaza los pasos fuera de orden con el siguiente paso en <code>how_to_fix</code>.</li>
+      <li><code>review_order</code> devuelve un <code>review_token</code>. Si cambian el plan, los viajeros o el email, el token deja de valer y hay que revisar otra vez.</li>
+      <li><code>pay</code> exige <code>amount_eur</code> igual al total revisado y <code>user_confirmed: true</code>, y está marcada como acción con consecuencias (<code>consequentialHint</code>).</li>
+      <li>Solo acepta tarjetas de prueba. Una tarjeta real se rechaza sin guardarla.</li>
+      <li>Es idempotente: pagar dos veces la misma cotización devuelve la misma póliza.</li>
+      <li>Las cotizaciones caducan a las 2 horas y no se puede contratar un viaje que ya ha empezado.</li>
+    </ul>
+
+    <h2>Errores pensados para un agente</h2>
+    <pre>{
+ "ok": false,
+ "error": {
+  "code": "amount_mismatch",
+  "message": "El importe a pagar es 135,00 € y se ha enviado 130.",
+  "field": "amount_eur",
+  "how_to_fix": "Envía amount_eur: 135. Este control evita pagar un importe distinto del que vio el usuario."
+ }
+}</pre>
+
+    <h2>Cómo conectar un agente</h2>
+    <ul>
+      <li><strong>Asistente integrado.</strong> El botón «Asistente IA» abre un agente (Claude) que descubre las herramientas con <code>getTools()</code> y las ejecuta con <code>executeTool()</code>. Necesita que el servidor tenga configurada una clave de API.</li>
+      <li><strong>Chrome con WebMCP.</strong> Activa <code>chrome://flags/#enable-webmcp-testing</code> y usa un agente del navegador compatible.</li>
+      <li><strong>Extensiones puente.</strong> Las extensiones del proyecto MCP-B detectan las herramientas de la pestaña y se las ofrecen a tu cliente MCP o a su propio chat.</li>
+    </ul>
+
+    <h2>Tarjetas de prueba</h2>
+    <ul>
+      <li><code>4242 4242 4242 4242</code>: aprobada.</li>
+      <li><code>4000 0000 0000 0002</code>: rechazada.</li>
+      <li><code>4000 0000 0000 9995</code>: sin fondos.</li>
+    </ul>
+  </main>
+  <footer class="site-footer"><p class="footer-demo"><strong>Demo — no es un seguro real.</strong> <a href="/">Volver a Escala</a></p></footer>
+</body>
+</html>

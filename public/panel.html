@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Panel de conversión de Escala (demo)</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/escala.css">
+  <script type="module" src="/js/panel.js"></script>
+</head>
+<body>
+  <div class="demo-band" role="note"><strong>Demo — no es un seguro real.</strong><span>Datos de las compras hechas en esta demo.</span></div>
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Escala, inicio">
+      <svg class="brand-mark" viewBox="0 0 64 22" aria-hidden="true"><line x1="6" y1="11" x2="58" y2="11"/><circle class="end" cx="6" cy="11" r="5.5"/><circle class="end" cx="58" cy="11" r="5.5"/><circle class="stop" cx="32" cy="11" r="7"/></svg>
+      <span class="brand-word">escala</span>
+    </a>
+  </header>
+  <main class="doc" style="max-width: 980px">
+    <h1>Embudo por canal</h1>
+    <p>Cada compra guarda si la hizo una persona en la web o un agente de IA vía WebMCP. Así se puede medir el canal agéntico igual que cualquier otro: cuántas cotizaciones llegan, dónde se caen y cuánto venden.</p>
+    <div class="table-wrap" style="margin-top: 24px">
+      <table class="coverage-table" id="funnel"><tbody><tr><td>Cargando…</td></tr></tbody></table>
+    </div>
+    <p style="margin-top: 16px" id="updated"></p>
+  </main>
+</body>
+</html>
