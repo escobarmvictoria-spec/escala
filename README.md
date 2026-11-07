@@ -20,7 +20,7 @@ Node 22 + Express, HTML/CSS/JS sin compilar y un fichero JSON. Las herramientas 
 ## Decisiones
 
 - **Precios de mercado:** `(base + tarifa por día) × factor de edad`, por zona y plan, IPS incluido. Calibrado con 41 precios publicados y 26 cotizaciones hechas a mano en Heymondo, IATI e InterMundial el 7/11/2026; error medio del 9,2 % y un 4 % por debajo de la mediana.
-- **Plan recomendado según el destino:** Total para EE. UU. y Canadá, Completo en el resto, y el sello dice qué gana la persona con ese plan. Misma regla para la web y los agentes. La duración queda como hipótesis para probar.
+- **Plan recomendado según el destino:** Total para EE. UU. y Canadá, Completo en el resto, y el sello dice qué gana la persona con ese plan. Misma regla para la web y los agentes. La duración queda como hipótesis; el experimento A/B para medirlo está en docs/.
 - **Medido, no supuesto:** `npm run eval` simula 18 clientes (compras, casos difíciles, casos en los que no hay que vender y una clienta que lo quiere pensar). Resultado: **18/18**, verificado contra el servidor.
 - **Humano cuando hace falta:** `request_human_callback` pasa el caso a una persona con el contexto (más de 84 años, destino excluido, enfermedad previa o si el cliente lo pide).
 - **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran.
@@ -28,6 +28,6 @@ Node 22 + Express, HTML/CSS/JS sin compilar y un fichero JSON. Las herramientas 
 
 ## Más detalle
 
-[Arquitectura, herramientas y controles](docs/architecture.md) · [Precios y calibración](docs/pricing.md) · [Prueba automática](docs/agent-eval.md) · [Despliegue y operación](docs/deploy.md) · [Marca](docs/brand.md)
+[Arquitectura, herramientas y controles](docs/architecture.md) · [Precios y calibración](docs/pricing.md) · [Prueba automática](docs/agent-eval.md) · [Experimento del plan recomendado](docs/experimento-recomendacion.md) · [Despliegue y operación](docs/deploy.md) · [Marca](docs/brand.md)
 
 En local: `npm install && npm start` (http://localhost:3000) y `npm test`. Claves solo en `.env`, nunca en el repositorio.
