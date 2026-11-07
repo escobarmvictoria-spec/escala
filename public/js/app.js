@@ -323,6 +323,7 @@ function renderReview(order) {
   const accepted = ['terms_accepted', 'paid'].includes(order.status);
   sheet.innerHTML = `
     <h3>Revisa antes de pagar</h3>
+    <div class="summary-total summary-total-top"><span>${esc(s.plan.name)}, total con impuestos</span><span>${esc(s.total_text)}</span></div>
     <dl class="summary-grid">
       <div><dt>Plan</dt><dd>${esc(s.plan.name)}</dd></div>
       <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}</dd></div>
@@ -481,6 +482,7 @@ function render(state, reason, extra = {}) {
   if (!order) {
     section.hidden = true;
     lastRenderedStep = null;
+    document.body.classList.remove('is-checkout');
     return;
   }
   if (reason === 'activity') return;
@@ -496,7 +498,9 @@ function render(state, reason, extra = {}) {
   if (step === 'revision') renderReview(order);
   if (step === 'pago') renderPay(order);
   if (step === 'poliza') renderPolicy(order);
-  if (extra.by === 'agent' && step !== lastRenderedStep) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago'].includes(step));
+  const moved = step !== lastRenderedStep && lastRenderedStep !== null;
+  if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   lastRenderedStep = step;
   if (order.status === 'paid' && !location.pathname.startsWith('/poliza/')) history.replaceState(null, '', `/poliza/${order.policy.policy_number}`);
 }
