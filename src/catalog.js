@@ -20,7 +20,7 @@ export const PLANS = [
   {
     id: 'completo',
     name: 'Completo',
-    tagline: 'Gastos médicos altos, cancelación y equipaje. El que elige la mayoría.',
+    tagline: 'Gastos médicos altos, cancelación y equipaje. Equilibrio entre precio y cobertura.',
     max_age: MAX_AGE,
     recommended: true,
   },
