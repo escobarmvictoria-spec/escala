@@ -46,9 +46,9 @@ async function alert(subject, lines) {
   log(subject);
   if (!TO) return log('Sin ALERT_EMAIL ni SENDER_EMAIL: no se envía email.');
   const text = [...lines, '', 'Este aviso lo envía el vigilante de Escala desde el servidor.'].join('\n');
-  const html = `<div style="font-family:Arial,sans-serif;font-size:15px;color:#19233F;line-height:1.5">${lines.map((l) => `<p>${l.replace(/(https:\/\/\S+)/g, '<a href="$1">$1</a>')}</p>`).join('')}<p style="color:#4A536B;font-size:13px">Este aviso lo envía el vigilante de Escala desde el servidor.</p></div>`;
+  // Solo texto: un aviso técnico no necesita HTML, y así Gmail no lo trata como promoción.
   try {
-    await mailer.send({ to: TO, subject: `Escala · ${subject}`, text, html });
+    await mailer.send({ to: TO, subject: `Escala: ${subject}`, text });
   } catch (e) {
     log('No se pudo enviar el aviso:', e.message);
   }
