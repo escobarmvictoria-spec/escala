@@ -48,8 +48,18 @@ function addMsg(role, text, extra = '') {
   return el;
 }
 
+// El registro técnico solo aparece cuando hay actividad (Alba o un agente externo usando las herramientas)
+// o en modo presentación: abre la web con ?demo una vez y queda activo en esa pestaña.
+let demoMode = false;
+try {
+  if (new URLSearchParams(location.search).has('demo')) sessionStorage.setItem('escala.demo', '1');
+  demoMode = sessionStorage.getItem('escala.demo') === '1';
+} catch {
+  /* sin almacenamiento: solo con actividad */
+}
 function renderActivity() {
   const items = store.state.activity;
+  $('#activity').hidden = items.length === 0 && !demoMode;
   $('#activity-count').textContent = String(items.length);
   $('#activity-log').innerHTML = items
     .map(
@@ -225,6 +235,7 @@ export async function initAgentDrawer(toolsPromise) {
     dot._t = setTimeout(() => !running && dot.classList.remove('is-busy'), 1500);
   });
 
+  renderActivity();
   const tools = await toolsPromise;
   const statusEl = $('#webmcp-status');
   if (tools.ok) {
