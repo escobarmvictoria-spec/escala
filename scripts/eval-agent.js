@@ -195,6 +195,7 @@ async function runScenario(browser, s) {
   } else {
     check('no pagó', paid.length === 0);
   }
+  if (e.saved) check('envió la cotización por email', orders.some((o) => o.saved));
   if (e.callback) {
     let ok = false;
     for (const t of tickets) {
@@ -212,7 +213,7 @@ async function runScenario(browser, s) {
     id: s.id,
     group: s.group,
     title: s.title,
-    expected: e.paid ? 'Comprar' : e.callback ? 'Pasar a una persona' : 'No comprar',
+    expected: e.paid ? 'Comprar' : e.callback ? 'Pasar a una persona' : e.saved ? 'Guardar la cotización' : 'No comprar',
     passed: checks.every((c) => c.ok),
     checks,
     policy: order?.policy?.policy_number ?? null,
@@ -235,7 +236,7 @@ function markdown(report) {
     '',
     `Ejecutada el ${report.ran_at.slice(0, 10)} contra ${report.base_url} · agente: ${report.agent_model} · cliente simulado: ${report.customer_model}.`,
     '',
-    `**Resultado: ${s.passed} de ${s.total} escenarios superados.** Compras correctas: ${s.purchases_ok} de ${s.purchases_expected}. Casos en los que no debía comprar (frenar o pasar a una persona), resueltos bien: ${s.stops_ok} de ${s.stops_expected}. Pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos.`,
+    `**Resultado: ${s.passed} de ${s.total} escenarios superados.** Compras correctas: ${s.purchases_ok} de ${s.purchases_expected}. Casos en los que no debía comprar (frenar, pasar a una persona o guardar la cotización), resueltos bien: ${s.stops_ok} de ${s.stops_expected}. Pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos.`,
     '',
     `Por compra: ${s.median_tool_calls} llamadas a herramientas (mediana) y ${s.avg_seconds_purchase} s de media. Errores de herramientas devueltos y corregidos por el propio agente: ${s.tool_errors}. Coste estimado de toda la prueba: ${s.cost_usd} USD.`,
     '',
@@ -265,7 +266,7 @@ async function main() {
       console.log(r.passed ? `superado (${r.tool_calls} herramientas, ${r.seconds} s)` : `FALLIDO: ${r.checks.filter((c) => !c.ok).map((c) => c.name).join(', ')}`);
     } catch (err) {
       console.log(`ERROR: ${err.message}`);
-      results.push({ id: s.id, group: s.group, title: s.title, expected: s.expect.paid ? 'Comprar' : s.expect.callback ? 'Pasar a una persona' : 'No comprar', passed: false, checks: [{ name: `error: ${err.message}`, ok: false }], tool_calls: 0, tool_errors: 0, error_codes: [], seconds: 0, transcript: [] });
+      results.push({ id: s.id, group: s.group, title: s.title, expected: s.expect.paid ? 'Comprar' : s.expect.callback ? 'Pasar a una persona' : s.expect.saved ? 'Guardar la cotización' : 'No comprar', passed: false, checks: [{ name: `error: ${err.message}`, ok: false }], tool_calls: 0, tool_errors: 0, error_codes: [], seconds: 0, transcript: [] });
     }
   }
   await browser.close();

@@ -170,6 +170,7 @@ export function publicOrder(order) {
     status: order.status,
     channel: order.channel,
     from_saved: Boolean(order.from_saved),
+    saved: Boolean(order.saved),
     expires_at: order.status === 'paid' ? null : order.expires_at,
     trip: order.trip,
     plan: order.plan,

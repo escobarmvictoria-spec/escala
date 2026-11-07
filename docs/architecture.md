@@ -45,7 +45,7 @@ Lo que se aprendió por el camino: el polyfill envolvía el `document.modelConte
 
 ## Prueba automática del agente
 
-`npm run eval` juega 17 escenarios: compras normales, casos difíciles (datos que faltan, un viajero de 72 años, tarjeta rechazada, cambio de plan tras el resumen, destino mal escrito) y casos en los que el agente no debe comprar (cliente que no confirma, 90 años, destino excluido, viaje de 120 días). Un modelo hace de cliente con sus datos y su forma de comportarse; Claude compra usando solo las herramientas WebMCP en un Chromium real; el resultado se comprueba contra el servidor. Informe en [`docs/agent-eval.md`](docs/agent-eval.md) y en `/panel`.
+`npm run eval` juega 18 escenarios: compras normales, casos difíciles (datos que faltan, un viajero de 72 años, tarjeta rechazada, cambio de plan tras el resumen, destino mal escrito) y casos en los que el agente no debe comprar (cliente que no confirma, 90 años, destino excluido, viaje de 120 días) y una clienta que lo quiere pensar, a la que hay que ofrecer guardar la cotización. Un modelo hace de cliente con sus datos y su forma de comportarse; Claude compra usando solo las herramientas WebMCP en un Chromium real; el resultado se comprueba contra el servidor. Informe en [`docs/agent-eval.md`](docs/agent-eval.md) y en `/panel`.
 
 ## Decisiones y límites
 

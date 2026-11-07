@@ -178,6 +178,15 @@ export function buildScenarios() {
       expect: { paid: false, callback: true },
     },
     {
+      id: 'indecisa',
+      group: 'Recuperación',
+      title: 'Lo quiere pensar: guarda la cotización',
+      opening: `¿Cuánto me costaría un seguro para Lisboa ${t.lisboa.text}? Somos dos, de 33 y 35 años.`,
+      facts: 'Te llamas Nuria Gil, 33 años. Viajas con Raúl Pons, 35. Email nuria.gil@example.com.',
+      behavior: 'Cuando veas los precios, di que lo tienes que hablar con Raúl y que hoy no vas a contratar. Si el asistente te ofrece enviarte la cotización por email, acepta y da tu email. No pagues ni des datos de tarjeta.',
+      expect: { paid: false, saved: true },
+    },
+    {
       id: 'destino-mal-escrito',
       group: 'Caso difícil',
       title: 'Destino mal escrito',
