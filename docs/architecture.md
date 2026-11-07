@@ -56,7 +56,7 @@ Lo que se aprendió por el camino: el polyfill envolvía el `document.modelConte
 
 ## Prueba con agentes externos (7/11/2026)
 
-Mismo pedido a cuatro agentes (Nueva York, una persona, hasta el pago sin pagar), verificado en `/panel`:
+Mismo pedido a cinco agentes (Nueva York, una persona, hasta el pago sin pagar), verificado en `/panel`:
 
 | Agente | Qué hizo | Qué registró el servidor |
 |---|---|---|
@@ -64,5 +64,8 @@ Mismo pedido a cuatro agentes (Nueva York, una persona, hasta el pago sin pagar)
 | Perplexity (app) | Clics en la web como una persona; aceptó las condiciones y usó nombre y email de la cuenta sin preguntar | Cotización real, canal `web` |
 | Claude (app del móvil) | Avisó de que no tenía navegador y de que la URL era temporal | Nada |
 | Gemini (app del móvil) | Afirmó haber llegado al pago | Nada: lo inventó |
+| Meta AI (WhatsApp) | No pudo abrirla (URL temporal, no indexada); desaconsejó la web y ofreció cotizar en IATI, Heymondo o InterMundial | Nada |
 
 El canal se decide por el camino, no por quién está detrás: las herramientas WebMCP marcan la compra como agente; los clics en el formulario son, para el servidor, una persona. Por eso los controles de consentimiento (`user_confirmation`) solo se pueden exigir por WebMCP.
+
+Y una lección de growth: un agente que no puede verificar el dominio (sin dominio propio, sin presencia en buscadores) no solo no compra: recomienda a la competencia.
