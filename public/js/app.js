@@ -529,7 +529,7 @@ function render(state, reason, extra = {}) {
   if (!order) {
     section.hidden = true;
     lastRenderedStep = null;
-    document.body.classList.remove('is-checkout', 'has-quote');
+    document.body.classList.remove('is-checkout');
     return;
   }
   if (reason === 'activity') return;
@@ -549,8 +549,6 @@ function render(state, reason, extra = {}) {
   if (step === 'poliza') renderPolicy(order);
   // Desde los datos hasta la póliza, la portada se aparta: solo la compra (y, al final, lo que toca hacer).
   document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
-  // Con una cotización en marcha, el botón flotante «Cotizar mi viaje» ya no aporta: se oculta.
-  document.body.classList.toggle('has-quote', Boolean(step));
   const moved = step !== lastRenderedStep && lastRenderedStep !== null;
   if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   lastRenderedStep = step;
@@ -632,17 +630,55 @@ async function renderExamplePrice() {
 }
 
 // El botón flotante se esconde mientras el cotizador está a la vista (sería un botón repetido).
+// Acción principal siempre a mano: en escritorio, en la cabecera fija; en móvil, una barra inferior
+// que aparece solo cuando el cotizador (o la cotización en curso) queda fuera de pantalla.
+// Si ya hay una cotización, la acción es «Retomar mi cotización» y lleva al paso pendiente.
+const hasOpenQuote = () => Boolean(store.state.order && store.state.order.status !== 'paid');
+function updateMainCta() {
+  const resume = hasOpenQuote();
+  $$('[data-main-cta]').forEach((el) => {
+    el.textContent = resume ? 'Retomar mi cotización' : 'Cotizar mi viaje';
+    el.setAttribute('href', resume ? '#compra' : '#cotizar');
+  });
+  document.body.classList.toggle('has-quote', resume);
+}
 function initFloatCta() {
-  const form = $('#quote-form');
-  if (!form || !('IntersectionObserver' in window)) return;
-  new IntersectionObserver(([entry]) => document.body.classList.toggle('quote-visible', entry.isIntersecting), { threshold: 0.25 }).observe(form);
+  // La cabecera fija se coloca justo debajo de la banda de demo.
+  const band = $('.demo-band');
+  const setBand = () => document.documentElement.style.setProperty('--band-h', `${band?.offsetHeight ?? 0}px`);
+  setBand();
+  addEventListener('resize', setBand);
+  if (!('IntersectionObserver' in window)) return;
+  const seen = new Map();
+  const sync = () => {
+    const target = hasOpenQuote() ? '#compra' : '#quote-form';
+    document.body.classList.toggle('quote-visible', Boolean(seen.get(target)));
+  };
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) seen.set(`#${e.target.id}`, e.isIntersecting);
+    sync();
+  }, { threshold: 0.05 });
+  ['#quote-form', '#compra'].forEach((s) => $(s) && io.observe($(s)));
+  store.subscribe((state, reason) => {
+    if (reason === 'activity') return;
+    updateMainCta();
+    sync();
+  });
+  updateMainCta();
 }
 
-// Los botones «Cotizar mi viaje» de la página llevan al cotizador y ponen el cursor en el destino.
+// Los botones de acción principal llevan al cotizador (cursor en el destino) o, si hay una cotización, al paso pendiente.
 function initQuoteLinks() {
   $$('[data-focus-quote]').forEach((a) =>
     a.addEventListener('click', (ev) => {
       ev.preventDefault();
+      $('#site-nav')?.classList.remove('is-open');
+      if (hasOpenQuote()) {
+        viewStep = null;
+        render(store.state, 'nav');
+        $('#compra').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       $('#cotizar').scrollIntoView({ behavior: 'smooth', block: 'start' });
       $('#q-destination').focus({ preventScroll: true });
     })

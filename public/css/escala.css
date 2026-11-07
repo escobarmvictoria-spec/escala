@@ -590,7 +590,7 @@ body.is-checkout .home-section { display: none; }
   position: fixed; z-index: 45; right: var(--s-5); bottom: var(--s-5);
   box-shadow: 0 10px 28px rgba(25, 35, 63, 0.28); transition: opacity .2s ease, transform .2s ease, visibility 0s linear 0s;
 }
-body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .float-cta, body.drawer-open .float-cta {
+body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .float-cta {
   opacity: 0; visibility: hidden; transform: translateY(12px); pointer-events: none;
   transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
 }
@@ -642,3 +642,14 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .floa
 .pay-summary > .edit-link { justify-self: start; padding: 0; }
 .trip-plan { font-weight: 600; color: var(--navy); }
 @media (max-width: 560px) { .pay-summary { padding: var(--s-3); } .pay-summary dl { gap: var(--s-2) var(--s-3); } .pay-total strong { font-size: var(--fs-lg); } }
+
+/* Escritorio: cabecera fija con la acción principal; el botón flotante no hace falta. */
+@media (min-width: 961px) {
+  .site-header { position: sticky; top: var(--band-h, 0px); }
+  .float-cta { display: none; }
+  html { scroll-padding-top: calc(var(--band-h, 0px) + 84px); }
+}
+/* Móvil: barra inferior compacta */
+@media (max-width: 560px) {
+  .float-cta { min-height: 48px; padding-top: 10px; padding-bottom: 10px; }
+}
