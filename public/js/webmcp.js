@@ -339,6 +339,34 @@ const TOOLS = [
     },
   },
   {
+    name: 'request_human_callback',
+    title: 'Pedir que llame una persona',
+    description:
+      "Asks a person from Escala's team to phone the user, with the context of the purchase so the user does not repeat anything. Offer it when the user asks for a human, when the case cannot be bought online (traveler over 84, excluded destination, trip over 90 days), for pre-existing medical conditions, for problems during a trip, or after two failed attempts. Needs the user's name and phone and their yes to being called. Not needed for a normal purchase.",
+    inputSchema: {
+      type: 'object',
+      properties: {
+        full_name: { type: 'string' },
+        phone: { type: 'string', description: 'Phone number, e.g. "600 123 456".' },
+        reason: { type: 'string', enum: ['enfermedad_previa', 'no_asegurable', 'dudas_coberturas', 'siniestro', 'otro'] },
+        summary: { type: 'string', description: 'What the person who calls should know, in one or two sentences.' },
+        quote_id: { type: 'string', description: 'Optional: the current quote, so its details travel with the request.' },
+        preferred_time: { type: 'string', enum: ['cuanto_antes', 'manana_manana', 'manana_tarde'] },
+        user_agreed: { type: 'boolean', description: 'True only if the user said yes to being called.' },
+      },
+      required: ['full_name', 'phone', 'reason', 'summary', 'user_agreed'],
+    },
+    async run(input) {
+      const { callback: cb } = await api.callback(input, AGENT);
+      return {
+        ok: true,
+        ticket: cb.ticket,
+        when: cb.when,
+        tell_the_user: `Una persona del equipo le llamará ${cb.when} al ${cb.phone}. Número de solicitud ${cb.ticket}.${cb.context_attached ? ' Verá la cotización, así que no tendrá que repetir nada.' : ''} (Demo: no llama nadie de verdad.)`,
+      };
+    },
+  },
+  {
     name: 'get_order_status',
     title: 'Estado de la compra',
     description: 'Read-only. Returns where a quote is in the purchase flow, what is already set and the next step. Use it if you lose track.',
@@ -367,6 +395,7 @@ const TOOLS = [
 function summarize(result) {
   if (!result.ok) return result.error?.message || 'Error';
   if (result.policy_number) return `Póliza ${result.policy_number}`;
+  if (result.ticket) return `Llamada pedida: ${result.ticket}, ${result.when}`;
   if (result.plans) return result.plans.map((p) => `${p.name} ${p.total_eur} €`).join(' · ');
   if (result.summary) return `Resumen: ${result.summary.plan.name}, ${result.summary.total_text}`;
   if (result.total_eur) return `Total ${result.total_eur} €`;

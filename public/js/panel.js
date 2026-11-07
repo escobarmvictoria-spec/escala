@@ -10,10 +10,11 @@ const LABELS = {
 const CHANNELS = { web: 'Web (personas)', agente_ia: 'Agente de IA (WebMCP)' };
 const eur = (n) => new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', useGrouping: 'always' }).format(n);
 const pct = (a, b) => (b ? `${Math.round((a / b) * 100)} %` : '—');
+const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 async function load() {
   const res = await fetch('/api/metrics');
-  const { steps, channels } = await res.json();
+  const { steps, channels, handoffs = {} } = await res.json();
   const keys = Object.keys(CHANNELS);
   const table = document.getElementById('funnel');
   const cell = (c, s) => {
@@ -26,6 +27,7 @@ async function load() {
     <tbody>
       ${steps.map((s) => `<tr><th scope="row">${LABELS[s]}</th>${keys.map((k) => cell(k, s)).join('')}</tr>`).join('')}
       <tr><th scope="row">Ventas</th>${keys.map((k) => `<td>${eur(channels[k]?.revenue_eur ?? 0)}</td>`).join('')}</tr>
+      <tr><th scope="row">Pidieron que les llame una persona<small>${esc(Object.entries(Object.values(handoffs).reduce((acc, h) => { for (const [k, v] of Object.entries(h.reasons)) acc[k] = (acc[k] || 0) + v; return acc; }, {})).map(([k, v]) => `${k}: ${v}`).join(' · '))}</small></th>${keys.map((k) => `<td>${handoffs[k]?.total ?? 0}</td>`).join('')}</tr>
       <tr><th scope="row">Planes vendidos</th>${keys
         .map((k) => `<td>${Object.entries(channels[k]?.plans ?? {}).map(([p, n]) => `${p} ${n}`).join(', ') || '—'}</td>`)
         .join('')}</tr>
@@ -39,9 +41,8 @@ async function loadEval() {
     if (!res.ok) return;
     const r = await res.json();
     const s = r.summary;
-    const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
     document.getElementById('eval').hidden = false;
-    document.getElementById('eval-summary').innerHTML = `<strong>${s.passed} de ${s.total} escenarios superados.</strong> Compró bien en ${s.purchases_ok} de ${s.purchases_expected} casos, frenó en ${s.stops_ok} de ${s.stops_expected} casos en los que no debía comprar y pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos. Mediana de ${s.median_tool_calls} herramientas por compra.`;
+    document.getElementById('eval-summary').innerHTML = `<strong>${s.passed} de ${s.total} escenarios superados.</strong> Compró bien en ${s.purchases_ok} de ${s.purchases_expected} casos, resolvió bien ${s.stops_ok} de ${s.stops_expected} casos en los que no debía comprar (frenar o pasar a una persona) y pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos. Mediana de ${s.median_tool_calls} herramientas por compra.`;
     document.getElementById('eval-table').innerHTML = `
       <thead><tr><th scope="col">Escenario</th><th scope="col">Esperado</th><th scope="col">Resultado</th><th scope="col">Herramientas</th><th scope="col">Segundos</th></tr></thead>
       <tbody>${r.results

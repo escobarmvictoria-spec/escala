@@ -68,7 +68,7 @@ export function createMailer(env, { outboxDir }) {
             subject,
             textContent: text,
             htmlContent: html,
-            attachment: [{ name: attachment.name, content: attachment.content.toString('base64') }],
+            ...(attachment ? { attachment: [{ name: attachment.name, content: attachment.content.toString('base64') }] } : {}),
             tags: ['escala-demo'],
           }),
           signal: controller.signal,
@@ -88,7 +88,7 @@ export function createMailer(env, { outboxDir }) {
         subject,
         text,
         html,
-        attachments: [{ filename: attachment.name, content: attachment.content }],
+        attachments: attachment ? [{ filename: attachment.name, content: attachment.content }] : [],
       });
       return { provider, message_id: info.messageId };
     }
@@ -97,9 +97,9 @@ export function createMailer(env, { outboxDir }) {
     const base = path.join(outboxDir, `${Date.now()}-${to.replace(/[^a-z0-9@.]/gi, '_')}`);
     fs.writeFileSync(`${base}.json`, JSON.stringify({ to, subject, text }, null, 2));
     fs.writeFileSync(`${base}.html`, html);
-    fs.writeFileSync(`${base}-${attachment.name}`, attachment.content);
+    if (attachment) fs.writeFileSync(`${base}-${attachment.name}`, attachment.content);
     return { provider, message_id: path.basename(base), note: 'Sin proveedor de email configurado: guardado en data/outbox.' };
   }
 
-  return { provider, sender, send };
+  return { provider, sender, send, teamAddress: env.TEAM_EMAIL || env.SENDER_EMAIL || null };
 }

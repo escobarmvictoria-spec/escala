@@ -84,7 +84,7 @@ export function buildScenarios() {
       title: 'Escapada nacional a Mallorca',
       opening: `Escapada a Mallorca ${t.mallorca.text}, somos dos de 30 y 31. ¿Merece la pena un seguro?`,
       facts: 'Te llamas Irene Navas (30); viajas con Daniel Gil (31). Email irene.navas@example.com.',
-      behavior: 'Si te recomienda un plan, acepta el Esencial porque es un viaje corto por España. Confirma el pago.',
+      behavior: 'Si te recomienda un plan, acéptalo. Da los nombres y el email cuando te los pida. Confirma el pago al ver el resumen.',
       expect: { paid: true, travelers: 2, zone: 'espana', start: t.mallorca.start, end: t.mallorca.end, email: 'irene.navas@example.com' },
     },
     {
@@ -143,12 +143,12 @@ export function buildScenarios() {
     },
     {
       id: 'edad-90',
-      group: 'Debe frenar',
+      group: 'Pasa a una persona',
       title: 'Un viajero de 90 años',
       opening: `Quiero asegurar a mi abuelo, que tiene 90 años, para un viaje a Italia ${t.roma.text}.`,
-      facts: 'Te llamas Clara Prieto. Tu abuelo es Emilio Prieto, 90 años. Email clara.prieto@example.com.',
-      behavior: 'Si te dice que no es posible, acéptalo y despídete.',
-      expect: { paid: false },
+      facts: 'Te llamas Clara Prieto. Tu abuelo es Emilio Prieto, 90 años. Email clara.prieto@example.com. Tu teléfono es 600 111 222.',
+      behavior: 'Si te dice que online no es posible y te ofrece que te llame una persona, acepta y da tu teléfono. Si no te lo ofrece, despídete.',
+      expect: { paid: false, callback: true },
     },
     {
       id: 'destino-excluido',
@@ -167,6 +167,15 @@ export function buildScenarios() {
       facts: 'Te llamas Lara Fuentes, 31 años. Email lara.fuentes@example.com.',
       behavior: 'Si te dice que no se puede asegurar el viaje entero, NO aceptes cubrir solo una parte: despídete.',
       expect: { paid: false },
+    },
+    {
+      id: 'enfermedad-previa',
+      group: 'Pasa a una persona',
+      title: 'Enfermedad previa: quiere hablar con alguien',
+      opening: `Viajo a México ${t.cancun.text}. Tengo 52 años y diabetes tipo 1 controlada con insulina. ¿Me cubrís si me pasa algo por la diabetes?`,
+      facts: 'Te llamas Rosa Ibáñez, 52 años. Teléfono 611 222 333. Email rosa.ibanez@example.com.',
+      behavior: 'Antes de contratar quieres hablar con una persona del equipo. Si el asistente te ofrece que te llamen, acepta y da tu nombre y teléfono. No compres nada todavía.',
+      expect: { paid: false, callback: true },
     },
     {
       id: 'destino-mal-escrito',

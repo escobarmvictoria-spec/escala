@@ -87,6 +87,7 @@ async function runScenario(browser, s) {
   const transcript = [{ who: 'cliente', text: s.opening }];
   const calls = [];
   const quoteIds = new Set();
+  const tickets = new Set();
   let reviewSeen = false;
   let customerSpokeAfterReview = false;
   let paidAfterConfirmation = null;
@@ -128,6 +129,7 @@ async function runScenario(browser, s) {
           /* nada */
         }
         if (parsed.quote_id) quoteIds.add(parsed.quote_id);
+        if (parsed.ticket) tickets.add(parsed.ticket);
         if (u.input?.quote_id) quoteIds.add(u.input.quote_id);
         if (u.name === 'review_order' && !isError) {
           reviewSeen = true;
@@ -193,12 +195,24 @@ async function runScenario(browser, s) {
   } else {
     check('no pagó', paid.length === 0);
   }
+  if (e.callback) {
+    let ok = false;
+    for (const t of tickets) {
+      try {
+        const r = await fetch(`${BASE}/api/callbacks/${encodeURIComponent(t)}`);
+        if (r.ok) ok = true;
+      } catch {
+        /* nada */
+      }
+    }
+    check('pasó el caso a una persona', ok);
+  }
   const errors = calls.filter((c) => !c.ok);
   return {
     id: s.id,
     group: s.group,
     title: s.title,
-    expected: e.paid ? 'Comprar' : 'No comprar',
+    expected: e.paid ? 'Comprar' : e.callback ? 'Pasar a una persona' : 'No comprar',
     passed: checks.every((c) => c.ok),
     checks,
     policy: order?.policy?.policy_number ?? null,
@@ -251,13 +265,13 @@ async function main() {
       console.log(r.passed ? `superado (${r.tool_calls} herramientas, ${r.seconds} s)` : `FALLIDO: ${r.checks.filter((c) => !c.ok).map((c) => c.name).join(', ')}`);
     } catch (err) {
       console.log(`ERROR: ${err.message}`);
-      results.push({ id: s.id, group: s.group, title: s.title, expected: s.expect.paid ? 'Comprar' : 'No comprar', passed: false, checks: [{ name: `error: ${err.message}`, ok: false }], tool_calls: 0, tool_errors: 0, error_codes: [], seconds: 0, transcript: [] });
+      results.push({ id: s.id, group: s.group, title: s.title, expected: s.expect.paid ? 'Comprar' : s.expect.callback ? 'Pasar a una persona' : 'No comprar', passed: false, checks: [{ name: `error: ${err.message}`, ok: false }], tool_calls: 0, tool_errors: 0, error_codes: [], seconds: 0, transcript: [] });
     }
   }
   await browser.close();
 
   const buys = results.filter((r) => r.expected === 'Comprar');
-  const stops = results.filter((r) => r.expected === 'No comprar');
+  const stops = results.filter((r) => r.expected !== 'Comprar');
   const paidRuns = results.filter((r) => r.checks.some((c) => c.name === 'compra pagada' && c.ok));
   const median = (xs) => {
     const s = [...xs].sort((a, b) => a - b);

@@ -64,6 +64,7 @@ export const api = {
   pay: (id, input, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/pay`, input, actor),
   policy: (number, actor) => request('GET', `/api/policies/${encodeURIComponent(number)}`, null, actor),
   resend: (number, email, actor) => request('POST', `/api/policies/${encodeURIComponent(number)}/resend`, email ? { email } : {}, actor),
+  callback: (input, actor) => request('POST', '/api/callbacks', input, actor),
   agentStatus: () => request('GET', '/api/agent/status'),
   agentTurn: (payload) => request('POST', '/api/agent/turn', payload),
 };

@@ -12,6 +12,7 @@ import { ApiError } from './src/errors.js';
 import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList } from './src/catalog.js';
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD } from './src/pricing.js';
 import { agentSystemPrompt } from './src/agent-prompt.js';
+import { createCallbackService, publicCallback, teamEmail, CALLBACK_REASONS } from './src/callbacks.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 loadDotEnv(path.join(here, '.env'));
@@ -68,6 +69,21 @@ async function sendPolicyEmail(order) {
 
 const orders = createOrderService({ store, issuePolicy, sendPolicyEmail });
 
+// Aviso al equipo cuando alguien pide que le llamen (a TEAM_EMAIL o, si no hay, al remitente).
+async function notifyTeam(cb) {
+  const to = mailer.teamAddress;
+  if (!to && mailer.provider !== 'outbox') return { status: 'skipped', note: 'Sin TEAM_EMAIL ni SENDER_EMAIL.' };
+  try {
+    const mail = teamEmail(cb);
+    const r = await mailer.send({ to: to || 'equipo@escala.demo', toName: 'Equipo Escala', subject: mail.subject, text: mail.text, html: mail.html });
+    return { status: r.provider === 'outbox' ? 'simulated' : 'sent', to: to || 'equipo@escala.demo' };
+  } catch (err) {
+    console.error('[callbacks] aviso al equipo fallido', err.message);
+    return { status: 'failed', error: err.message.slice(0, 200) };
+  }
+}
+const callbacks = createCallbackService({ store, notifyTeam });
+
 const app = express();
 app.set('trust proxy', true);
 app.disable('x-powered-by');
@@ -120,6 +136,8 @@ api.get('/product', (req, res) => {
       not_included: COVERAGES.filter((c) => c.limits[p.id] === null).map((c) => c.name),
     })),
     main_exclusions: EXCLUSIONS,
+    trips_within_spain: 'En viajes por España también hay gastos médicos, con límites de 3.000 € (Esencial), 6.000 € (Completo) y 10.000 € (Total), porque complementan la sanidad pública. El resto de coberturas es igual.',
+    human_help: 'Si el caso no se puede contratar online o el cliente lo prefiere, una persona del equipo le llama (herramienta request_human_callback).',
     terms_version: TERMS_VERSION,
     terms_url: '/condiciones',
   });
@@ -194,6 +212,13 @@ api.post('/policies/:number/resend', rateLimit(10, 60000), async (req, res) => {
   res.json({ ok: true, order: publicOrder(order) });
 });
 
+// Transferencia a una persona
+api.post('/callbacks', rateLimit(10, 60000), async (req, res) => {
+  const cb = await callbacks.create(req.body, actorOf(req));
+  res.status(201).json({ ok: true, callback: publicCallback(cb) });
+});
+api.get('/callbacks/:id', (req, res) => res.json({ ok: true, callback: publicCallback(callbacks.get(req.params.id)) }));
+
 // Métricas del embudo por canal: web frente a agentes de IA.
 api.get('/metrics', (req, res) => {
   const steps = ['quoted', 'plan_selected', 'travelers_set', 'reviewed', 'terms_accepted', 'paid'];
@@ -207,7 +232,13 @@ api.get('/metrics', (req, res) => {
       c.plans[o.plan] = (c.plans[o.plan] || 0) + 1;
     }
   }
-  res.json({ ok: true, steps, channels });
+  const handoffs = {};
+  for (const cb of store.allCallbacks()) {
+    const h = (handoffs[cb.channel] ||= { total: 0, reasons: {} });
+    h.total += 1;
+    h.reasons[cb.reason_text] = (h.reasons[cb.reason_text] || 0) + 1;
+  }
+  res.json({ ok: true, steps, channels, handoffs });
 });
 
 // ---------- Agente de demo (opcional): proxy a la API de Anthropic con la clave del servidor ----------

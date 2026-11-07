@@ -30,6 +30,7 @@
       <a href="#coberturas">Coberturas</a>
       <a href="#ia">Con tu asistente de IA</a>
       <a href="#preguntas">Preguntas</a>
+      <a href="#" data-open-human>Hablar con una persona</a>
     </nav>
     <button class="agent-toggle" type="button" aria-controls="agent-drawer" aria-expanded="false">
       <span class="agent-dot" aria-hidden="true"></span><span class="agent-toggle-label">Asistente IA</span>
@@ -145,7 +146,8 @@
       <div class="sign-row">
         <span class="pictogram" aria-hidden="true"><svg viewBox="0 0 40 40"><path d="M12 9c2 0 4 5 4 7s-3 3-3 4c1 3 4 6 7 7 1 0 2-3 4-3s7 2 7 4-2 5-5 5C17 33 7 23 7 14c0-3 3-5 5-5z"/></svg></span>
         <h3>Humano</h3>
-        <p>Si algo pasa en el viaje, te atiende una persona por teléfono a cualquier hora. Sin menús ni esperas eternas.</p>
+        <p>Si algo pasa en el viaje, te atiende una persona por teléfono a cualquier hora. Y si tienes dudas antes de contratar, te llamamos nosotros.</p>
+        <button type="button" class="human-link" data-open-human>Quiero que me llame una persona</button>
       </div>
       <div class="sign-row">
         <span class="pictogram" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="8" y="12" width="24" height="18" rx="4"/><line x1="20" y1="6" x2="20" y2="12"/><circle cx="20" cy="5" r="1.5"/><circle cx="15" cy="21" r="2"/><circle cx="25" cy="21" r="2"/></svg></span>
@@ -181,6 +183,7 @@
           <li><code>pay</code><span>Paga solo el importe que viste y con tu confirmación.</span></li>
           <li><code>get_policy</code><span>Te da la póliza y confirma el envío por email.</span></li>
         </ol>
+        <p>Y si tu caso necesita a una persona, el agente puede pedir que te llamemos con <code>request_human_callback</code>, pasando lo que ya sabe para que no tengas que repetirlo.</p>
         <p class="ai-links"><button class="btn-primary" type="button" data-open-agent>Probar con el asistente</button> <a href="/agentes">Cómo conectar tu agente</a></p>
       </div>
     </section>
@@ -191,6 +194,7 @@
       <details><summary>¿Cómo se calcula el precio?</summary><p>Depende de tres cosas: la zona del destino, los días de viaje y la edad de cada viajero. Los menores pagan un 40 % menos y los grupos de 3 o más personas tienen un 10 % de descuento. El precio ya incluye el impuesto sobre primas (IPS, 8 %).</p></details>
       <details><summary>¿Qué es la franquicia?</summary><p>La parte de cada siniestro que pagas tú. Solo el plan Esencial tiene franquicia: 75 € en gastos médicos. Completo y Total no tienen.</p></details>
       <details><summary>¿Cuándo recibo la póliza?</summary><p>En cuanto pagas: te llega por email en PDF y también puedes descargarla en la web.</p></details>
+      <details><summary>¿Puedo hablar con una persona?</summary><p>Sí. Pide que te llamemos y alguien del equipo te llama en menos de 15 minutos, de 9:00 a 21:00. Verá lo que ya has hecho en la web, así que no tendrás que repetirlo. Tu asistente de IA también puede pedir la llamada por ti. <button type="button" class="human-link" data-open-human>Pedir que me llamen</button></p></details>
       <details><summary>¿Puedo pedirle a un asistente de IA que lo contrate?</summary><p>Sí. Si tu asistente es compatible con WebMCP, puede hacer la compra entera desde esta página. Antes de pagar tiene que enseñarte el resumen y pedirte confirmación.</p></details>
     </section>
   </main>

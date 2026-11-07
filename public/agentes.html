@@ -17,17 +17,18 @@
   </header>
   <main class="doc">
     <h1>Escala para agentes de IA</h1>
-    <p>La página principal registra 10 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
+    <p>La página principal registra 11 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
 
     <h2>El flujo de compra</h2>
     <pre>get_quote → select_plan → set_travelers → review_order → accept_terms → pay → get_policy</pre>
-    <p>Herramientas de apoyo: <code>get_product_info</code> (coberturas y exclusiones), <code>get_order_status</code> (dónde está la compra y qué falta) y <code>resend_policy_email</code>.</p>
+    <p>Herramientas de apoyo: <code>get_product_info</code> (coberturas y exclusiones), <code>get_order_status</code> (dónde está la compra y qué falta), <code>resend_policy_email</code> y <code>request_human_callback</code>, que pide que una persona del equipo llame al cliente con el contexto de la compra cuando el caso no se puede resolver online.</p>
 
     <h2>Controles antes de pagar</h2>
     <ul>
       <li>El orden es obligatorio: el servidor guarda el estado del pedido y rechaza los pasos fuera de orden con el siguiente paso en <code>how_to_fix</code>.</li>
       <li><code>review_order</code> devuelve un <code>review_token</code>. Si cambian el plan, los viajeros o el email, el token deja de valer y hay que revisar otra vez.</li>
-      <li><code>pay</code> exige <code>amount_eur</code> igual al total revisado y <code>user_confirmed: true</code>, y está marcada como acción con consecuencias (<code>consequentialHint</code>).</li>
+      <li>Después de <code>review_order</code> el agente tiene que terminar su turno y esperar la respuesta del cliente.</li>
+      <li><code>pay</code> exige <code>amount_eur</code> igual al total revisado y <code>user_confirmation</code> con las palabras con las que el cliente aceptó, que se guardan como prueba de consentimiento y salen en la póliza. Está marcada como acción con consecuencias (<code>consequentialHint</code>).</li>
       <li>Solo acepta tarjetas de prueba. Una tarjeta real se rechaza sin guardarla.</li>
       <li>Es idempotente: pagar dos veces la misma cotización devuelve la misma póliza.</li>
       <li>Las cotizaciones caducan a las 2 horas y no se puede contratar un viaje que ya ha empezado.</li>

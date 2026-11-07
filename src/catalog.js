@@ -244,7 +244,7 @@ export function coveragesFor(planId, zone) {
     const limit = zone === 'espana' && c.limits_espana ? c.limits_espana[planId] : c.limits[planId];
     return {
       id: c.id,
-      name: c.name,
+      name: zone === 'espana' && c.id === 'medical' ? 'Gastos médicos (viaje por España)' : c.name,
       limit_eur: limit === 'ilimitado' ? null : limit,
       limit_text: limit === 'ilimitado' ? 'Ilimitado' : formatEur(limit, 0),
       deductible_eur: c.deductible[planId],

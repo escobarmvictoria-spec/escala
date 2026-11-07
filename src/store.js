@@ -5,10 +5,10 @@ import path from 'node:path';
 export function createStore(dir) {
   fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, 'db.json');
-  let db = { orders: {}, policies: {} };
+  let db = { orders: {}, policies: {}, callbacks: {} };
   if (fs.existsSync(file)) {
     try {
-      db = JSON.parse(fs.readFileSync(file, 'utf8'));
+      db = { callbacks: {}, ...JSON.parse(fs.readFileSync(file, 'utf8')) };
     } catch (e) {
       console.error('[store] db.json corrupto, se renombra y se empieza de cero', e.message);
       fs.renameSync(file, `${file}.corrupt-${Date.now()}`);
@@ -31,5 +31,12 @@ export function createStore(dir) {
     },
     orderIdForPolicy: (number) => db.policies[number] || null,
     allOrders: () => Object.values(db.orders),
+    getCallback: (id) => db.callbacks[id] || null,
+    putCallback(cb) {
+      db.callbacks[cb.id] = cb;
+      save();
+      return cb;
+    },
+    allCallbacks: () => Object.values(db.callbacks),
   };
 }

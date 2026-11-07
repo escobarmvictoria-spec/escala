@@ -9,7 +9,7 @@ Escala vende seguro de viaje con tres planes (Esencial, Completo y Total). Una p
 ```
 Navegador ─────────────────────────────────────────────┐
   index.html + app.js        (interfaz para personas)  │  mismo estado:
-  webmcp.js  → document.modelContext.registerTool ×10  │  la página muestra
+  webmcp.js  → document.modelContext.registerTool ×11  │  la página muestra
   agent.js   → asistente integrado (opcional)          │  lo que hace el agente
   polyfill @mcp-b/global (si el navegador no trae WebMCP)
         │  fetch /api/* (cabecera x-escala-actor: web | agent)
@@ -35,6 +35,8 @@ Una sola fuente de verdad: las herramientas WebMCP y los botones llaman a la mis
 | `review_order` | Resumen completo + `review_token`. |
 | `accept_terms` | Registra la aceptación con el `review_token` vigente. |
 | `pay` | Paga con tarjeta de prueba, emite la póliza y envía el email. |
+| `request_human_callback` | Pide que una persona del equipo llame al cliente, con el contexto de la compra y aviso por email al equipo. |
+| `request_human_callback` | Pide que una persona del equipo llame al cliente, con el contexto de la compra y aviso por email al equipo. |
 | `get_policy`, `get_order_status`, `get_product_info`, `resend_policy_email` | Consulta y soporte. |
 
 Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la revisión invalida el `review_token`; `review_order` obliga al agente a terminar su turno y esperar la respuesta; `pay` exige el importe exacto revisado y `user_confirmation` con las palabras del usuario, que se guardan como prueba de consentimiento y salen en la póliza (y se marca con `consequentialHint`); solo tarjetas de prueba; idempotente (no cobra dos veces); cotizaciones que caducan a las 2 h. Cada error devuelve `code`, `message` y `how_to_fix` para que el agente se corrija solo. Cada compra guarda su canal (web o agente) y `/panel` muestra el embudo por canal.

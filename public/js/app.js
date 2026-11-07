@@ -2,6 +2,7 @@
 import { api, store, eur, fmtDate, ApiFailure } from './core.js';
 import { registerEscalaTools } from './webmcp.js';
 import { initAgentDrawer } from './agent.js';
+import { initHumanDialog } from './human.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -27,6 +28,15 @@ function showError(form, err) {
   }
   const e = err instanceof ApiFailure ? err.body.error : { message: err.message };
   box.textContent = [e.message, e.how_to_fix].filter(Boolean).join(' ');
+  if (['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(e.code)) {
+    box.append(' ');
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'human-link';
+    b.dataset.openHuman = 'no_asegurable';
+    b.textContent = 'Pide que te llame una persona';
+    box.append(b);
+  }
   box.hidden = false;
 }
 
@@ -166,6 +176,13 @@ function renderPlans(order) {
   const coverages = store.state.coverages;
   const grid = $('#plans-grid');
   grid.innerHTML = '';
+  if (!$('#plans-help')) {
+    const help = document.createElement('p');
+    help.id = 'plans-help';
+    help.className = 'plans-help';
+    help.innerHTML = '¿No sabes cuál elegir o tienes una enfermedad previa? <button type="button" class="human-link" data-open-human="dudas_coberturas">Te llama una persona</button>';
+    grid.after(help);
+  }
   for (const id of ['esencial', 'completo', 'total']) {
     const p = order.quote.plans[id];
     const meta = product?.plans.find((x) => x.id === id);
@@ -182,7 +199,7 @@ function renderPlans(order) {
       <p class="plan-price-note">Total para ${p.per_traveler.length === 1 ? '1 viajero' : `${p.per_traveler.length} viajeros`}, impuestos incluidos. ${perPerson}.${p.group_discount_pct ? ` Incluye ${p.group_discount_pct} % de descuento de grupo.` : ''}</p>
       <ul class="plan-list">
         ${COVERAGE_ORDER.map((name) => {
-          const c = covs.find((x) => x.coverage === name);
+          const c = covs.find((x) => x.coverage === name || (name.startsWith('Gastos médicos') && x.coverage.startsWith('Gastos médicos')));
           if (!c) return missing.includes(name) ? `<li class="is-missing"><span>${esc(shortName(name))}</span><span>No incluido</span></li>` : '';
           return `<li><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span></li>`;
         }).join('')}
@@ -209,6 +226,7 @@ function renderPlans(order) {
 function shortName(name) {
   return name
     .replace('Gastos médicos en el extranjero', 'Gastos médicos')
+    .replace('Gastos médicos (viaje por España)', 'Gastos médicos')
     .replace('Repatriación o traslado sanitario', 'Repatriación')
     .replace('Robo, pérdida o daños del equipaje', 'Equipaje')
     .replace('Retraso del equipaje (más de 12 h)', 'Retraso de equipaje')
@@ -431,6 +449,7 @@ function renderPolicy(order) {
     <div class="actions">
       <a class="btn-primary" href="${esc(p.pdf_url)}" target="_blank" rel="noopener">Descargar la póliza (PDF)</a>
       <button class="btn-secondary" type="button" data-new-quote>Cotizar otro viaje</button>
+      <button class="human-link" type="button" data-open-human="siniestro">¿Problemas en el viaje? Te llama una persona</button>
     </div>
     <form class="resend" id="resend-form" novalidate>
       <div class="field"><label for="r-email">¿No te ha llegado? Reenvíala</label><input id="r-email" type="email" value="${esc(order.holder.email)}"></div>
@@ -549,6 +568,7 @@ async function main() {
   initQuoteForm();
   initTravelersForm();
   initPayForm();
+  initHumanDialog();
   $$('.route button').forEach((b) =>
     b.addEventListener('click', () => {
       viewStep = b.closest('li').dataset.step;
