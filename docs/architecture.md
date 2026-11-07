@@ -53,3 +53,16 @@ Lo que se aprendió por el camino: el polyfill envolvía el `document.modelConte
 - **WebMCP estándar + polyfill:** las herramientas se registran con la API del W3C; el polyfill de MCP-B la aporta donde no existe y la expone también a extensiones MCP.
 - **Pago simulado:** se rechazan tarjetas reales y solo se guardan los 4 últimos dígitos.
 - **No apto para producción:** la consulta de pólizas no tiene autenticación, el túnel rápido cambia de URL si se reinicia y no hay aseguradora detrás.
+
+## Prueba con agentes externos (7/11/2026)
+
+Mismo pedido a cuatro agentes (Nueva York, una persona, hasta el pago sin pagar), verificado en `/panel`:
+
+| Agente | Qué hizo | Qué registró el servidor |
+|---|---|---|
+| ChatGPT (escritorio, Work, GPT‑6.1 Sol) | Herramientas WebMCP; pidió confirmación antes de pagar | Póliza emitida, canal `agente_ia`, con las palabras de aceptación |
+| Perplexity (app) | Clics en la web como una persona; aceptó las condiciones y usó nombre y email de la cuenta sin preguntar | Cotización real, canal `web` |
+| Claude (app del móvil) | Avisó de que no tenía navegador y de que la URL era temporal | Nada |
+| Gemini (app del móvil) | Afirmó haber llegado al pago | Nada: lo inventó |
+
+El canal se decide por el camino, no por quién está detrás: las herramientas WebMCP marcan la compra como agente; los clics en el formulario son, para el servidor, una persona. Por eso los controles de consentimiento (`user_confirmation`) solo se pueden exigir por WebMCP.
