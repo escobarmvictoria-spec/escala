@@ -48,9 +48,11 @@ function addMsg(role, text, extra = '') {
   return el;
 }
 
-// El registro técnico solo aparece cuando hay actividad (Alba o un agente externo usando las herramientas)
+// El registro técnico solo aparece cuando un agente externo (como ChatGPT) usa las herramientas,
 // o en modo presentación: abre la web con ?demo una vez y queda activo en esa pestaña.
+// Cuando es Alba, sus pasos ya se cuentan dentro del chat.
 let demoMode = false;
+let externalActivity = false;
 try {
   if (new URLSearchParams(location.search).has('demo')) sessionStorage.setItem('escala.demo', '1');
   demoMode = sessionStorage.getItem('escala.demo') === '1';
@@ -59,7 +61,7 @@ try {
 }
 function renderActivity() {
   const items = store.state.activity;
-  $('#activity').hidden = items.length === 0 && !demoMode;
+  $('#activity').hidden = !(demoMode || externalActivity);
   $('#activity-count').textContent = String(items.length);
   $('#activity-log').innerHTML = items
     .map(
@@ -219,8 +221,9 @@ export async function initAgentDrawer(toolsPromise) {
 
   store.subscribe((state, reason) => {
     if (reason !== 'activity') return;
-    renderActivity();
     // Si un agente externo (no Alba) empieza a usar las herramientas, abrimos el registro para que se vea.
+    if (!running) externalActivity = true;
+    renderActivity();
     if (!running) {
       $('#external-note').hidden = false;
       $('#activity').open = true;
