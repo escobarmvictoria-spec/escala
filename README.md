@@ -17,6 +17,10 @@ Node 22 + Express, HTML/CSS/JS sin compilar y un fichero JSON. Las herramientas 
 
 **Controles antes de pagar:** orden de pasos obligatorio; cualquier cambio tras el resumen obliga a revisarlo de nuevo; el agente debe parar tras el resumen y esperar el sí; `pay` exige el importe exacto y las palabras con las que el usuario confirmó (quedan en la póliza); solo tarjetas de prueba; no cobra dos veces. Cada error dice qué falló y cómo arreglarlo.
 
+## Desplegar
+
+En un Ubuntu: `git clone` del repositorio, `bash deploy/setup.sh` (instala Node 22, pide las claves de Brevo y Anthropic, crea los servicios de la app, el túnel de Cloudflare y el vigilante, y muestra la URL) y, para actualizar, `bash deploy/update.sh` (no cambia la URL). Las claves viven solo en `.env`. Detalle en [docs/deploy.md](docs/deploy.md).
+
 ## Decisiones
 
 - **Precios de mercado:** `(base + tarifa por día) × factor de edad`, por zona y plan, IPS incluido. Calibrado con 41 precios publicados y 26 cotizaciones hechas a mano en Heymondo, IATI e InterMundial el 7/11/2026; error medio del 9,2 % y un 4 % por debajo de la mediana.
