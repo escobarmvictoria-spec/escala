@@ -457,6 +457,14 @@ export async function registerEscalaTools() {
         ...definition,
         async execute(input = {}) {
           const started = performance.now();
+          // Algunos clientes pasan los argumentos como texto JSON en lugar de como objeto.
+          if (typeof input === 'string') {
+            try {
+              input = JSON.parse(input);
+            } catch {
+              input = {};
+            }
+          }
           let result;
           try {
             result = await run(input || {});
