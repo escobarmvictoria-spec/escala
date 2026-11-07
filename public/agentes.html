@@ -59,10 +59,22 @@
     <h2>Cómo conectar un agente</h2>
     <ul>
       <li><strong>Asistente integrado.</strong> El botón «Hablar con Alba» abre a Alba, la asistente virtual (un agente con Claude), que descubre las herramientas con <code>getTools()</code> y las ejecuta con <code>executeTool()</code> (o con el registro propio de Escala cuando el WebMCP es nativo). Necesita que el servidor tenga configurada una clave de API.</li>
-      <li><strong>ChatGPT (Site tools).</strong> En la app de escritorio, abre esta web en el navegador integrado y pide la compra en ChatGPT Work con un modelo compatible (probado con GPT‑6.1 Sol). Activa «Usar herramientas del sitio de forma predeterminada» en Configuración → Navegador → Permisos. Con WebMCP nativo, Escala registra las herramientas directamente en el navegador.</li>
+      <li><strong>ChatGPT (Site tools).</strong> Probado en el navegador integrado de la app de escritorio; ver el ejemplo en «Cómo probarlo».</li>
       <li><strong>Chrome con WebMCP.</strong> Activa <code>chrome://flags/#enable-webmcp-testing</code> y usa un agente del navegador compatible.</li>
       <li><strong>Extensiones puente.</strong> Las extensiones del proyecto MCP-B detectan las herramientas de la pestaña y se las ofrecen a tu cliente MCP o a su propio chat.</li>
     </ul>
+
+    <h2 id="como-probarlo">Cómo probarlo</h2>
+    <p>Escala se probó en el <strong>navegador integrado de la app de escritorio de ChatGPT</strong>, con acceso a las herramientas WebMCP del sitio: ChatGPT Work y el modelo GPT‑6.1 Sol, con «Usar herramientas del sitio de forma predeterminada» activado en Configuración → Navegador → Permisos. Con GPT‑6 Luna no funciona.</p>
+    <ol>
+      <li>Abre Escala en el navegador integrado de ChatGPT.</li>
+      <li>Pídele el viaje, por ejemplo (datos ficticios):
+        <pre class="prompt">Contrátame un seguro de viaje en Escala para Lucía Martín, 34 años, a Japón del 10 al 17 de diciembre de 2026. Envía la póliza a lucia.martin@example.com y paga con la tarjeta de prueba 4242 4242 4242 4242, caducidad 12/29, CVC 123. Usa las herramientas del sitio.</pre>
+      </li>
+      <li>El agente cotiza, elige el plan, rellena los datos y <strong>te muestra el resumen</strong> (plan, destino, fechas, asegurados y total). Ahí se detiene.</li>
+      <li><strong>Tú confirmas</strong> después de ver el resumen («Sí, acepto las condiciones, paga»). Solo entonces hace el pago simulado, con tus palabras guardadas en la póliza.</li>
+      <li>La póliza de prueba llega en PDF al email indicado, y el agente puede recuperarla con <code>get_policy</code>.</li>
+    </ol>
 
     <h2>Tarjetas de prueba</h2>
     <ul>

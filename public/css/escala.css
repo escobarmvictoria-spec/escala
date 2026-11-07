@@ -703,3 +703,6 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .chat-log { grid-template-columns: minmax(0, 1fr); }
 .msg { min-width: 0; }
 .msg.assistant:has(.msg-table) { justify-self: stretch; max-width: 100%; }
+
+/* Prompt de ejemplo en /agentes: que se lea sin desplazarse en el móvil */
+.doc pre.prompt { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 8px; }
