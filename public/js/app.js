@@ -556,9 +556,15 @@ async function restoreOrder() {
       store.apply(data, 'restore', { by: 'web' });
       return;
     }
+    // Solo se recupera una compra a medias (por si recargas la página).
+    // Una compra ya pagada no vuelve a abrirse en la portada: sigue disponible en /poliza/NÚMERO.
     const id = store.savedQuoteId();
     if (id) {
       const data = await api.getQuote(id);
+      if (data.order.status === 'paid') {
+        store.reset();
+        return;
+      }
       store.apply(data, 'restore', { by: 'web' });
       fillQuoteForm(data.order);
     }
