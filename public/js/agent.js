@@ -191,7 +191,7 @@ function initChat(status) {
   } catch {
     passcode = null;
   }
-  addMsg('assistant', 'Hola, soy **Alba**, la asistente virtual de Escala. Soy una inteligencia artificial: te explico las coberturas y te ayudo a contratar, y antes de pagar siempre te enseño el resumen. ¿Por dónde empezamos?');
+  addMsg('assistant', 'Hola, soy **Alba**, la asistente virtual de Escala. Te ayudo a comparar coberturas y a resolver tus dudas. Si quieres, también te acompaño en la compra de prueba: antes del pago simulado, te muestro el resumen y espero tu confirmación. ¿Por dónde empezamos?');
   const quick = $('#quick-replies');
   $('#chat-log').append(quick); // los atajos van justo debajo del saludo, como en un chat
   quick.hidden = false;
