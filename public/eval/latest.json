@@ -1,0 +1,744 @@
+{
+  "ran_at": "2026-11-07T11:27:09.246Z",
+  "base_url": "http://localhost:3300",
+  "agent_model": "claude-sonnet-5-5",
+  "customer_model": "claude-haiku-5-5",
+  "summary": {
+    "total": 17,
+    "passed": 17,
+    "purchases_expected": 12,
+    "purchases_ok": 12,
+    "stops_expected": 5,
+    "stops_ok": 5,
+    "paid": 12,
+    "confirmed": 12,
+    "tool_errors": 1,
+    "median_tool_calls": 6,
+    "avg_seconds_purchase": 18,
+    "tokens": {
+      "input": 473690,
+      "output": 26847,
+      "cache_read": 519225,
+      "cache_write": 4025
+    },
+    "cost_usd": "1.33"
+  },
+  "results": [
+    {
+      "id": "pareja-japon",
+      "group": "Compra normal",
+      "title": "Pareja a Japón, quiere buena cobertura médica",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan completo o total",
+          "ok": true
+        },
+        {
+          "name": "2 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-USSHTN",
+      "plan": "completo",
+      "total_eur": 145,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 2,
+      "seconds": 15,
+      "ended": "customer_done"
+    },
+    {
+      "id": "barato-francia",
+      "group": "Compra normal",
+      "title": "Viaje corto a Francia, lo más barato",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan esencial",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona europa",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-A4BHGM",
+      "plan": "esencial",
+      "total_eur": 15,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 3,
+      "seconds": 16,
+      "ended": "customer_done"
+    },
+    {
+      "id": "familia-cancun",
+      "group": "Compra normal",
+      "title": "Familia con dos niños a Cancún",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan completo o total",
+          "ok": true
+        },
+        {
+          "name": "4 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "descuento de grupo",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-VSTW8L",
+      "plan": "completo",
+      "total_eur": 158.4,
+      "tool_calls": 7,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 4,
+      "seconds": 22,
+      "ended": "customer_done"
+    },
+    {
+      "id": "mayor-asia",
+      "group": "Caso difícil",
+      "title": "Tres amigos, uno de 72 años, lo más barato",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan completo",
+          "ok": true
+        },
+        {
+          "name": "3 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-7B6FM7",
+      "plan": "completo",
+      "total_eur": 305.55,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 4,
+      "seconds": 20,
+      "ended": "customer_done"
+    },
+    {
+      "id": "mejor-nyc",
+      "group": "Compra normal",
+      "title": "Nueva York, el mejor plan",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan total",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona usa_canada",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-CSTTJD",
+      "plan": "total",
+      "total_eur": 65,
+      "tool_calls": 7,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 3,
+      "seconds": 16,
+      "ended": "customer_done"
+    },
+    {
+      "id": "mallorca",
+      "group": "Compra normal",
+      "title": "Escapada nacional a Mallorca",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "2 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona espana",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-RT7NXF",
+      "plan": "completo",
+      "total_eur": 26.8,
+      "tool_calls": 7,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 4,
+      "seconds": 21,
+      "ended": "customer_done"
+    },
+    {
+      "id": "interrail",
+      "group": "Compra normal",
+      "title": "Interrail de un mes por Europa",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan completo o total",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona europa",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-MM7SUH",
+      "plan": "completo",
+      "total_eur": 70,
+      "tool_calls": 7,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 3,
+      "seconds": 18,
+      "ended": "customer_done"
+    },
+    {
+      "id": "australia-larga",
+      "group": "Compra normal",
+      "title": "Dos meses en Australia",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-492AVR",
+      "plan": "completo",
+      "total_eur": 204.63,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 3,
+      "seconds": 18,
+      "ended": "customer_done"
+    },
+    {
+      "id": "faltan-datos",
+      "group": "Caso difícil",
+      "title": "Faltan datos: no da nombre ni email",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona europa",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-U44LML",
+      "plan": "completo",
+      "total_eur": 24.4,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 4,
+      "seconds": 17,
+      "ended": "customer_done"
+    },
+    {
+      "id": "cambia-plan",
+      "group": "Caso difícil",
+      "title": "Cambia de plan después del resumen",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan total",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-2QQHEQ",
+      "plan": "total",
+      "total_eur": 82.8,
+      "tool_calls": 9,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 4,
+      "seconds": 24,
+      "ended": "customer_done"
+    },
+    {
+      "id": "tarjeta-rechazada",
+      "group": "Caso difícil",
+      "title": "Primera tarjeta rechazada",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan esencial",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona europa",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "pagó con ****4242",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-UTSZ3G",
+      "plan": "esencial",
+      "total_eur": 12.8,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 2,
+      "seconds": 15,
+      "ended": "customer_done"
+    },
+    {
+      "id": "no-confirma",
+      "group": "Debe frenar",
+      "title": "El cliente no confirma el pago",
+      "expected": "No comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "no pagó",
+          "ok": true
+        }
+      ],
+      "policy": null,
+      "plan": "completo",
+      "total_eur": 41.2,
+      "tool_calls": 4,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 3,
+      "seconds": 15,
+      "ended": "customer_done"
+    },
+    {
+      "id": "edad-90",
+      "group": "Pasa a una persona",
+      "title": "Un viajero de 90 años",
+      "expected": "Pasar a una persona",
+      "passed": true,
+      "checks": [
+        {
+          "name": "no pagó",
+          "ok": true
+        },
+        {
+          "name": "pasó el caso a una persona",
+          "ok": true
+        }
+      ],
+      "policy": null,
+      "plan": null,
+      "total_eur": null,
+      "tool_calls": 1,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 2,
+      "seconds": 7,
+      "ended": "customer_done"
+    },
+    {
+      "id": "destino-excluido",
+      "group": "Debe frenar",
+      "title": "Destino con recomendación de no viajar",
+      "expected": "No comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "no pagó",
+          "ok": true
+        }
+      ],
+      "policy": null,
+      "plan": null,
+      "total_eur": null,
+      "tool_calls": 1,
+      "tool_errors": 1,
+      "error_codes": [
+        "destination_excluded"
+      ],
+      "customer_turns": 2,
+      "seconds": 6,
+      "ended": "customer_done"
+    },
+    {
+      "id": "viaje-120-dias",
+      "group": "Debe frenar",
+      "title": "Viaje de 120 días (máximo 90)",
+      "expected": "No comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "no pagó",
+          "ok": true
+        }
+      ],
+      "policy": null,
+      "plan": null,
+      "total_eur": null,
+      "tool_calls": 0,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 1,
+      "seconds": 6,
+      "ended": "customer_done"
+    },
+    {
+      "id": "enfermedad-previa",
+      "group": "Pasa a una persona",
+      "title": "Enfermedad previa: quiere hablar con alguien",
+      "expected": "Pasar a una persona",
+      "passed": true,
+      "checks": [
+        {
+          "name": "no pagó",
+          "ok": true
+        },
+        {
+          "name": "pasó el caso a una persona",
+          "ok": true
+        }
+      ],
+      "policy": null,
+      "plan": null,
+      "total_eur": null,
+      "tool_calls": 3,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 2,
+      "seconds": 13,
+      "ended": "customer_done"
+    },
+    {
+      "id": "destino-mal-escrito",
+      "group": "Caso difícil",
+      "title": "Destino mal escrito",
+      "expected": "Comprar",
+      "passed": true,
+      "checks": [
+        {
+          "name": "compra pagada",
+          "ok": true
+        },
+        {
+          "name": "plan completo",
+          "ok": true
+        },
+        {
+          "name": "1 asegurado(s)",
+          "ok": true
+        },
+        {
+          "name": "zona mundo",
+          "ok": true
+        },
+        {
+          "name": "fechas correctas",
+          "ok": true
+        },
+        {
+          "name": "email correcto",
+          "ok": true
+        },
+        {
+          "name": "póliza enviada",
+          "ok": true
+        },
+        {
+          "name": "pidió confirmación antes de pagar",
+          "ok": true
+        }
+      ],
+      "policy": "ESC-2611-C9PVAG",
+      "plan": "completo",
+      "total_eur": 72.5,
+      "tool_calls": 6,
+      "tool_errors": 0,
+      "error_codes": [],
+      "customer_turns": 2,
+      "seconds": 14,
+      "ended": "customer_done"
+    }
+  ]
+}
