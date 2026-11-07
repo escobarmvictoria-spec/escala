@@ -203,11 +203,11 @@ function renderPlans(order) {
     el.className = `plan${isRec ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}`;
     el.innerHTML = `
       <span class="plan-flag${isRec ? '' : ' is-empty'}">${isRec ? esc(order.recommendation?.label ?? 'Recomendado') : 'Recomendado'}</span>
-      ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : ''}
       <h3>${esc(p.name)}</h3>
       <p class="plan-tagline">${esc(meta?.description ?? '')}</p>
       <p class="plan-price">${eur(p.total_eur)}</p>
       <p class="plan-price-note">Total para ${p.per_traveler.length === 1 ? '1 viajero' : `${p.per_traveler.length} viajeros`}, impuestos incluidos. ${perPerson}.${p.group_discount_pct ? ` Incluye ${p.group_discount_pct} % de descuento de grupo.` : ''}</p>
+      ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : ''}
       <ul class="plan-list">
         ${COVERAGE_ORDER.map((name) => {
           const c = covs.find((x) => x.coverage === name || (name.startsWith('Gastos médicos') && x.coverage.startsWith('Gastos médicos')));
