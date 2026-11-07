@@ -8,6 +8,8 @@ import { createStore } from './src/store.js';
 import { createOrderService, publicOrder, summaryOf, planSummary, keyCoverages, todayMadrid } from './src/orders.js';
 import { renderPolicyPdf } from './src/pdf.js';
 import { createMailer, buildPolicyEmail, buildQuoteEmail } from './src/email.js';
+import { renderProductSheet } from './src/ipid.js';
+import { structuredData } from './src/structured-data.js';
 import { ApiError } from './src/errors.js';
 import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList, placeSuggestions } from './src/catalog.js';
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
@@ -124,6 +126,8 @@ api.get('/product', (req, res) => {
     brand: 'Escala',
     demo_notice: 'Demo — no es un seguro real',
     who_can_buy: 'Residentes en España, viajes que empiezan en España.',
+    product_sheet_url: '/ficha-producto.pdf',
+    product_sheet_note: 'Ficha de información del producto (formato IPID, 2 páginas): coberturas, exclusiones, restricciones, pagos y desistimiento.',
     limits: { max_trip_days: MAX_DAYS, max_travelers: MAX_TRAVELERS, max_age: MAX_AGE },
     zones: Object.values(ZONES),
     plans: PLANS.map((p) => ({
@@ -353,8 +357,25 @@ app.get('/condiciones', (req, res) => res.sendFile(path.join(pub, 'condiciones.h
 app.get('/panel', (req, res) => res.sendFile(path.join(pub, 'panel.html')));
 app.get('/agentes', (req, res) => res.sendFile(path.join(pub, 'agentes.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(pub, 'privacidad.html')));
-app.get('/poliza/:number', (req, res) => res.sendFile(path.join(pub, 'index.html')));
-app.get('/retomar/:id', (req, res) => res.sendFile(path.join(pub, 'index.html')));
+// Portada con datos estructurados (schema.org) generados con el catálogo y la tarifa.
+function sendIndex(req, res) {
+  const html = fs.readFileSync(path.join(pub, 'index.html'), 'utf8');
+  const base = publicBaseUrl || `${req.protocol}://${req.get('host')}`;
+  res.set('Cache-Control', 'no-cache');
+  res.type('html').send(html.replace('<!--structured-data-->', structuredData(html, base)));
+}
+app.get(['/', '/index.html'], sendIndex);
+app.get('/poliza/:number', sendIndex);
+app.get('/retomar/:id', sendIndex);
+// Ficha de información del producto (formato IPID), siempre al día con el catálogo.
+let productSheet = null;
+app.get('/ficha-producto.pdf', async (req, res) => {
+  productSheet ??= await renderProductSheet();
+  res.set('Content-Type', 'application/pdf');
+  res.set('Content-Disposition', 'inline; filename="escala-ficha-producto.pdf"');
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.send(productSheet);
+});
 app.use(express.static(pub, { extensions: ['html'], maxAge: '5m' }));
 
 app.use((err, req, res, next) => {

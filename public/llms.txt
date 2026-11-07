@@ -21,3 +21,4 @@
 - [Web y cotizador](/)
 - [Guía para agentes](/agentes)
 - [Condiciones](/condiciones)
+- Ficha de información del producto (formato IPID, PDF de 2 páginas): /ficha-producto.pdf. Datos estructurados schema.org (JSON-LD) en la portada: planes, coberturas, precios de ejemplo y preguntas frecuentes.

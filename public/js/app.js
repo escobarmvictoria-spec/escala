@@ -347,7 +347,7 @@ function renderReview(order) {
     <div class="terms-box">
       <strong>Condiciones (versión ${esc(s.terms.version)})</strong>
       <ul>${s.terms.key_points.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
-      <p style="margin-top:8px"><a href="/condiciones" target="_blank" rel="noopener">Leer las condiciones completas</a></p>
+      <p style="margin-top:8px"><a href="/ficha-producto.pdf" target="_blank" rel="noopener">Ficha del producto (PDF)</a> y <a href="/condiciones" target="_blank" rel="noopener">condiciones completas</a></p>
     </div>
     <div class="summary-total"><span>Total, impuestos incluidos</span><span>${esc(s.total_text)}</span></div>
     <form id="terms-form" class="actions" novalidate>

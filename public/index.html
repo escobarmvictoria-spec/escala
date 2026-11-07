@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta name="robots" content="noindex">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Escala | Seguro de viaje que se entiende (demo)</title>
   <meta name="description" content="Seguro de viaje con tres planes, límites y franquicias a la vista y póliza en tu email al momento. Contrátalo en tres pasos, con ayuda de una persona o de tu asistente de IA. Demo: no es un seguro real.">
@@ -17,6 +18,7 @@
   <link rel="stylesheet" href="/css/escala.css">
   <link rel="alternate" type="text/plain" href="/llms.txt" title="Información para modelos de lenguaje">
   <script type="module" src="/js/app.js"></script>
+  <!--structured-data-->
 </head>
 <body>
   <a class="skip" href="#cotizar">Ir al cotizador</a>
@@ -233,7 +235,7 @@
           <div class="exclusions">
             <h3>Lo que no cubre ningún plan</h3>
             <ul id="exclusions-list"></ul>
-            <p class="exclusions-link"><a href="/condiciones">Leer las condiciones de contratación</a></p>
+            <p class="exclusions-link"><a href="/ficha-producto.pdf" target="_blank" rel="noopener">Ficha del producto (PDF, 2 páginas)</a> <span aria-hidden="true">|</span> <a href="/condiciones">Condiciones de contratación</a></p>
           </div>
           <div class="section-cta">
             <a class="btn-primary" href="#cotizar" data-focus-quote>Cotizar mi viaje</a>
