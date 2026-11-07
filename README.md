@@ -52,7 +52,7 @@ Lo que se aprendió por el camino: el polyfill envolvía el `document.modelConte
 
 ## Precios
 
-`precio = (base + tarifa_diaria × días) × factor_edad`, por zona y plan, con descuento de grupo e IPS incluido. Calibrado con 41 cotizaciones reales de Heymondo, IATI, InterMundial, Mapfre y Chapka: error absoluto medio del 9,6 %. Detalle y fuentes en [`docs/pricing.md`](docs/pricing.md); `npm run calibrate` repite la comparación.
+`precio = (base + tarifa_diaria × días) × factor_edad`, por zona y plan, con descuento de grupo e IPS incluido. Calibrado en dos rondas: 41 precios publicados (artículos de 2025-2026) y 26 cotizaciones hechas a mano en Heymondo, IATI e InterMundial el 7/11/2026. Esas cotizaciones mostraron que el mercado había subido (sobre todo EE. UU.) y la tarifa se recalibró: frente a ellas, error medio del 9,2 % y Escala un 4 % por debajo de la mediana. Detalle y fuentes en [`docs/pricing.md`](docs/pricing.md); `npm run calibrate` repite la comparación.
 
 ## Desplegar
 

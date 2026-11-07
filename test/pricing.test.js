@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { priceTrip, RATES } from '../src/pricing.js';
 import { resolveDestination } from '../src/catalog.js';
 
-test('una semana en Europa, adulto, Esencial cuesta 17,20 € (lo que dice la portada)', () => {
-  assert.equal(priceTrip({ zone: 'europa', days: 7, travelers: [{ age: 35 }] }).plans.esencial.total_eur, 17.2);
+test('una semana en Europa, adulto, Esencial cuesta 19,75 € (el precio de ejemplo de la portada sale del motor)', () => {
+  assert.equal(priceTrip({ zone: 'europa', days: 7, travelers: [{ age: 35 }] }).plans.esencial.total_eur, 19.75);
 });
 
 test('el orden de planes y zonas es lógico en cualquier duración', () => {

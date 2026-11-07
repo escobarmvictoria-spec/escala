@@ -1,51 +1,589 @@
 {
-  "note": "Cotizaciones publicadas para 1 viajero adulto residente en España. 'tier' indica con qué plan de Escala se compara cada producto.",
-  "sources": {
-    "europa": { "url": "https://capturetheatlas.com/es/seguro-de-viaje-a-europa/", "updated": "2025-12-11", "detail": "Heymondo desde España: escapada de 4 días a Alemania e Interrail de 1 mes" },
-    "usa": { "url": "https://capturetheatlas.com/es/seguro-de-viaje-a-estados-unidos/", "updated": "2025-12-11", "detail": "Viaje de 20 días, 1 viajero de 30 años; tabla de precios Heymondo a 7, 15 y 20 días" },
-    "japon": { "url": "https://japonpedia.com/cuanto-vale-seguro-viaje-japon/", "updated": "2026-09-17", "detail": "Japón a 7, 15 y 30 días, viajero estándar residente en España, sin descuentos" }
+ "note": "Cotizaciones de seguro de viaje para residentes en España. 'tier' indica con qué plan de Escala se compara cada producto; 'travelers' (1 si falta) el número de viajeros adultos del precio total.",
+ "sources": {
+  "europa": {
+   "url": "https://capturetheatlas.com/es/seguro-de-viaje-a-europa/",
+   "updated": "2025-12-11",
+   "detail": "Heymondo desde España: escapada de 4 días a Alemania e Interrail de 1 mes"
   },
-  "quotes": [
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Solo Asistencia", "price": 10.59, "tier": "esencial" },
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Tranquilidad", "price": 14.71, "tier": "esencial" },
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Tranquilidad + cancelación", "price": 17.25, "tier": "completo" },
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Top", "price": 23.73, "tier": "completo" },
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Premium", "price": 32.48, "tier": "total" },
-    { "source": "europa", "zone": "europa", "days": 4, "product": "Heymondo Premium + cancelación", "price": 39.19, "tier": "total" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Solo Asistencia", "price": 35.04, "tier": "esencial" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Tranquilidad", "price": 44.05, "tier": "esencial" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Tranquilidad + cancelación", "price": 52.46, "tier": "completo" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Top", "price": 70.70, "tier": "completo" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Top + cancelación", "price": 88.96, "tier": "completo" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Premium", "price": 97.28, "tier": "total" },
-    { "source": "europa", "zone": "europa", "days": 30, "product": "Heymondo Premium + cancelación", "price": 108.44, "tier": "total" },
-    { "source": "usa", "zone": "usa_canada", "days": 7, "product": "Heymondo Esencial", "price": 26.39, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 7, "product": "Heymondo Tranquilidad", "price": 30.69, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 7, "product": "Heymondo Top", "price": 49.00, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 7, "product": "Heymondo Premium", "price": 61.14, "tier": "total" },
-    { "source": "usa", "zone": "usa_canada", "days": 15, "product": "Heymondo Esencial", "price": 45.43, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 15, "product": "Heymondo Tranquilidad", "price": 53.09, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 15, "product": "Heymondo Top", "price": 80.17, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 15, "product": "Heymondo Premium", "price": 105.65, "tier": "total" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Heymondo Esencial", "price": 54.55, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Heymondo Tranquilidad", "price": 63.82, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "IATI Estándar", "price": 69.16, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "InterMundial Total Travel Mini", "price": 81.63, "tier": "esencial" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Heymondo Tranquilidad + cancelación", "price": 80.00, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "IATI Estándar + cancelación", "price": 91.72, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "InterMundial Total Travel Mini + cancelación", "price": 91.56, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Heymondo Top", "price": 97.40, "tier": "completo" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Heymondo Premium", "price": 124.22, "tier": "total" },
-    { "source": "usa", "zone": "usa_canada", "days": 20, "product": "Mapfre Segurviajes Total", "price": 127.97, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 7, "product": "Heymondo Top", "price": 49.13, "tier": "completo" },
-    { "source": "japon", "zone": "mundo", "days": 7, "product": "IATI Estrella", "price": 53.79, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 7, "product": "InterMundial Totaltravel Premium", "price": 63.25, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 15, "product": "Heymondo Top", "price": 76.16, "tier": "completo" },
-    { "source": "japon", "zone": "mundo", "days": 15, "product": "IATI Estrella", "price": 94.65, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 15, "product": "InterMundial Totaltravel Premium", "price": 107.00, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 30, "product": "Heymondo Top", "price": 142.50, "tier": "completo" },
-    { "source": "japon", "zone": "mundo", "days": 30, "product": "IATI Estrella", "price": 154.20, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 30, "product": "InterMundial Totaltravel Premium", "price": 171.21, "tier": "total" },
-    { "source": "japon", "zone": "mundo", "days": 15, "product": "Gama básica (IATI Estándar, Mondo Esencial), unos 3 €/día", "price": 45.00, "tier": "esencial" }
-  ]
+  "usa": {
+   "url": "https://capturetheatlas.com/es/seguro-de-viaje-a-estados-unidos/",
+   "updated": "2025-12-11",
+   "detail": "Viaje de 20 días, 1 viajero de 30 años; tabla de precios Heymondo a 7, 15 y 20 días"
+  },
+  "japon": {
+   "url": "https://japonpedia.com/cuanto-vale-seguro-viaje-japon/",
+   "updated": "2026-09-17",
+   "detail": "Japón a 7, 15 y 30 días, viajero estándar residente en España, sin descuentos"
+  },
+  "victoria": {
+   "url": "Cotizaciones hechas en heymondo.es, iatiseguros.com e intermundial.es",
+   "updated": "2026-11-07",
+   "detail": "Cotizadas por Victoria Escobar el 7/11/2026 (salida ese día), adulto estándar (las webs no piden edad para cotizar). Precio total; 'travelers' indica cuántos viajeros. IATI Mochilero no se usa: es un producto de aventura sin equivalente en Escala."
+  }
+ },
+ "quotes": [
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Solo Asistencia",
+   "price": 10.59,
+   "tier": "esencial"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Tranquilidad",
+   "price": 14.71,
+   "tier": "esencial"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Tranquilidad + cancelación",
+   "price": 17.25,
+   "tier": "completo"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Top",
+   "price": 23.73,
+   "tier": "completo"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Premium",
+   "price": 32.48,
+   "tier": "total"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 4,
+   "product": "Heymondo Premium + cancelación",
+   "price": 39.19,
+   "tier": "total"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Solo Asistencia",
+   "price": 35.04,
+   "tier": "esencial"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Tranquilidad",
+   "price": 44.05,
+   "tier": "esencial"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Tranquilidad + cancelación",
+   "price": 52.46,
+   "tier": "completo"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Top",
+   "price": 70.7,
+   "tier": "completo"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Top + cancelación",
+   "price": 88.96,
+   "tier": "completo"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Premium",
+   "price": 97.28,
+   "tier": "total"
+  },
+  {
+   "source": "europa",
+   "zone": "europa",
+   "days": 30,
+   "product": "Heymondo Premium + cancelación",
+   "price": 108.44,
+   "tier": "total"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 7,
+   "product": "Heymondo Esencial",
+   "price": 26.39,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 7,
+   "product": "Heymondo Tranquilidad",
+   "price": 30.69,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 7,
+   "product": "Heymondo Top",
+   "price": 49.0,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 7,
+   "product": "Heymondo Premium",
+   "price": 61.14,
+   "tier": "total"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 15,
+   "product": "Heymondo Esencial",
+   "price": 45.43,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 15,
+   "product": "Heymondo Tranquilidad",
+   "price": 53.09,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 15,
+   "product": "Heymondo Top",
+   "price": 80.17,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 15,
+   "product": "Heymondo Premium",
+   "price": 105.65,
+   "tier": "total"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Heymondo Esencial",
+   "price": 54.55,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Heymondo Tranquilidad",
+   "price": 63.82,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "IATI Estándar",
+   "price": 69.16,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "InterMundial Total Travel Mini",
+   "price": 81.63,
+   "tier": "esencial"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Heymondo Tranquilidad + cancelación",
+   "price": 80.0,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "IATI Estándar + cancelación",
+   "price": 91.72,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "InterMundial Total Travel Mini + cancelación",
+   "price": 91.56,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Heymondo Top",
+   "price": 97.4,
+   "tier": "completo"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Heymondo Premium",
+   "price": 124.22,
+   "tier": "total"
+  },
+  {
+   "source": "usa",
+   "zone": "usa_canada",
+   "days": 20,
+   "product": "Mapfre Segurviajes Total",
+   "price": 127.97,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 7,
+   "product": "Heymondo Top",
+   "price": 49.13,
+   "tier": "completo"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 7,
+   "product": "IATI Estrella",
+   "price": 53.79,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 7,
+   "product": "InterMundial Totaltravel Premium",
+   "price": 63.25,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 15,
+   "product": "Heymondo Top",
+   "price": 76.16,
+   "tier": "completo"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 15,
+   "product": "IATI Estrella",
+   "price": 94.65,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 15,
+   "product": "InterMundial Totaltravel Premium",
+   "price": 107.0,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 30,
+   "product": "Heymondo Top",
+   "price": 142.5,
+   "tier": "completo"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 30,
+   "product": "IATI Estrella",
+   "price": 154.2,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 30,
+   "product": "InterMundial Totaltravel Premium",
+   "price": 171.21,
+   "tier": "total"
+  },
+  {
+   "source": "japon",
+   "zone": "mundo",
+   "days": 15,
+   "product": "Gama básica (IATI Estándar, Mondo Esencial), unos 3 €/día",
+   "price": 45.0,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "Heymondo Tranquilidad",
+   "price": 23.53,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "Heymondo Top",
+   "price": 30.5,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "Heymondo Premium",
+   "price": 40.77,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "IATI Escapadas",
+   "price": 22.2,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "IATI Estándar",
+   "price": 24.85,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel mini",
+   "price": 19.53,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel",
+   "price": 30.22,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "europa",
+   "days": 8,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel premium",
+   "price": 46.6,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "Heymondo Esencial",
+   "price": 62.82,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "Heymondo Tranquilidad",
+   "price": 78.0,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "Heymondo Top",
+   "price": 118.78,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "Heymondo Premium",
+   "price": 140.24,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "IATI Estándar",
+   "price": 80.17,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "IATI Estrella",
+   "price": 153.25,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "InterMundial Totaltravel mini",
+   "price": 71.28,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "InterMundial Totaltravel",
+   "price": 99.98,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "mundo",
+   "days": 8,
+   "travelers": 2,
+   "product": "InterMundial Totaltravel premium",
+   "price": 140.76,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "Heymondo Esencial",
+   "price": 42.29,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "Heymondo Tranquilidad",
+   "price": 57.0,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "Heymondo Top",
+   "price": 79.48,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "Heymondo Premium",
+   "price": 101.82,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "IATI Estándar",
+   "price": 58.03,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "IATI Estrella",
+   "price": 111.78,
+   "tier": "total"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel mini",
+   "price": 69.21,
+   "tier": "esencial"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel",
+   "price": 83.26,
+   "tier": "completo"
+  },
+  {
+   "source": "victoria",
+   "zone": "usa_canada",
+   "days": 11,
+   "travelers": 1,
+   "product": "InterMundial Totaltravel premium",
+   "price": 134.99,
+   "tier": "total"
+  }
+ ]
 }

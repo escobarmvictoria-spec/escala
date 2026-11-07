@@ -7,9 +7,9 @@ import { PLANS, ZONES, MAX_DAYS, MAX_AGE, IPS_RATE } from './catalog.js';
 // [base €, € por día] por zona y plan. Precio final con impuestos incluidos.
 export const RATES = {
   espana: { esencial: [7, 0.7], completo: [9, 1.1], total: [14, 1.6] },
-  europa: { esencial: [9.5, 1.1], completo: [13, 1.9], total: [25, 2.6] },
-  mundo: { esencial: [15, 2.0], completo: [20, 3.5], total: [30, 4.4] },
-  usa_canada: { esencial: [15, 2.55], completo: [22, 3.8], total: [30, 5.0] },
+  europa: { esencial: [11, 1.25], completo: [14, 1.9], total: [24, 2.3] },
+  mundo: { esencial: [18, 2.3], completo: [22, 3.8], total: [32, 4.45] },
+  usa_canada: { esencial: [18, 3.35], completo: [34, 3.9], total: [38, 5.6] },
 };
 
 export const LONG_TRIP_THRESHOLD = 31; // a partir del día 32, la tarifa diaria baja
