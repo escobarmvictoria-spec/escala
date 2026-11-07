@@ -190,16 +190,29 @@ function renderPlans(order) {
     help.innerHTML = '¿No sabes cuál elegir o tienes una enfermedad previa? <button type="button" class="human-link" data-open-human="dudas_coberturas">Te llama una persona</button>';
     grid.after(help);
   }
+  const rec = order.recommendation?.plan ?? 'completo';
+  let why = $('#plans-reason');
+  if (!why) {
+    why = document.createElement('p');
+    why.id = 'plans-reason';
+    why.className = 'plans-reason';
+    grid.before(why);
+  }
+  why.innerHTML = order.recommendation && order.quote.plans[rec]?.available
+    ? `<strong>Te recomendamos ${esc(order.quote.plans[rec].name)}.</strong> ${esc(order.recommendation.reason)}`
+    : '';
+  why.hidden = !why.innerHTML;
   for (const id of ['esencial', 'completo', 'total']) {
     const p = order.quote.plans[id];
+    const isRec = id === rec && p.available;
     const meta = product?.plans.find((x) => x.id === id);
     const covs = coverages?.[id] ?? meta?.coverages ?? [];
     const missing = meta?.not_included ?? [];
     const perPerson = p.per_traveler.length > 1 ? `${eur(p.total_eur / p.per_traveler.length)} por persona de media` : `${eur(p.total_eur / order.trip.days)} al día`;
     const el = document.createElement('article');
-    el.className = `plan${meta?.recommended ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}`;
+    el.className = `plan${isRec ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}`;
     el.innerHTML = `
-      <span class="plan-flag${meta?.recommended ? '' : ' is-empty'}">Recomendado</span>
+      <span class="plan-flag${isRec ? '' : ' is-empty'}">Recomendado</span>
       <h3>${esc(p.name)}</h3>
       <p class="plan-tagline">${esc(meta?.description ?? '')}</p>
       <p class="plan-price">${eur(p.total_eur)}</p>
@@ -212,7 +225,7 @@ function renderPlans(order) {
         }).join('')}
       </ul>
       ${p.available ? '' : `<p class="plan-unavailable">${esc(p.unavailable_reason)}</p>`}
-      <button class="${order.plan === id ? 'btn-navy' : meta?.recommended ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
+      <button class="${order.plan === id ? 'btn-navy' : isRec ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
     grid.append(el);
   }
   $$('[data-plan]', grid).forEach((b) =>

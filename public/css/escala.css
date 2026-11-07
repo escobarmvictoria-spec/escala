@@ -669,3 +669,6 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .quick-replies button { border: 1px solid var(--navy); background: var(--white); color: var(--navy); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; min-height: 40px; }
 .quick-replies button:hover { background: var(--navy); color: var(--white); }
 .activity .webmcp-status { margin: 8px 0; border: 0; border-radius: var(--r-s); }
+
+/* Motivo del plan recomendado (depende del viaje) */
+.plans-reason { margin: 0 0 20px; padding: 14px 18px; background: var(--yellow-soft); border-radius: 12px; color: var(--navy); }

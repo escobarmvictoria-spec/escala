@@ -5,7 +5,7 @@
 import crypto from 'node:crypto';
 import {
   PLANS, ZONES, ZONE_ORDER, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, QUOTE_TTL_MINUTES,
-  MAX_DAYS_IN_ADVANCE, EXCLUDED, EXCLUSIONS, resolveDestination, planById, coveragesFor, formatEur, countryName,
+  MAX_DAYS_IN_ADVANCE, EXCLUDED, EXCLUSIONS, resolveDestination, planById, coveragesFor, formatEur, countryName, recommendPlan,
 } from './catalog.js';
 import { priceTrip } from './pricing.js';
 import { ApiError } from './errors.js';
@@ -175,6 +175,7 @@ export function publicOrder(order) {
     trip: order.trip,
     plan: order.plan,
     quote: order.quote,
+    recommendation: order.quote ? recommendPlan({ zone: order.trip.zone, days: order.trip.days }) : null,
     holder: order.holder,
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,

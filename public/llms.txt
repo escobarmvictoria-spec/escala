@@ -6,8 +6,9 @@
 - Viajes de hasta 90 días que empiezan en España, hasta 6 viajeros, de 0 a 84 años (Esencial hasta 69).
 - Zonas: España; Europa y ribera mediterránea; resto del mundo; EE. UU. y Canadá.
 - Esencial: gastos médicos 150.000 € con franquicia de 75 €, repatriación ilimitada, equipaje 500 €, responsabilidad civil 30.000 €.
-- Completo (recomendado): gastos médicos 1.000.000 €, cancelación 1.500 €, equipaje 1.500 €, retrasos, accidentes 30.000 €, sin franquicia.
+- Completo: gastos médicos 1.000.000 €, cancelación 1.500 €, equipaje 1.500 €, retrasos, accidentes 30.000 €, sin franquicia.
 - Total: gastos médicos 5.000.000 €, cancelación 5.000 €, equipaje 3.000 €, accidentes 60.000 €, sin franquicia.
+- Plan recomendado según el viaje: Total para EE. UU. y Canadá o viajes de más de 30 días; Completo en el resto. get_quote lo devuelve en recommendation, con su motivo.
 - Precio final con impuestos (IPS 8 %). Menores −40 %, grupos de 3 o más −10 %.
 
 ## Para agentes de IA

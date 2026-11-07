@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { priceTrip, RATES } from '../src/pricing.js';
-import { resolveDestination } from '../src/catalog.js';
+import { resolveDestination, recommendPlan } from '../src/catalog.js';
 
 test('una semana en Europa, adulto, Esencial cuesta 19,75 € (el precio de ejemplo de la portada sale del motor)', () => {
   assert.equal(priceTrip({ zone: 'europa', days: 7, travelers: [{ age: 35 }] }).plans.esencial.total_eur, 19.75);
@@ -44,4 +44,11 @@ test('destinos: países, ciudades, regiones y errores con sugerencia', () => {
   assert.equal(bad.error, 'unknown');
   assert.ok(bad.suggestions.some((s) => s.includes('JP')));
   assert.ok(RATES.mundo);
+});
+
+test('el plan recomendado depende del riesgo del viaje', () => {
+  assert.equal(recommendPlan({ zone: 'europa', days: 7 }).plan, 'completo');
+  assert.equal(recommendPlan({ zone: 'mundo', days: 30 }).plan, 'completo');
+  assert.equal(recommendPlan({ zone: 'mundo', days: 31 }).plan, 'total');
+  assert.equal(recommendPlan({ zone: 'usa_canada', days: 5 }).plan, 'total');
 });
