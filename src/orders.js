@@ -53,7 +53,7 @@ function ageOn(birthDate, onDate) {
   return age;
 }
 
-function parseAge(value, field, startDate) {
+function parseAge(value, field, startDate, travelerCount = 1) {
   if (value && typeof value === 'object') {
     if (value.birth_date) return ageOn(parseDate(value.birth_date, `${field}.birth_date`), startDate);
     value = value.age;
@@ -65,9 +65,13 @@ function parseAge(value, field, startDate) {
       hint: 'Indica la edad en años como número entero (por ejemplo 34), o la fecha de nacimiento en birth_date.',
     });
   if (age > MAX_AGE)
-    throw new ApiError('age_not_insurable', `Escala asegura a viajeros de hasta ${MAX_AGE} años; uno de los viajeros tiene ${age}.`, {
+    throw new ApiError('age_not_insurable', `La edad máxima es ${MAX_AGE} años; ${travelerCount > 1 ? 'uno de los viajeros' : 'el viajero'} tiene ${age}.`, {
       field,
-      hint: `Quita a ese viajero de la cotización. No hay plan disponible para mayores de ${MAX_AGE} años.`,
+      details: { travelers: travelerCount, age, max_age: MAX_AGE },
+      // Con un solo viajero, «quítalo» es un callejón sin salida: la salida es una persona del equipo.
+      hint: travelerCount > 1
+        ? `Puedes quitar a ese viajero y cotizar al resto, o ofrecer que una persona del equipo revise la consulta (human_help).`
+        : `No hay plan online para mayores de ${MAX_AGE} años. Dile: «La edad máxima es ${MAX_AGE} años. Si quieres, una persona del equipo puede revisar tu consulta» y ofrece «Pedir que me llamen» (human_help).`,
     });
   return age;
 }
@@ -290,7 +294,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
           field: 'travelers',
           hint: 'Divide el grupo en varias pólizas.',
         });
-      const ages = travelers.map((t, i) => parseAge(t, `travelers[${i}].age`, dates.start_date));
+      const ages = travelers.map((t, i) => parseAge(t, `travelers[${i}].age`, dates.start_date, travelers.length));
 
       const now = new Date();
       const order = {
@@ -433,7 +437,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
             field: `travelers[${i}].full_name`,
             hint: 'Indica nombre y al menos un apellido, por ejemplo "Lucía Martín".',
           });
-        const age = parseAge(t.birth_date ? { birth_date: t.birth_date } : t.age, `travelers[${i}].age`, order.trip.start_date);
+        const age = parseAge(t.birth_date ? { birth_date: t.birth_date } : t.age, `travelers[${i}].age`, order.trip.start_date, input.travelers?.length ?? 1);
         const doc = t.document_id ? String(t.document_id).trim().toUpperCase().slice(0, 20) : null;
         return { full_name: name, age, ...(t.birth_date ? { birth_date: parseDate(t.birth_date, `travelers[${i}].birth_date`) } : {}), document_id: doc };
       });

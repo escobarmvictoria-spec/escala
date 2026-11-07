@@ -34,7 +34,7 @@ function showError(form, err) {
     b.type = 'button';
     b.className = 'human-link';
     b.dataset.openHuman = 'no_asegurable';
-    b.textContent = 'Pide que te llame una persona';
+    b.textContent = 'Pedir que me llamen';
     box.append(b);
   }
   box.hidden = false;
@@ -187,7 +187,7 @@ function renderPlans(order) {
     const help = document.createElement('p');
     help.id = 'plans-help';
     help.className = 'plans-help';
-    help.innerHTML = '¿No sabes cuál elegir o tienes una enfermedad previa? <button type="button" class="human-link" data-open-human="dudas_coberturas">Te llama una persona</button>';
+    help.innerHTML = '¿Dudas entre planes o tienes una enfermedad previa? Si tienes una, su cobertura está por confirmar y una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="dudas_coberturas">Pedir que me llamen</button>';
     grid.after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';

@@ -50,7 +50,9 @@ const HUMAN_ERRORS = {
   },
   destination_excluded: (e) => e.message,
   invalid_age: () => 'Revisa la edad: escribe los años con un número, por ejemplo 34.',
-  age_not_insurable: (e) => `${e.message} Puedes quitarlo de la cotización.`,
+  age_not_insurable: (e) => (e.details?.travelers ?? 1) > 1
+    ? `${e.message.split(';')[0]}. Puedes quitar a ese viajero y cotizar al resto, o pedir que una persona del equipo revise tu consulta.`
+    : `${e.message.split(';')[0]}. Si quieres, una persona del equipo puede revisar tu consulta.`,
   missing_start_date: () => 'Elige la fecha de salida.',
   missing_end_date: () => 'Elige la fecha de vuelta.',
   invalid_date: () => 'Revisa las fechas: alguna no es válida.',

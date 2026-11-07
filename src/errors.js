@@ -5,6 +5,7 @@ export const NOT_INSURABLE_ONLINE = ['age_not_insurable', 'destination_excluded'
 const HUMAN_HELP = {
   tool: 'request_human_callback',
   reason: 'no_asegurable',
+  option_label: 'Pedir que me llamen',
   say: 'Explica el motivo y ofrece que le llame una persona del equipo para buscar una alternativa. Si acepta, pide nombre y teléfono y llama a request_human_callback con user_agreed: true.',
 };
 

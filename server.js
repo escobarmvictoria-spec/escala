@@ -142,6 +142,11 @@ api.get('/product', (req, res) => {
     main_exclusions: EXCLUSIONS,
     trips_within_spain: 'En viajes por España también hay gastos médicos, con límites de 3.000 € (Esencial), 6.000 € (Completo) y 10.000 € (Total), porque complementan la sanidad pública. El resto de coberturas es igual.',
     human_help: 'Si el caso no se puede contratar online o el cliente lo prefiere, una persona del equipo le llama (herramienta request_human_callback).',
+    preexisting_conditions: {
+      coverage: 'por_confirmar',
+      say: 'La cobertura de una enfermedad previa está por confirmar: se excluyen las que no estaban estables antes de contratar. No prometas cobertura. Ofrece que una persona del equipo revise el caso.',
+      human_help: { tool: 'request_human_callback', reason: 'enfermedad_previa', option_label: 'Pedir que me llamen' },
+    },
     terms_version: TERMS_VERSION,
     terms_url: '/condiciones',
   });

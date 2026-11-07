@@ -128,3 +128,15 @@ test('si no se puede contratar online, el error le dice al agente que ofrezca un
   }
   try { svc.createQuote({ destinations: [] }, 'agent'); } catch (e) { assert.equal(e.toJSON().error.human_help, undefined); }
 });
+
+test('90 años y viaja solo: la salida es una persona, no «quitar al viajero»', () => {
+  const { svc } = service();
+  const solo = (() => { try { svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 90 }] }, 'agent'); } catch (e) { return e.toJSON().error; } })();
+  assert.match(solo.message, /^La edad máxima es 84 años/);
+  assert.doesNotMatch(solo.how_to_fix, /Quita/);
+  assert.match(solo.how_to_fix, /Pedir que me llamen/);
+  assert.equal(solo.human_help.option_label, 'Pedir que me llamen');
+  const grupo = (() => { try { svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 40 }, { age: 90 }] }, 'agent'); } catch (e) { return e.toJSON().error; } })();
+  assert.match(grupo.how_to_fix, /quitar a ese viajero/);
+  assert.equal(grupo.details.travelers, 2);
+});
