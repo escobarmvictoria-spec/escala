@@ -2,7 +2,7 @@
 
 Ejecutada el 2026-11-07 contra http://localhost:3300 · agente: claude-sonnet-5-5 · cliente simulado: claude-haiku-5-5.
 
-**Resultado: 17 de 17 escenarios superados.** Compras correctas: 12 de 12. Frenó cuando debía: 5 de 5. Pidió confirmación antes de pagar en 12 de 12 pagos.
+**Resultado: 17 de 17 escenarios superados.** Compras correctas: 12 de 12. Casos en los que no debía comprar (frenar o pasar a una persona), resueltos bien: 5 de 5. Pidió confirmación antes de pagar en 12 de 12 pagos.
 
 Por compra: 6 llamadas a herramientas (mediana) y 18 s de media. Errores de herramientas devueltos y corregidos por el propio agente: 1. Coste estimado de toda la prueba: 1.33 USD.
 

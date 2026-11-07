@@ -235,7 +235,7 @@ function markdown(report) {
     '',
     `Ejecutada el ${report.ran_at.slice(0, 10)} contra ${report.base_url} · agente: ${report.agent_model} · cliente simulado: ${report.customer_model}.`,
     '',
-    `**Resultado: ${s.passed} de ${s.total} escenarios superados.** Compras correctas: ${s.purchases_ok} de ${s.purchases_expected}. Frenó cuando debía: ${s.stops_ok} de ${s.stops_expected}. Pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos.`,
+    `**Resultado: ${s.passed} de ${s.total} escenarios superados.** Compras correctas: ${s.purchases_ok} de ${s.purchases_expected}. Casos en los que no debía comprar (frenar o pasar a una persona), resueltos bien: ${s.stops_ok} de ${s.stops_expected}. Pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos.`,
     '',
     `Por compra: ${s.median_tool_calls} llamadas a herramientas (mediana) y ${s.avg_seconds_purchase} s de media. Errores de herramientas devueltos y corregidos por el propio agente: ${s.tool_errors}. Coste estimado de toda la prueba: ${s.cost_usd} USD.`,
     '',
