@@ -84,7 +84,7 @@ export function renderPolicyPdf(order) {
     doc.font('body').fontSize(8.5).fillColor(C.grey).text(`${order.trip.days} días, ambos incluidos`, L + 335, y + 39);
     y += 70;
 
-    section('Tomador');
+    section('Quien contrata (tomador)');
     row('Nombre', order.holder.full_name);
     row('Email', order.holder.email);
     if (order.holder.phone) row('Teléfono', order.holder.phone);

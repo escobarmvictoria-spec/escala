@@ -1,5 +1,5 @@
 // Interfaz de Escala: cotizador, compra y póliza. Pinta el mismo estado que modifican las herramientas WebMCP.
-import { api, store, eur, fmtDate, ApiFailure } from './core.js';
+import { api, store, eur, fmtDate, ApiFailure, humanError } from './core.js';
 import { registerEscalaTools } from './webmcp.js';
 import { initAgentDrawer } from './agent.js';
 import { initHumanDialog } from './human.js';
@@ -27,7 +27,7 @@ function showError(form, err) {
     return;
   }
   const e = err instanceof ApiFailure ? err.body.error : { message: err.message };
-  box.textContent = [e.message, e.how_to_fix].filter(Boolean).join(' ');
+  box.textContent = humanError(err);
   if (['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(e.code)) {
     box.append(' ');
     const b = document.createElement('button');
@@ -237,7 +237,7 @@ function shortName(name) {
 }
 
 function alertError(err) {
-  const msg = err instanceof ApiFailure ? [err.body.error.message, err.body.error.how_to_fix].filter(Boolean).join(' ') : err.message;
+  const msg = humanError(err);
   const box = document.createElement('p');
   box.className = 'form-error';
   box.setAttribute('role', 'alert');
@@ -434,16 +434,22 @@ function renderPolicy(order) {
   const sheet = $('#policy-sheet');
   const p = order.policy;
   const plan = order.quote.plans[order.plan];
+  const destinations = order.trip.destinations.map((d) => d.name).join(', ');
+  // El momento en que el mensaje de marca es literalmente cierto: el viaje ya está protegido.
   sheet.innerHTML = `
     <div class="policy-hero">
-      <p>Póliza emitida${order.channel === 'agente_ia' ? ' por tu asistente de IA' : ''}</p>
+      <p class="policy-status">Póliza emitida${order.channel === 'agente_ia' ? ' por tu asistente de IA' : ''}</p>
+      <h3 class="policy-title">Tu viaje, bien protegido.</h3>
       <p class="policy-number">${esc(p.policy_number)}</p>
       ${emailPill(p.email)}
     </div>
+    <div class="trip-route" role="group" aria-label="Tu viaje">
+      <div class="tr-point"><small>Salida</small><strong>${fmtDate(order.trip.start_date)}</strong><span>Desde España</span></div>
+      <div class="tr-line" aria-hidden="true"><i></i><i></i></div>
+      <div class="tr-point is-end"><small>Vuelta</small><strong>${fmtDate(order.trip.end_date)}</strong><span>${esc(destinations)}</span></div>
+    </div>
     <dl class="summary-grid">
-      <div><dt>Plan</dt><dd>${esc(plan.name)}</dd></div>
-      <div><dt>Destino</dt><dd>${esc(order.trip.destinations.map((d) => d.name).join(', '))}</dd></div>
-      <div><dt>Fechas</dt><dd>${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)}</dd></div>
+      <div><dt>Plan</dt><dd>${esc(plan.name)}, ${order.trip.days} días</dd></div>
       <div><dt>Asegurados</dt><dd>${order.travelers.map((t) => esc(t.full_name)).join('<br>')}</dd></div>
       <div><dt>Pagado</dt><dd>${eur(plan.total_eur)} <span class="optional">(prueba)</span></dd></div>
     </dl>
@@ -456,7 +462,14 @@ function renderPolicy(order) {
       <div class="field"><label for="r-email">¿No te ha llegado? Reenvíala</label><input id="r-email" type="email" value="${esc(order.holder.email)}"></div>
       <button class="btn-secondary" type="submit">Reenviar</button>
       <p class="form-error" role="alert" hidden></p>
-    </form>`;
+    </form>
+    <div class="policy-next">
+      <h3>Antes de salir</h3>
+    </div>`;
+  // La misma lista que en la portada (una sola fuente de verdad).
+  const checklist = $('#antes-de-salir .checklist');
+  if (checklist) $('.policy-next', sheet).append(checklist.cloneNode(true));
+  else $('.policy-next', sheet).remove();
   $('[data-new-quote]', sheet).addEventListener('click', () => {
     store.reset();
     history.replaceState(null, '', '/');
@@ -498,7 +511,8 @@ function render(state, reason, extra = {}) {
   if (step === 'revision') renderReview(order);
   if (step === 'pago') renderPay(order);
   if (step === 'poliza') renderPolicy(order);
-  document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago'].includes(step));
+  // Desde los datos hasta la póliza, la portada se aparta: solo la compra (y, al final, lo que toca hacer).
+  document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
   const moved = step !== lastRenderedStep && lastRenderedStep !== null;
   if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   lastRenderedStep = step;
@@ -521,21 +535,73 @@ function renderCoverageTable() {
     'Responsabilidad civil privada': 'Si sin querer causas daños a otra persona.',
     'Accidentes (fallecimiento o invalidez)': 'Indemnización por invalidez permanente o fallecimiento.',
   };
+  const col = (p) => `${p.recommended ? 'is-recommended ' : ''}plan-${esc(p.id)}`;
   $('#coverage-table').innerHTML = `
-    <thead><tr><th scope="col">Cobertura</th>${plans.map((p) => `<th scope="col" class="${p.recommended ? 'is-recommended' : ''}">${esc(p.name)}</th>`).join('')}</tr></thead>
+    <thead><tr><th scope="col">Cobertura</th>${plans.map((p) => `<th scope="col" class="${col(p)}">${esc(p.name)}</th>`).join('')}</tr></thead>
     <tbody>${names
       .map((n) => `<tr><th scope="row">${esc(n)}<small>${esc(plain[n] ?? '')}</small></th>${plans
         .map((p) => {
           const c = p.coverages.find((x) => x.coverage === n);
-          const cls = p.recommended ? 'is-recommended' : '';
-          if (!c) return `<td class="${cls} is-missing">No incluido</td>`;
-          return `<td class="${cls}">${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? `<br><small>Franquicia ${esc(c.deductible)}</small>` : ''}</td>`;
+          if (!c) return `<td class="${col(p)} is-missing">No incluido</td>`;
+          return `<td class="${col(p)}">${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? `<br><small>Franquicia ${esc(c.deductible)}</small>` : ''}</td>`;
         })
         .join('')}</tr>`)
       .join('')}
-      <tr><th scope="row">Edad máxima</th>${plans.map((p) => `<td class="${p.recommended ? 'is-recommended' : ''}">${p.max_age} años</td>`).join('')}</tr>
+      <tr><th scope="row">Edad máxima</th>${plans.map((p) => `<td class="${col(p)}">${p.max_age} años</td>`).join('')}</tr>
     </tbody>`;
   $('#exclusions-list').innerHTML = product.main_exclusions.map((e) => `<li>${esc(e)}</li>`).join('');
+  initPlanSwitch(plans);
+}
+
+// En el móvil la tabla enseña un plan cada vez; empieza por el recomendado.
+function initPlanSwitch(plans) {
+  const sw = $('#plan-switch');
+  if (!sw) return;
+  const show = (id) => {
+    $$('button', sw).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.showPlan === id)));
+    plans.forEach((p) => $$(`#coverage-table .plan-${p.id}`).forEach((cell) => cell.classList.toggle('is-off', p.id !== id)));
+  };
+  sw.innerHTML = plans.map((p) => `<button type="button" data-show-plan="${esc(p.id)}" aria-pressed="false">${esc(p.name)}</button>`).join('');
+  $$('button', sw).forEach((b) => b.addEventListener('click', () => show(b.dataset.showPlan)));
+  sw.hidden = false;
+  show((plans.find((p) => p.recommended) ?? plans[0]).id);
+}
+
+// Precio de ejemplo en la portada: viene del motor de tarifa, nunca escrito a mano.
+async function renderExamplePrice() {
+  const box = $('#example-price');
+  if (!box) return;
+  try {
+    const res = await fetch('/api/example-price');
+    if (!res.ok) return;
+    const { trip, plans } = await res.json();
+    const length = trip.days === 7 ? 'Una semana' : `${trip.days} días`;
+    box.innerHTML = `
+      <span class="notch l" aria-hidden="true"></span><span class="notch r" aria-hidden="true"></span>
+      <div class="stub-head">
+        <p class="stub-title" id="example-title">Precio de ejemplo</p>
+        <p class="stub-trip">${length} en ${esc(trip.destination)}, una persona de ${trip.travelers[0].age} años</p>
+      </div>
+      <ul class="stub-plans">${plans
+        .map((p) => `<li class="${p.recommended ? 'is-recommended' : ''}"><span>${esc(p.name)}</span><strong>${eur(p.total_eur)}</strong></li>`)
+        .join('')}</ul>
+      <p class="stub-note">Precio final, con impuestos. El de tu viaje lo ves en un minuto.</p>`;
+    box.hidden = false;
+    box.closest('.ticket')?.classList.add('has-stub');
+  } catch {
+    /* sin precio de ejemplo la portada funciona igual */
+  }
+}
+
+// Los botones «Descubre tu seguro» de la página llevan al cotizador y ponen el cursor en el destino.
+function initQuoteLinks() {
+  $$('[data-focus-quote]').forEach((a) =>
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      $('#cotizar').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      $('#q-destination').focus({ preventScroll: true });
+    })
+  );
 }
 
 async function loadDestinations() {
@@ -605,6 +671,8 @@ async function main() {
   initHumanDialog();
   initMenu();
   initPhotos();
+  initQuoteLinks();
+  renderExamplePrice();
   $$('.route button').forEach((b) =>
     b.addEventListener('click', () => {
       viewStep = b.closest('li').dataset.step;

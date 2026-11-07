@@ -36,12 +36,13 @@
         <a href="#coberturas">Coberturas</a>
         <a href="#como-funciona">Cómo funciona</a>
         <a href="#ayuda">Ayuda</a>
-        <a class="btn-primary btn-small" href="#cotizar">Descubre tu seguro</a>
+        <a class="btn-primary nav-cta" href="#cotizar">Descubre tu seguro</a>
       </nav>
       <div class="header-actions">
         <button class="agent-toggle" type="button" aria-controls="agent-drawer" aria-expanded="false">
-          <span class="agent-dot" aria-hidden="true"></span><span class="agent-toggle-label">Asistente IA</span>
+          <span class="agent-dot" aria-hidden="true"></span><span class="agent-toggle-label">Asistente de IA</span>
         </button>
+        <a class="btn-primary btn-small header-cta" href="#cotizar">Descubre tu seguro</a>
         <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Menú
         </button>
@@ -52,26 +53,28 @@
   <main>
     <section class="hero" id="cotizar" aria-labelledby="hero-title">
       <div class="wrap">
-        <div class="hero-main">
+        <div class="hero-head">
           <h1 id="hero-title">Seguro de viaje que se entiende.</h1>
           <p class="lede">Viaja con tranquilidad. Contrata de forma sencilla y descubre qué cubre tu seguro antes de salir.</p>
+        </div>
 
+        <div class="hero-main">
           <form class="quote-panel" id="quote-form" novalidate aria-labelledby="quote-title">
             <div class="panel-head">
               <h2 class="panel-title" id="quote-title">¿A dónde viajas?</h2>
               <p class="panel-note">Sin registrarte y con el precio final</p>
             </div>
-            <div class="field">
-              <label for="q-destination">Destino</label>
-              <input id="q-destination" name="destination" list="destinations" autocomplete="off" placeholder="Japón, Italia, Nueva York…" aria-describedby="q-destination-help" required>
-              <p class="field-help" id="q-destination-help">Un país, una ciudad o «Europa». Si son varios, sepáralos con comas.</p>
-            </div>
-            <div class="field-row">
-              <div class="field">
+            <div class="trip-fields">
+              <div class="field f-dest">
+                <label for="q-destination">Destino</label>
+                <input id="q-destination" name="destination" list="destinations" autocomplete="off" placeholder="Japón, Nueva York…" aria-describedby="q-destination-help" required>
+              </div>
+              <p class="field-help f-help" id="q-destination-help">Un país, una ciudad o «Europa». Si son varios, sepáralos con comas.</p>
+              <div class="field f-start">
                 <label for="q-start">Salida</label>
                 <input id="q-start" name="start_date" type="date" required>
               </div>
-              <div class="field">
+              <div class="field f-end">
                 <label for="q-end">Vuelta</label>
                 <input id="q-end" name="end_date" type="date" required>
               </div>
@@ -93,13 +96,13 @@
           </ul>
         </div>
 
-        <div class="hero-side">
+        <div class="hero-side ticket">
           <figure class="photo hero-photo">
             <img src="/img/photos/hero.jpg" alt="Tres personas pasean por una calle soleada de una ciudad europea" width="960" height="1200" fetchpriority="high">
             <svg class="photo-route" viewBox="0 0 400 150" aria-hidden="true"><path d="M24 128 C 120 128, 160 40, 376 36"/><circle class="end" cx="24" cy="128" r="6"/><circle class="end" cx="376" cy="36" r="6"/><circle class="stop" cx="168" cy="86" r="9"/></svg>
-            <p class="photo-chip top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/></svg>Coberturas y límites a la vista</p>
-            <p class="photo-chip bottom"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Asistencia 24 horas por teléfono</p>
           </figure>
+          <!-- Precio de ejemplo: lo calcula el mismo motor de tarifa (GET /api/example-price). Si no llega, no se muestra. -->
+          <div class="ticket-stub" id="example-price" aria-labelledby="example-title" role="group" hidden></div>
         </div>
       </div>
     </section>
@@ -167,8 +170,7 @@
     <section class="section home-section" id="como-funciona" aria-labelledby="como-title">
       <div class="wrap">
         <div class="section-head">
-          <p class="kicker">Cómo funciona</p>
-          <h2 id="como-title">Tu viaje, bien protegido. Sin complicaciones.</h2>
+          <h2 id="como-title">Tres pasos y tienes tu póliza</h2>
         </div>
         <ol class="steps">
           <li><span class="step-dot" aria-hidden="true">1</span><h3>Cuéntanos tu viaje</h3><p>Destino, fechas y la edad de cada viajero. No hace falta registrarse.</p></li>
@@ -179,38 +181,23 @@
       </div>
     </section>
 
-    <section class="section benefits home-section" aria-labelledby="beneficios-title">
+    <section class="section benefits home-section" id="letra-pequena" aria-labelledby="glosario-title">
       <div class="wrap">
         <figure class="photo benefits-photo">
           <img src="/img/photos/pareja.jpg" alt="Una pareja mayor camina del brazo por una carretera" width="960" height="1200" loading="lazy">
         </figure>
         <div>
           <div class="section-head">
-            <p class="kicker">Por qué Escala</p>
-            <h2 id="beneficios-title">Entiende lo que contratas. Viaja tranquilo.</h2>
+            <h2 id="glosario-title">Entiende lo que contratas. Viaja tranquilo.</h2>
+            <p>La letra pequeña no debería ser una aventura. Estas son las palabras de la póliza que más dudas generan, explicadas con los datos de Escala.</p>
           </div>
-          <div class="pillars">
-            <div class="pillar">
-              <span class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h4"/></svg></span>
-              <h3>Coberturas fáciles de entender</h3>
-              <p>Cada plan dice cuánto cubre, si tiene franquicia y lo que no cubre, en palabras normales.</p>
-            </div>
-            <div class="pillar">
-              <span class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="5" cy="17" r="2"/><circle cx="19" cy="7" r="2"/><path d="M7 17c5 0 5-10 10-10"/><circle cx="12" cy="12" r="2.2"/></svg></span>
-              <h3>Contratación sencilla</h3>
-              <p>Tres pasos, sin registro y con el precio final desde el principio. La póliza te llega al momento.</p>
-            </div>
-            <div class="pillar">
-              <span class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg></span>
-              <h3>Asistencia humana</h3>
-              <p>Teléfono de asistencia 24 horas durante el viaje. Y si tienes dudas antes de contratar, te llamamos.</p>
-            </div>
-            <div class="pillar">
-              <span class="pillar-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H10l-4 4v-4H6a2 2 0 0 1-2-2z"/><path d="M8.5 10h.01M12 10h.01M15.5 10h.01"/></svg></span>
-              <h3>Tecnología que te lo pone fácil</h3>
-              <p>Un asistente de IA te ayuda a entender y contratar, y nunca paga sin tu confirmación.</p>
-            </div>
-          </div>
+          <dl class="glossary">
+            <div><dt><mark>Franquicia</mark></dt><dd>La parte de cada siniestro que pagas tú. En Escala solo la tiene el plan Esencial: 75 € en gastos médicos. Completo y Total no tienen.</dd></div>
+            <div><dt><mark>Siniestro</mark></dt><dd>Cada incidente que puede cubrir tu seguro: una urgencia médica, una maleta perdida o, según el plan, un vuelo que sale con más de 6 horas de retraso.</dd></div>
+            <div><dt><mark>Tomador</mark></dt><dd>Quien contrata y recibe la póliza. Puede viajar o no: por ejemplo, una madre que asegura el viaje de su hijo.</dd></div>
+            <div><dt><mark>Enfermedad preexistente</mark></dt><dd>La que ya tenías antes de contratar. Si no estaba estable, ningún plan la cubre. Si tienes dudas, te llamamos y lo vemos contigo.</dd></div>
+            <div><dt><mark>Desistimiento</mark></dt><dd>Tu derecho a anular la póliza en los 14 días siguientes a contratarla, siempre que el viaje no haya empezado.</dd></div>
+          </dl>
         </div>
       </div>
     </section>
@@ -218,17 +205,23 @@
     <section class="section home-section" id="coberturas" aria-labelledby="coberturas-title">
       <div class="wrap">
         <div class="section-head">
-          <p class="kicker">Coberturas</p>
           <h2 id="coberturas-title">Qué cubre cada plan</h2>
-          <p>La letra pequeña no debería ser una aventura. Estos son los límites por persona asegurada. En viajes por España, el límite de gastos médicos es más bajo porque complementa la sanidad pública.</p>
+          <p>Estos son los límites por persona asegurada. En viajes por España, el límite de gastos médicos es más bajo porque complementa la sanidad pública.</p>
         </div>
+        <div class="plan-switch" id="plan-switch" role="group" aria-label="Plan que quieres ver" hidden></div>
         <div class="table-wrap" tabindex="0" role="region" aria-label="Tabla de coberturas por plan">
           <table class="coverage-table" id="coverage-table"></table>
         </div>
-        <div class="exclusions">
-          <h3>Lo que no cubre ningún plan</h3>
-          <ul id="exclusions-list"></ul>
-          <p style="margin-top: 12px"><a href="/condiciones">Leer las condiciones de contratación</a></p>
+        <div class="coverage-foot">
+          <div class="exclusions">
+            <h3>Lo que no cubre ningún plan</h3>
+            <ul id="exclusions-list"></ul>
+            <p class="exclusions-link"><a href="/condiciones">Leer las condiciones de contratación</a></p>
+          </div>
+          <div class="section-cta">
+            <a class="btn-primary" href="#cotizar" data-focus-quote>Descubre tu seguro</a>
+            <p>Te enseñamos los tres planes con el precio de tu viaje.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -237,7 +230,6 @@
       <div class="wrap">
         <div>
           <div class="section-head">
-            <p class="kicker">Ayuda</p>
             <h2 id="ayuda-title">Te acompañamos antes y durante el viaje.</h2>
           </div>
           <ul class="help-list">
@@ -253,7 +245,7 @@
         </figure>
       </div>
 
-      <div class="wrap" id="preguntas" style="margin-top: 72px">
+      <div class="wrap faq" id="preguntas">
         <div class="section-head"><h2>Preguntas frecuentes</h2></div>
         <div class="faq-list">
           <details><summary>¿Quién puede contratar Escala?</summary><p>Personas que viven en España, para viajes que empiezan en España, de hasta 90 días y con hasta 6 viajeros por póliza. Aseguramos de 0 a 84 años; el plan Esencial, hasta los 69.</p></details>
@@ -270,9 +262,8 @@
       <div class="wrap">
         <div class="ai-band">
           <div>
-            <p class="kicker">Asistente de IA</p>
             <h2 id="ia-title">La tecnología lo hace fácil. Nosotros lo hacemos humano.</h2>
-            <p>El asistente de Escala te ayuda a entender y contratar tu seguro. Tú decides siempre.</p>
+            <p>El asistente de IA de Escala te ayuda a entender y contratar tu seguro. Tú decides siempre.</p>
             <p class="ai-links"><button class="btn-navy btn-small" type="button" data-open-agent>Probar el asistente</button> <a href="/agentes">Cómo se conectan otros asistentes de IA</a></p>
           </div>
           <ul class="ai-points">
@@ -285,10 +276,22 @@
       </div>
     </section>
 
-    <section class="closing home-section" aria-labelledby="cierre-title">
+    <section class="section departure home-section" id="antes-de-salir" aria-labelledby="salir-title">
       <div class="wrap">
-        <h2 id="cierre-title">Viaja más. Preocúpate menos.</h2>
-        <a class="btn-primary" href="#cotizar">Descubre tu seguro</a>
+        <div class="departure-head">
+          <h2 id="salir-title">Antes de salir</h2>
+          <p>Cuatro cosas que conviene hacer antes de cerrar la maleta, tengas el seguro que tengas.</p>
+        </div>
+        <ul class="checklist">
+          <li><h3>Guarda la póliza en el móvil</h3><p>Es lo primero que te pedirán si pasa algo. Escala te la envía en PDF por email en cuanto contratas.</p></li>
+          <li><h3>Apunta el teléfono de asistencia</h3><p>Atiende 24 horas y está en la póliza. Llévalo también en papel, por si te quedas sin batería. En la demo es ficticio: +34 900 000 000.</p></li>
+          <li><h3>Si viajas por la Unión Europea, lleva la Tarjeta Sanitaria Europea</h3><p>Es gratuita y se pide a la Seguridad Social. Te da acceso a la sanidad pública del país, pero no sustituye al seguro: no cubre la sanidad privada ni la repatriación.</p></li>
+          <li><h3>Consulta las recomendaciones de viaje de Exteriores</h3><p>El Ministerio de Asuntos Exteriores publica recomendaciones para cada país. Escala no cubre viajes a países a los que recomienda no viajar.</p></li>
+        </ul>
+        <div class="closing">
+          <p class="closing-line">Viaja más. Preocúpate menos.</p>
+          <a class="btn-primary" href="#cotizar" data-focus-quote>Descubre tu seguro</a>
+        </div>
       </div>
     </section>
   </main>
@@ -327,7 +330,7 @@
 
   <aside class="agent-drawer" id="agent-drawer" aria-labelledby="agent-title" hidden>
     <div class="drawer-head">
-      <h2 id="agent-title">Asistente IA</h2>
+      <h2 id="agent-title">Asistente de IA</h2>
       <button class="drawer-close" type="button" aria-label="Cerrar el asistente">×</button>
     </div>
     <p class="webmcp-status" id="webmcp-status">Comprobando WebMCP…</p>

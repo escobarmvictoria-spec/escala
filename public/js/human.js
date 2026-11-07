@@ -1,5 +1,5 @@
 // «Quiero que me llame una persona»: formulario en un diálogo, con el contexto de la compra en curso.
-import { api, store } from './core.js';
+import { api, store, humanError } from './core.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -95,8 +95,7 @@ export function initHumanDialog() {
         <div class="actions"><button class="btn-secondary" type="button" data-close>Cerrar</button></div>`;
       $('[data-close]', done).focus();
     } catch (e) {
-      const body = e.body?.error;
-      err.textContent = body ? [body.message, body.how_to_fix].filter(Boolean).join(' ') : e.message;
+      err.textContent = humanError(e);
       err.hidden = false;
     } finally {
       button.disabled = false;

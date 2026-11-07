@@ -66,7 +66,9 @@ En local: `npm install && npm start` (http://localhost:3000) y `npm test`.
 
 ## Marca
 
-Escala: «Seguro de viaje que se entiende». Paleta Midnight Navy `#19233F`, Warm Ivory `#F6F3EC`, Solar Yellow `#F2C75B` (acento y botones principales) y Calm Teal `#79B8AD` (asistencia e información); Manrope para titulares e Inter para texto, alojadas en el propio proyecto. El motivo propio es la ruta con una escala (dos puntos y una parada amarilla): está en el logo, en los pasos de compra, en «Cómo funciona», en las fotos, en el PDF y en el email. Todos los valores son variables en `public/css/escala.css`. Fotografías de Unsplash (licencia Unsplash), descargadas en el servidor con `deploy/fetch-photos.sh` según `public/img/photos/photos.txt`.
+Escala: «Seguro de viaje que se entiende». Paleta Midnight Navy `#19233F`, Warm Ivory `#F6F3EC`, Solar Yellow `#F2C75B` (acento y botones principales) y Calm Teal `#79B8AD` (asistencia e información); Manrope para titulares e Inter para texto, alojadas en el propio proyecto. El motivo propio es la ruta con una escala (dos puntos y una parada amarilla): está en el logo, en los pasos de compra, en «Cómo funciona», en las fotos, en el PDF y en el email. Todos los valores son variables en `public/css/escala.css`.
+
+Decisiones de marca que no son estéticas: el precio de ejemplo de la portada lo calcula el motor de tarifa (`GET /api/example-price`, sin crear pedidos), así que nunca se desalinea de las cotizaciones; la jerga de la póliza se explica con los datos reales del producto («La letra pequeña, traducida»); la web habla a personas y las herramientas a agentes (los errores de la API llevan instrucciones para el agente y la interfaz los traduce en `public/js/core.js`); el asistente de IA es una opción discreta en la cabecera y el botón principal es siempre «Descubre tu seguro»; y la compra termina con «Tu viaje, bien protegido.» y una lista de lo que conviene hacer antes de salir. Fotografías de Unsplash (licencia Unsplash), descargadas en el servidor con `deploy/fetch-photos.sh` según `public/img/photos/photos.txt`.
 
 ## Decisiones y límites
 

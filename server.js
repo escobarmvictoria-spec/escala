@@ -10,7 +10,7 @@ import { renderPolicyPdf } from './src/pdf.js';
 import { createMailer, buildPolicyEmail } from './src/email.js';
 import { ApiError } from './src/errors.js';
 import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList } from './src/catalog.js';
-import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD } from './src/pricing.js';
+import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
 import { agentSystemPrompt } from './src/agent-prompt.js';
 import { createCallbackService, publicCallback, teamEmail, CALLBACK_REASONS } from './src/callbacks.js';
 
@@ -145,6 +145,20 @@ api.get('/product', (req, res) => {
 
 api.get('/pricing-model', (req, res) => {
   res.json({ ok: true, rates: RATES, age_bands: AGE_BANDS, group: { min_travelers: GROUP_MIN, discount: GROUP_DISCOUNT }, long_trip: { after_day: LONG_TRIP_THRESHOLD, daily_rate_factor: LONG_TRIP_FACTOR } });
+});
+
+// Precio de ejemplo para la portada, calculado con el mismo motor que las cotizaciones (no crea pedidos).
+const EXAMPLE_TRIP = { destination: 'Italia', zone: 'europa', days: 7, age: 35 };
+api.get('/example-price', (req, res) => {
+  const { destination, zone, days, age } = EXAMPLE_TRIP;
+  const priced = priceTrip({ zone, days, travelers: [{ age }] });
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.json({
+    ok: true,
+    trip: { destination, zone, zone_name: priced.zone_name, days, travelers: [{ age }] },
+    plans: PLANS.map((p) => ({ plan: p.id, name: p.name, recommended: Boolean(p.recommended), total_eur: priced.plans[p.id].total_eur })),
+    note: 'Precio final con impuestos (IPS 8 %) incluidos.',
+  });
 });
 
 const coveragesByPlan = (zone) => Object.fromEntries(PLANS.map((p) => [p.id, keyCoverages(p.id, zone)]));
