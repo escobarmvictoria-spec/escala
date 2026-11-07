@@ -8,7 +8,7 @@ Escala vende seguro de viaje con tres planes (Esencial, Completo y Total). Lo pu
 
 - **Web:** la URL pública que figura en el email de entrega. Tarjeta de prueba `4242 4242 4242 4242`; la `4000 0000 0000 0002` sale rechazada.
 - **Con ChatGPT:** app de escritorio → ChatGPT Work con **GPT‑6.1 Sol** → abrir la web en su navegador integrado (permiso «Usar herramientas del sitio» activado). Con GPT‑6 Luna no funciona.
-- **Sin agente propio:** el botón «Asistente de IA» abre un agente (Claude) que compra con las mismas herramientas.
+- **Sin agente propio:** «Hablar con Alba» abre a Alba, la asistente virtual (un chatbot con Claude), que compra con las mismas herramientas.
 - **Embudo por canal y prueba automática:** `/panel`. **Para agentes:** `/agentes` y `/llms.txt`.
 
 ## Cómo está hecho

@@ -39,7 +39,7 @@
       </nav>
       <div class="header-actions">
         <button class="agent-toggle" type="button" aria-controls="agent-drawer" aria-expanded="false">
-          <span class="agent-dot" aria-hidden="true"></span><span class="agent-toggle-label">Asistente de IA</span>
+          <span class="agent-dot" aria-hidden="true"></span><span class="agent-toggle-label">Hablar con Alba</span>
         </button>
         <a class="btn-primary btn-small header-cta" href="#cotizar" data-focus-quote data-main-cta>Cotizar mi viaje</a>
         <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false">
@@ -280,8 +280,8 @@
         <div class="ai-band">
           <div>
             <h2 id="ia-title">La tecnología lo hace fácil. Nosotros lo hacemos humano.</h2>
-            <p>El asistente de IA de Escala te ayuda a entender y contratar tu seguro. Tú decides siempre.</p>
-            <p class="ai-links"><button class="btn-navy btn-small" type="button" data-open-agent>Probar el asistente</button> <a href="/agentes">Cómo se conectan otros asistentes de IA</a></p>
+            <p>Alba, la asistente virtual de Escala, te ayuda a entender las coberturas y a contratar tu seguro. Es una inteligencia artificial y tú decides siempre.</p>
+            <p class="ai-links"><button class="btn-navy btn-small" type="button" data-open-agent>Hablar con Alba</button> <a href="/agentes">Cómo se conectan otros asistentes de IA</a></p>
           </div>
           <ul class="ai-points">
             <li>Te explica qué cubre cada plan y responde tus dudas sobre el producto.</li>
@@ -328,7 +328,7 @@
           <li><a href="/#cotizar">Seguro de viaje</a></li>
           <li><a href="/#coberturas">Coberturas</a></li>
           <li><a href="/#como-funciona">Cómo funciona</a></li>
-          <li><a href="/#ia">Asistente de IA</a></li>
+          <li><a href="/#ia">Alba, asistente virtual</a></li>
         </ul></nav>
         <nav class="footer-col" aria-labelledby="f-ayuda"><h2 id="f-ayuda">Ayuda y contacto</h2><ul>
           <li><button type="button" class="human-link" data-open-human>Hablar con una persona</button></li>
@@ -350,21 +350,31 @@
 
   <aside class="agent-drawer" id="agent-drawer" aria-labelledby="agent-title" hidden>
     <div class="drawer-head">
-      <h2 id="agent-title">Asistente de IA</h2>
-      <button class="drawer-close" type="button" aria-label="Cerrar el asistente">×</button>
+      <span class="alba-avatar" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 37 C 17 37, 17 11, 40 11"/><circle class="end" cx="8" cy="37" r="5"/><circle class="end" cx="40" cy="11" r="5"/><circle class="stop" cx="18.75" cy="24" r="6.5"/></svg></span>
+      <div class="drawer-title">
+        <h2 id="agent-title">Alba, asistente virtual de Escala</h2>
+        <p>Una inteligencia artificial. Antes de pagar, siempre te pide confirmación.</p>
+      </div>
+      <button class="drawer-close" type="button" aria-label="Cerrar la conversación con Alba">×</button>
     </div>
-    <p class="webmcp-status" id="webmcp-status">Comprobando WebMCP…</p>
+    <p class="external-note" id="external-note" hidden>Un asistente de IA externo está usando las herramientas de Escala. Abajo ves cada paso que da.</p>
     <div class="chat" id="chat" hidden>
       <div class="chat-log" id="chat-log" aria-live="polite"></div>
+      <div class="quick-replies" id="quick-replies" hidden>
+        <button type="button" data-quick="coberturas">Comparar coberturas</button>
+        <button type="button" data-quick="cotizar">Cotizar mi viaje</button>
+        <button type="button" data-quick="retomar">Retomar una cotización</button>
+      </div>
       <form class="chat-form" id="chat-form">
-        <label class="visually-hidden" for="chat-input">Escribe al asistente</label>
-        <textarea id="chat-input" rows="2" placeholder="Ej.: Asegúranos a mi pareja (34) y a mí (36) para Japón del 10 al 24 de diciembre."></textarea>
+        <label class="visually-hidden" for="chat-input">Escribe a Alba</label>
+        <textarea id="chat-input" rows="2" placeholder="Escribe a Alba…"></textarea>
         <button class="btn-navy" type="submit">Enviar</button>
       </form>
     </div>
     <div class="agent-off" id="agent-off" hidden></div>
-    <details class="activity" open>
-      <summary>Actividad WebMCP <span id="activity-count">0</span></summary>
+    <details class="activity" id="activity">
+      <summary>Lo que pasa en la web (herramientas WebMCP) <span id="activity-count">0</span></summary>
+      <p class="webmcp-status" id="webmcp-status">Comprobando WebMCP…</p>
       <ol class="activity-log" id="activity-log"></ol>
     </details>
   </aside>

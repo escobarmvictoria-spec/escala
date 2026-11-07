@@ -1,11 +1,19 @@
-// Cajón del asistente: registro de actividad WebMCP y, si el servidor lo tiene activado,
-// un agente real (Claude) que descubre y usa las herramientas con document.modelContext.getTools()/executeTool().
+// Alba, la asistente virtual (un chatbot con un agente real, Claude, que compra con las herramientas WebMCP de la página),
+// y el registro de lo que hace cualquier agente en la web (también los externos, como ChatGPT).
 import { api, store } from './core.js';
 import { listTools, callTool } from './webmcp.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const MAX_STEPS = 16;
+// Cómo se cuenta en el chat cada herramienta que usa Alba (con su nombre técnico, para la demo).
+const TOOL_LABELS = {
+  get_product_info: 'Consultando coberturas', get_quote: 'Calculando precios', select_plan: 'Eligiendo el plan',
+  set_travelers: 'Guardando los datos', review_order: 'Preparando el resumen', accept_terms: 'Registrando que aceptas',
+  pay: 'Pagando', get_policy: 'Recuperando la póliza', resend_policy_email: 'Reenviando la póliza',
+  save_quote: 'Enviando la cotización', request_human_callback: 'Pidiendo que te llamen', get_order_status: 'Revisando tu compra',
+};
+const toolLine = (name, state = '') => `${state}${TOOL_LABELS[name] ?? 'Usando la web'} (${name})`;
 
 let drawer, toggle, messages = [], running = false, passcode = null, autoOpened = false;
 
@@ -101,7 +109,7 @@ async function runAgent(userText) {
       const results = [];
       for (const call of calls) {
         const tool = registered.find((t) => t.name === call.name);
-        const line = addMsg('tool', `→ ${call.name}`);
+        const line = addMsg('tool', toolLine(call.name, '… '));
         let output;
         try {
           output = tool ? await runTool(tool, call.input) : JSON.stringify({ ok: false, error: { code: 'unknown_tool', message: `No existe la herramienta ${call.name}.` } });
@@ -109,12 +117,12 @@ async function runAgent(userText) {
           output = JSON.stringify({ ok: false, error: { code: 'tool_exception', message: err.message } });
         }
         const { text, ok } = readResult(output);
-        line.textContent = `${ok ? '✓' : '✗'} ${call.name}`;
+        line.textContent = toolLine(call.name, ok ? '✓ ' : '✗ ');
         if (!ok) line.classList.add('is-error');
         results.push({ type: 'tool_result', tool_use_id: call.id, content: text, ...(ok ? {} : { is_error: true }) });
       }
       messages.push({ role: 'user', content: results });
-      if (step === MAX_STEPS - 1) addMsg('system', 'El asistente ha llegado al máximo de pasos por mensaje. Escribe "sigue" para continuar.');
+      if (step === MAX_STEPS - 1) addMsg('system', 'He llegado al máximo de pasos por mensaje. Escribe "sigue" y continúo.');
     }
   } catch (err) {
     thinking.remove();
@@ -139,7 +147,30 @@ function initChat(status) {
   } catch {
     passcode = null;
   }
-  addMsg('assistant', 'Hola. Cuéntame tu viaje (destino, fechas, edades) y lo aseguro por ti. Te enseñaré el resumen antes de pagar.');
+  addMsg('assistant', 'Hola, soy **Alba**, la asistente virtual de Escala. Soy una inteligencia artificial: te explico las coberturas y te ayudo a contratar, y antes de pagar siempre te enseño el resumen. ¿Por dónde empezamos?');
+  const quick = $('#quick-replies');
+  $('#chat-log').append(quick); // los atajos van justo debajo del saludo, como en un chat
+  quick.hidden = false;
+  const send = (text) => {
+    if (running) return;
+    quick.hidden = true;
+    addMsg('user', text);
+    runAgent(text);
+  };
+  quick.addEventListener('click', (ev) => {
+    const b = ev.target.closest('[data-quick]');
+    if (!b) return;
+    if (status.needs_passcode && !passcode) return addMsg('assistant', 'Primero escribe el código de acceso de la demo.');
+    const order = store.state.order;
+    if (b.dataset.quick === 'coberturas') send('Quiero comparar las coberturas de los planes.');
+    if (b.dataset.quick === 'cotizar') send('Quiero cotizar mi viaje.');
+    if (b.dataset.quick === 'retomar') {
+      if (order && order.status !== 'paid') return send(`Quiero retomar mi cotización ${order.quote_id}.`);
+      quick.hidden = true;
+      addMsg('user', 'Quiero retomar una cotización.');
+      addMsg('assistant', 'Si la guardaste, abre el email «Tu cotización de Escala» y pulsa **Retomar mi compra**: vuelves justo donde lo dejaste. Si no lo tienes a mano, la rehacemos en un momento: ¿a dónde viajas y en qué fechas?');
+    }
+  });
   $('#chat-form').addEventListener('submit', (ev) => {
     ev.preventDefault();
     const input = $('#chat-input');
@@ -153,6 +184,7 @@ function initChat(status) {
       return;
     }
     input.value = '';
+    $('#quick-replies').hidden = true;
     addMsg('user', text);
     runAgent(text);
   });
@@ -178,10 +210,14 @@ export async function initAgentDrawer(toolsPromise) {
   store.subscribe((state, reason) => {
     if (reason !== 'activity') return;
     renderActivity();
-    // Si un agente externo empieza a usar las herramientas, abrimos el registro para que se vea.
-    if (!autoOpened && drawer.hidden && !running) {
-      autoOpened = true;
-      open(false);
+    // Si un agente externo (no Alba) empieza a usar las herramientas, abrimos el registro para que se vea.
+    if (!running) {
+      $('#external-note').hidden = false;
+      $('#activity').open = true;
+      if (!autoOpened && drawer.hidden) {
+        autoOpened = true;
+        open(false);
+      }
     }
     const dot = toggle.querySelector('.agent-dot');
     dot.classList.add('is-busy');
@@ -209,6 +245,7 @@ export async function initAgentDrawer(toolsPromise) {
     const off = $('#agent-off');
     off.hidden = false;
     off.innerHTML = `
+      <p>Alba no está disponible ahora mismo en esta web.</p>
       <p><strong>Usa tu propio agente.</strong> Esta página expone sus herramientas con WebMCP. Un agente compatible (por ejemplo, Chrome con WebMCP activado o la extensión MCP-B) puede cotizar y comprar sin tocar la interfaz.</p>
       <p>Lo que haga el agente aparecerá abajo, en «Actividad WebMCP», y la página avanzará sola.</p>
       <p><a href="/agentes">Cómo conectar un agente</a></p>`;

@@ -41,7 +41,7 @@ Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la r
 
 ChatGPT compra en Escala por WebMCP desde el navegador integrado de su app de escritorio («Site tools»). Probado con **ChatGPT Work y el modelo GPT‑6.1 Sol (razonamiento bajo)**; hay que tener activado *Configuración → Navegador → Permisos → Usar herramientas del sitio de forma predeterminada*. No todos los modelos lo soportan: con GPT‑6 Luna (Codex) falla con `does not support command "webmcp_list_tools"`.
 
-Lo que se aprendió por el camino: el polyfill envolvía el `document.modelContext` nativo de ChatGPT y su enumerador fallaba. Ahora la web detecta WebMCP nativo y registra las herramientas directamente en él; el polyfill solo se carga en navegadores que no lo traen (y el asistente integrado usa el mismo registro de herramientas en ambos casos). La línea de estado del «Asistente de IA» indica qué modo está activo.
+Lo que se aprendió por el camino: el polyfill envolvía el `document.modelContext` nativo de ChatGPT y su enumerador fallaba. Ahora la web detecta WebMCP nativo y registra las herramientas directamente en él; el polyfill solo se carga en navegadores que no lo traen (y el asistente integrado usa el mismo registro de herramientas en ambos casos). La línea de estado de la conversación con Alba («Lo que pasa en la web») indica qué modo está activo.
 
 ## Prueba automática del agente
 
