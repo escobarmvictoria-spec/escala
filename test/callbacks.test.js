@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createStore } from '../src/store.js';
 import { createOrderService } from '../src/orders.js';
-import { createCallbackService, callbackWindow } from '../src/callbacks.js';
+import { createCallbackService, callbackWindow, publicCallback } from '../src/callbacks.js';
 
 const future = (d) => new Date(Date.now() + d * 864e5).toISOString().slice(0, 10);
 
@@ -26,8 +26,20 @@ test('pedir que llame una persona: valida, guarda el contexto y avisa al equipo'
 });
 
 test('la ventana de llamada respeta el horario de 9 a 21 h', () => {
-  assert.equal(callbackWindow('cuanto_antes', new Date('2026-11-09T10:00:00Z')), 'en menos de 15 minutos');
+  assert.equal(callbackWindow('cuanto_antes', new Date('2026-11-09T10:00:00Z')), 'hoy, en horario de 9:00 a 21:00');
   assert.equal(callbackWindow('cuanto_antes', new Date('2026-11-09T22:30:00Z')), 'mañana a partir de las 9:00');
   assert.equal(callbackWindow('cuanto_antes', new Date('2026-11-09T05:00:00Z')), 'hoy a partir de las 9:00');
   assert.equal(callbackWindow('manana_tarde'), 'mañana entre las 15:00 y las 21:00');
+});
+
+test('sin cotización se adjunta el viaje que intentó cotizar; un problema en viaje va a la asistencia', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'escala-cb2-'));
+  const store = createStore(dir);
+  const svc = createCallbackService({ store, notifyTeam: async () => ({ status: 'sent' }) });
+  const cb = await svc.create({ full_name: 'Ramón Gil', phone: '600 111 222', user_agreed: true, reason: 'no_asegurable', trip_attempt: { destinations: ['Italia'], start_date: '2026-12-10', end_date: '2026-12-17', ages: [90] } });
+  assert.equal(cb.preferred_time, 'sin_preferencia');
+  assert.match(cb.context.trip, /Italia, 2026-12-10 a 2026-12-17/);
+  assert.equal(cb.context.travelers, '90 años');
+  assert.equal(publicCallback(cb).context_kind, 'intento');
+  await assert.rejects(() => svc.create({ full_name: 'Ramón Gil', phone: '600 111 222', user_agreed: true, reason: 'siniestro' }), { code: 'use_assistance_phone' });
 });

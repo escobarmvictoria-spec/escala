@@ -18,7 +18,8 @@ const REASON_SHORT = {
   siniestro: 'problema en el viaje',
   otro: 'otro motivo',
 };
-export const CALLBACK_TIMES = { cuanto_antes: 'Cuanto antes', manana_manana: 'Mañana por la mañana', manana_tarde: 'Mañana por la tarde' };
+export const CALLBACK_TIMES = { sin_preferencia: 'Sin preferencia', cuanto_antes: 'Cuanto antes', manana_manana: 'Mañana por la mañana', manana_tarde: 'Mañana por la tarde' };
+export const ASSISTANCE_PHONE = '+34 900 000 000';
 
 function madridHour(date = new Date()) {
   return Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', hourCycle: 'h23' }).format(date));
@@ -29,7 +30,7 @@ export function callbackWindow(preferred, date = new Date()) {
   const h = madridHour(date);
   if (preferred === 'manana_manana') return 'mañana entre las 9:00 y las 14:00';
   if (preferred === 'manana_tarde') return 'mañana entre las 15:00 y las 21:00';
-  if (h >= 9 && h < 21) return 'en menos de 15 minutos';
+  if (h >= 9 && h < 21) return 'hoy, en horario de 9:00 a 21:00';
   return h >= 21 ? 'mañana a partir de las 9:00' : 'hoy a partir de las 9:00';
 }
 
@@ -52,7 +53,14 @@ export function createCallbackService({ store, notifyTeam }) {
           hint: 'Pregunta al usuario si quiere que le llame alguien del equipo y envía user_agreed: true solo si dice que sí.',
         });
       const reason = CALLBACK_REASONS[input.reason] ? input.reason : 'otro';
-      const preferred = CALLBACK_TIMES[input.preferred_time] ? input.preferred_time : 'cuanto_antes';
+      // Un problema durante el viaje no espera a una llamada comercial: va al teléfono de asistencia 24 h.
+      if (reason === 'siniestro')
+        throw new ApiError('use_assistance_phone', `Para un problema durante el viaje, llama a la asistencia 24 horas: ${ASSISTANCE_PHONE} (en la demo, ficticio). Está en la póliza.`, {
+          field: 'reason',
+          status: 422,
+          hint: `No pidas una llamada: dale al usuario el teléfono de asistencia que figura en su póliza, ${ASSISTANCE_PHONE}.`,
+        });
+      const preferred = CALLBACK_TIMES[input.preferred_time] ? input.preferred_time : 'sin_preferencia';
 
       let context = null;
       if (input.quote_id) {
@@ -69,6 +77,21 @@ export function createCallbackService({ store, notifyTeam }) {
           order.events.push({ at: new Date().toISOString(), actor, action: 'human_requested', detail: reason });
           store.putOrder(order);
         }
+      }
+      // Sin cotización (por ejemplo, la edad bloqueó el cotizador): se adjunta el viaje que intentó cotizar.
+      if (!context && input.trip_attempt && typeof input.trip_attempt === 'object') {
+        const a = input.trip_attempt;
+        const clean = (v, n) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
+        const dest = clean(Array.isArray(a.destinations) ? a.destinations.join(', ') : a.destinations, 120);
+        const ages = (Array.isArray(a.ages) ? a.ages : []).slice(0, 6).map((x) => Number(x)).filter((x) => Number.isFinite(x));
+        if (dest || ages.length)
+          context = {
+            quote_id: null,
+            status: 'sin_cotizacion',
+            trip: `${dest || 'destino sin indicar'}, ${clean(a.start_date, 10) || '?'} a ${clean(a.end_date, 10) || '?'} (intento de cotización)`,
+            travelers: ages.map((x) => `${x} años`).join(', ') || 'sin indicar',
+            plan: null,
+          };
       }
       const cb = {
         id: `LL-${crypto.randomBytes(3).toString('hex').toUpperCase()}`,
@@ -107,6 +130,8 @@ export function publicCallback(cb) {
     when: cb.when,
     channel: cb.channel,
     context_attached: Boolean(cb.context),
+    context_kind: cb.context ? (cb.context.quote_id ? 'cotizacion' : 'intento') : null,
+    quote_id: cb.context?.quote_id ?? null,
   };
 }
 
@@ -117,7 +142,7 @@ export function teamEmail(cb) {
     `Cuándo: ${cb.when}`,
     `Motivo: ${cb.reason_text}`,
     cb.summary ? `Lo que ya sabemos: ${cb.summary}` : null,
-    cb.context ? `Compra en curso: ${cb.context.trip}; viajeros: ${cb.context.travelers}${cb.context.plan ? `; plan ${cb.context.plan}` : ''}; estado ${cb.context.status} (${cb.context.quote_id})` : null,
+    cb.context ? `${cb.context.quote_id ? 'Compra en curso' : 'Viaje que intentó cotizar'}: ${cb.context.trip}; viajeros: ${cb.context.travelers}${cb.context.plan ? `; plan ${cb.context.plan}` : ''}${cb.context.quote_id ? `; estado ${cb.context.status} (${cb.context.quote_id})` : ''}` : null,
     '',
     'Demo — no es un seguro real.',
   ].filter((l) => l !== null);

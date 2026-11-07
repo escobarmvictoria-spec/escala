@@ -368,16 +368,21 @@ const TOOLS = [
     name: 'request_human_callback',
     title: 'Pedir que llame una persona',
     description:
-      "Asks a person from Escala's team to phone the user, with the context of the purchase so the user does not repeat anything. Offer it when the user asks for a human, when the case cannot be bought online (traveler over 84, excluded destination, trip over 90 days), for pre-existing medical conditions, for problems during a trip, or after two failed attempts. Needs the user's name and phone and their yes to being called. Not needed for a normal purchase.",
+      "Asks a person from Escala's team to phone the user, with the context of the purchase so the user does not repeat anything. Offer it when the user asks for a human, when the case cannot be bought online (traveler over 84, excluded destination, trip over 90 days), or for pre-existing medical conditions (coverage to be confirmed), or after two failed attempts. If there is no quote (e.g. the quote was rejected for age), send trip_attempt so the team sees the trip. Needs the user's name and phone and their yes to being called. Not for problems during a trip: for those, give the 24 h assistance phone printed on the policy (+34 900 000 000 in this demo). Not needed for a normal purchase.",
     inputSchema: {
       type: 'object',
       properties: {
         full_name: { type: 'string' },
         phone: { type: 'string', description: 'Phone number, e.g. "600 123 456".' },
-        reason: { type: 'string', enum: ['enfermedad_previa', 'no_asegurable', 'dudas_coberturas', 'siniestro', 'otro'] },
+        reason: { type: 'string', enum: ['enfermedad_previa', 'no_asegurable', 'dudas_coberturas', 'otro'] },
         summary: { type: 'string', description: 'What the person who calls should know, in one or two sentences.' },
         quote_id: { type: 'string', description: 'Optional: the current quote, so its details travel with the request.' },
-        preferred_time: { type: 'string', enum: ['cuanto_antes', 'manana_manana', 'manana_tarde'] },
+        trip_attempt: {
+          type: 'object',
+          description: 'Optional, when there is no quote_id: the trip the user tried to quote.',
+          properties: { destinations: { type: 'array', items: { type: 'string' } }, start_date: { type: 'string' }, end_date: { type: 'string' }, ages: { type: 'array', items: { type: 'integer' } } },
+        },
+        preferred_time: { type: 'string', enum: ['sin_preferencia', 'cuanto_antes', 'manana_manana', 'manana_tarde'], description: 'Optional.' },
         user_agreed: { type: 'boolean', description: 'True only if the user said yes to being called.' },
       },
       required: ['full_name', 'phone', 'reason', 'summary', 'user_agreed'],
@@ -388,7 +393,7 @@ const TOOLS = [
         ok: true,
         ticket: cb.ticket,
         when: cb.when,
-        tell_the_user: `Una persona del equipo le llamará ${cb.when} al ${cb.phone}. Número de solicitud ${cb.ticket}.${cb.context_attached ? ' Verá la cotización, así que no tendrá que repetir nada.' : ''} (Demo: no llama nadie de verdad.)`,
+        tell_the_user: `Solicitud registrada (${cb.ticket}). Una persona del equipo le llamará ${cb.when} al ${cb.phone}.${cb.context_kind === 'cotizacion' ? ' Verá su cotización, así que no tendrá que repetir nada.' : cb.context_kind === 'intento' ? ' Verá los datos del viaje que intentó cotizar.' : ''} (Demo: es una solicitud de prueba, no llama nadie de verdad.)`,
       };
     },
   },

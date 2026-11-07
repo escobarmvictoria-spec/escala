@@ -711,3 +711,12 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .compare-help { margin-top: var(--s-4); font-size: var(--fs-sm); color: var(--navy-soft); }
 .compare-help .btn-small { margin-left: 6px; vertical-align: middle; }
 .plans-help { line-height: 1.7; }
+
+/* Pedir que me llamen: motivo como texto, contexto adjunto y salida a la asistencia en viaje */
+.cb-reason-show { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; margin: 0; }
+.cb-context { margin: 0; padding: 10px 12px; border-radius: var(--r-s); background: var(--teal-soft); color: var(--teal-deep); font-size: var(--fs-sm); font-weight: 500; }
+.cb-assist { display: grid; gap: 8px; padding: 14px 16px; border-radius: var(--r-s); background: var(--yellow-soft); }
+.cb-assist p { margin: 0; }
+.cb-phone { font-family: var(--font-head); font-size: var(--fs-md); font-weight: 700; }
+.cb-demo { margin: 0; font-size: var(--fs-xs); }
+.human-dialog .actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }

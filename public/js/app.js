@@ -118,17 +118,24 @@ function initQuoteForm() {
     }
     const button = $('button[type=submit]', form);
     await busy(button, async () => {
+      const input = {
+        destinations: form.destination.value.split(',').map((s) => s.trim()).filter(Boolean),
+        start_date: form.start_date.value,
+        end_date: form.end_date.value,
+        travelers: ages.map((a) => ({ age: Number(a) })),
+      };
       try {
-        const data = await api.quote({
-          destinations: form.destination.value.split(',').map((s) => s.trim()).filter(Boolean),
-          start_date: form.start_date.value,
-          end_date: form.end_date.value,
-          travelers: ages.map((a) => ({ age: Number(a) })),
-        });
+        const data = await api.quote(input);
+        store.state.attempt = null;
         viewStep = null;
         store.apply(data, 'quote', { by: 'web' });
         $('#compra').scrollIntoView({ behavior: 'smooth', block: 'start' });
       } catch (err) {
+        // Si el viaje no se puede contratar online, guardamos lo que intentó cotizar para la llamada.
+        const code = err instanceof ApiFailure ? err.body?.error?.code : null;
+        store.state.attempt = ['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(code)
+          ? { destinations: input.destinations, start_date: input.start_date, end_date: input.end_date, ages: input.travelers.map((t) => t.age) }
+          : null;
         showError(form, err);
       }
     });
@@ -494,7 +501,7 @@ function renderPolicy(order) {
     <div class="actions">
       <a class="btn-primary" href="${esc(p.pdf_url)}" target="_blank" rel="noopener">Descargar la póliza (PDF)</a>
       <button class="btn-secondary" type="button" data-new-quote>Cotizar otro viaje</button>
-      <button class="human-link" type="button" data-open-human="siniestro">¿Problemas en el viaje? Te llama una persona</button>
+      <a class="human-link" href="/#asistencia">¿Problemas en el viaje? Asistencia 24 h</a>
     </div>
     <form class="resend" id="resend-form" novalidate>
       <div class="field"><label for="r-email">¿No te ha llegado? Reenvíala</label><input id="r-email" type="email" value="${esc(order.holder.email)}"></div>

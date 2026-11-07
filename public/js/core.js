@@ -9,6 +9,7 @@ const state = {
   summary: null,
   agentDriving: false,
   activity: [],
+  attempt: null, // último viaje que no se pudo cotizar (para pasárselo al equipo si pide que le llamen)
 };
 
 function restore() {
