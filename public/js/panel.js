@@ -34,7 +34,7 @@ async function load() {
     </tbody>`;
   const rec = document.getElementById('recovery');
   if (rec && recovery)
-    rec.innerHTML = `<strong>Recuperación de abandonos:</strong> ${recovery.saved} cotizaciones enviadas por email («Envíame este precio»), ${recovery.resumed} retomadas desde el email (${pct(recovery.resumed, recovery.saved)}) y ${recovery.paid_after_resume} compradas después (${eur(recovery.revenue_eur)}).`;
+    rec.innerHTML = `<strong>Recuperación de abandonos:</strong> ${recovery.saved} cotizaciones enviadas por email («Enviarme la cotización»), ${recovery.resumed} retomadas desde el email (${pct(recovery.resumed, recovery.saved)}) y ${recovery.paid_after_resume} compradas después (${eur(recovery.revenue_eur)}).`;
   document.getElementById('updated').textContent = `Actualizado a las ${new Date().toLocaleTimeString('es-ES')}. Se refresca cada 10 segundos.`;
 }
 

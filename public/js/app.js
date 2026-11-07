@@ -178,7 +178,6 @@ function renderPlans(order) {
   if (savedFor !== order.quote_id) {
     savedFor = order.quote_id;
     $$('#save-quote .save-done, #save-quote .form-error').forEach((el) => (el.hidden = true));
-    if (!order.from_saved) $('#resume-note').hidden = true;
     if (order.holder?.email && !$('#s-email').value) $('#s-email').value = order.holder.email;
   }
   const grid = $('#plans-grid');
@@ -332,11 +331,12 @@ function renderReview(order) {
     <h3>Revisa antes de pagar</h3>
     <div class="summary-total summary-total-top"><span>${esc(s.plan.name)}, total con impuestos</span><span>${esc(s.total_text)}</span></div>
     <dl class="summary-grid">
-      <div><dt>Plan</dt><dd>${esc(s.plan.name)}</dd></div>
+      <div><dt>Plan</dt><dd>${esc(s.plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
       <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}</dd></div>
       <div><dt>Fechas</dt><dd>${fmtDate(s.trip.start_date)} – ${fmtDate(s.trip.end_date)} (${s.trip.days} días)</dd></div>
       <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional">${esc(s.holder.email)}</span></dd></div>
     </dl>
+    <div class="review-head"><h4>Asegurados</h4><button type="button" class="edit-link" data-goto="viajeros">Editar viajeros</button></div>
     <table class="mini-table"><thead><tr><th>Asegurado</th><th>Edad</th><th class="num">Precio</th></tr></thead><tbody>
       ${s.insured.map((t) => `<tr><td>${esc(t.full_name)}</td><td>${t.age}</td><td class="num">${eur(t.price_eur)}</td></tr>`).join('')}
     </tbody></table>
@@ -354,6 +354,13 @@ function renderReview(order) {
       <button class="btn-primary" type="submit">${accepted ? 'Ir al pago' : 'Aceptar y pagar'}</button>
       <p class="form-error" role="alert" hidden></p>
     </form>`;
+  // Corregir donde se detecta el error: vuelve al paso sin perder lo ya escrito.
+  $$('[data-goto]', sheet).forEach((b) =>
+    b.addEventListener('click', () => {
+      viewStep = b.dataset.goto;
+      render(store.state, 'nav');
+    })
+  );
   const form = $('#terms-form');
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
@@ -509,6 +516,8 @@ function render(state, reason, extra = {}) {
   section.hidden = false;
   if (extra.by === 'agent') viewStep = null;
   const step = currentStep(order);
+  const resumeNote = $('#resume-note');
+  if (resumeNote.dataset.for !== order.quote_id) resumeNote.hidden = true;
   renderRoute(order, step);
   renderTripLine(order);
   $('.agent-notice').hidden = !(state.agentDriving && order.status !== 'paid');
@@ -520,7 +529,7 @@ function render(state, reason, extra = {}) {
   if (step === 'poliza') renderPolicy(order);
   // Desde los datos hasta la póliza, la portada se aparta: solo la compra (y, al final, lo que toca hacer).
   document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
-  // Con una cotización en marcha, el botón flotante «Descubre tu seguro» ya no aporta: se oculta.
+  // Con una cotización en marcha, el botón flotante «Cotizar mi viaje» ya no aporta: se oculta.
   document.body.classList.toggle('has-quote', Boolean(step));
   const moved = step !== lastRenderedStep && lastRenderedStep !== null;
   if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -609,7 +618,7 @@ function initFloatCta() {
   new IntersectionObserver(([entry]) => document.body.classList.toggle('quote-visible', entry.isIntersecting), { threshold: 0.25 }).observe(form);
 }
 
-// Los botones «Descubre tu seguro» de la página llevan al cotizador y ponen el cursor en el destino.
+// Los botones «Cotizar mi viaje» de la página llevan al cotizador y ponen el cursor en el destino.
 function initQuoteLinks() {
   $$('[data-focus-quote]').forEach((a) =>
     a.addEventListener('click', (ev) => {
@@ -630,7 +639,7 @@ async function loadDestinations() {
   }
 }
 
-// Volver desde el email de «Envíame este precio» (/retomar/ID).
+// Volver desde el email de «Enviarme la cotización» (/retomar/ID).
 async function resumeFromEmail(id) {
   history.replaceState(null, '', '/');
   try {
@@ -642,10 +651,18 @@ async function resumeFromEmail(id) {
     store.apply(data, 'restore', { by: 'web' });
     fillQuoteForm(data.order);
     const note = $('#resume-note');
-    note.textContent =
+    const o = data.order;
+    const planName = o.plan ? data.plans.find((p) => p.plan === o.plan)?.name : null;
+    const now = o.plan ? eur(o.total_eur) : null;
+    note.textContent = [
+      `Has vuelto a tu cotización${planName ? ` con el plan ${planName} elegido` : ''}.`,
       data.resumed === 'repriced'
-        ? `Has vuelto a tu cotización. Como habían pasado más de 2 horas, hemos recalculado el precio con la tarifa de hoy${data.price_changed ? ` (antes: ${eur(data.previous_total_eur)})` : ''}.`
-        : 'Has vuelto a tu cotización: sigue donde la dejaste.';
+        ? data.price_changed
+          ? `El precio ha cambiado desde que la guardaste: antes ${eur(data.previous_total_eur)}, ahora ${now}. Revísalo antes de seguir.`
+          : 'Como habían pasado más de 2 horas, hemos comprobado el precio con la tarifa de hoy: no ha cambiado.'
+        : 'Sigue donde la dejaste, con el mismo precio.',
+    ].join(' ');
+    note.dataset.for = o.quote_id;
     note.hidden = false;
     requestAnimationFrame(() => $('#compra').scrollIntoView({ block: 'start' }));
   } catch (err) {

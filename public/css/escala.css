@@ -584,7 +584,7 @@ body.is-checkout .home-section { display: none; }
   .agent-dot.is-busy { animation: none; }
 }
 
-/* Botón flotante «Descubre tu seguro»: siempre a mano, salvo cuando ya se ve el cotizador,
+/* Botón flotante «Cotizar mi viaje»: siempre a mano, salvo cuando ya se ve el cotizador,
    durante la compra (no compite con «Pagar») o con el asistente abierto. */
 .float-cta {
   position: fixed; z-index: 45; right: var(--s-5); bottom: var(--s-5);
@@ -614,3 +614,10 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .floa
   .save-quote { grid-template-columns: 1fr; }
   .save-fields { flex-direction: column; }
 }
+
+/* Revisión: editar justo donde se ve el dato. */
+.edit-link { background: none; border: 0; padding: 0 0 0 6px; color: var(--navy); font: inherit; font-size: var(--fs-sm); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.edit-link:hover { color: var(--teal-deep); }
+.review-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: var(--s-4); }
+.review-head h4 { font-size: var(--fs-base); }
+.summary-grid .edit-link { display: block; padding: 4px 0 0; }
