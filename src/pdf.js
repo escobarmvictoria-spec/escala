@@ -114,6 +114,7 @@ export function renderPolicyPdf(order) {
     if (plan.group_discount_pct) row('Descuento de grupo', `${plan.group_discount_pct} % aplicado`);
     row('Total pagado', formatEur(plan.total_eur), { bold: true });
     row('Medio de pago', `Tarjeta de prueba terminada en ${order.payment.card_last4} (sin cobro real)`);
+    if (order.payment.user_confirmation) row('Confirmación del cliente', `«${order.payment.user_confirmation}»`);
 
     section('Qué no cubre (principales exclusiones)');
     doc.font('body').fontSize(9).fillColor(C.ink);

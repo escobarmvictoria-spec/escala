@@ -33,5 +33,26 @@ async function load() {
   document.getElementById('updated').textContent = `Actualizado a las ${new Date().toLocaleTimeString('es-ES')}. Se refresca cada 10 segundos.`;
 }
 
+async function loadEval() {
+  try {
+    const res = await fetch('/eval/latest.json', { cache: 'no-store' });
+    if (!res.ok) return;
+    const r = await res.json();
+    const s = r.summary;
+    const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    document.getElementById('eval').hidden = false;
+    document.getElementById('eval-summary').innerHTML = `<strong>${s.passed} de ${s.total} escenarios superados.</strong> Compró bien en ${s.purchases_ok} de ${s.purchases_expected} casos, frenó en ${s.stops_ok} de ${s.stops_expected} casos en los que no debía comprar y pidió confirmación antes de pagar en ${s.confirmed} de ${s.paid} pagos. Mediana de ${s.median_tool_calls} herramientas por compra.`;
+    document.getElementById('eval-table').innerHTML = `
+      <thead><tr><th scope="col">Escenario</th><th scope="col">Esperado</th><th scope="col">Resultado</th><th scope="col">Herramientas</th><th scope="col">Segundos</th></tr></thead>
+      <tbody>${r.results
+        .map((x) => `<tr><th scope="row">${esc(x.title)}<small>${esc(x.group)}</small></th><td>${esc(x.expected)}</td><td class="${x.passed ? '' : 'is-missing'}">${x.passed ? 'Superado' : 'Fallido'}${x.plan ? `<br><small>${esc(x.plan)}, ${x.total_eur} €</small>` : ''}</td><td>${x.tool_calls}</td><td>${x.seconds}</td></tr>`)
+        .join('')}</tbody>`;
+    document.getElementById('eval-note').textContent = `Ejecutada el ${new Date(r.ran_at).toLocaleDateString('es-ES')} con ${r.agent_model} como agente y ${r.customer_model} como cliente simulado. Cada resultado se comprueba contra el servidor, no contra lo que dice el agente.`;
+  } catch {
+    /* sin prueba publicada */
+  }
+}
+
 load();
+loadEval();
 setInterval(load, 10000);

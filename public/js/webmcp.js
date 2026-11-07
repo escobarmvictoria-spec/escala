@@ -220,7 +220,7 @@ const TOOLS = [
     name: 'review_order',
     title: 'Revisar resumen y condiciones',
     description:
-      'Step 4. Returns everything the user must see before paying: plan, trip, holder, insured people with their price, total, coverages with limits and deductibles, main exclusions and key terms, plus a review_token. Show the user a short version (plan, dates, insured, total, deductibles) and ask whether they accept the terms and want to pay.',
+      'Step 4. Returns everything the user must see before paying: plan, trip, holder, insured people with their price, total, coverages with limits and deductibles, main exclusions and key terms, plus a review_token. Show the user a short version (plan, dates, insured, total, deductibles), ask whether they accept the terms and want to pay, and END YOUR TURN: never call accept_terms or pay in the same turn as review_order, even if the user asked earlier to buy.',
     inputSchema: { type: 'object', properties: { quote_id: { type: 'string' } }, required: ['quote_id'] },
     async run({ quote_id }) {
       const data = await api.review(quote_id, AGENT);
@@ -232,14 +232,14 @@ const TOOLS = [
         terms_version: data.summary.terms.version,
         terms_url: absolute(data.summary.terms.url),
         summary: data.summary,
-        next_step: 'Enseña el resumen al usuario. Si acepta las condiciones, llama a accept_terms con review_token y terms_version.',
+        next_step: 'Enseña este resumen al usuario y TERMINA TU TURNO esperando su respuesta. No llames a accept_terms ni a pay hasta que el usuario conteste que sí, aunque antes te haya pedido comprar.',
       };
     },
   },
   {
     name: 'accept_terms',
     title: 'Aceptar condiciones',
-    description: 'Step 5. Records that the user accepted the terms shown in review_order. Requires the review_token from the latest review_order; if the order changed since then, review again.',
+    description: 'Step 5. Records that the user accepted the terms shown in review_order. Only call it after the user answered the summary with a yes. Requires the review_token from the latest review_order; if the order changed since then, review again.',
     inputSchema: {
       type: 'object',
       properties: {
@@ -258,7 +258,7 @@ const TOOLS = [
         quote_id,
         status: data.order.status,
         amount_to_pay_eur: data.order.total_eur,
-        next_step: `Con la confirmación del usuario, llama a pay con amount_eur ${data.order.total_eur}.`,
+        next_step: `Llama a pay con amount_eur ${data.order.total_eur} y, en user_confirmation, las palabras con las que el usuario aceptó pagar.`,
       };
     },
   },
@@ -266,16 +266,16 @@ const TOOLS = [
     name: 'pay',
     title: 'Pagar y emitir póliza',
     description:
-      'Step 6. Pays with a TEST card (no real money), issues the policy and emails the PDF to the holder. Only call it after the user explicitly confirmed the summary and the total. Safeguards: terms must be accepted, amount_eur must equal the reviewed total, user_confirmed must be true, and only test cards work: 4242 4242 4242 4242 is approved, 4000 0000 0000 0002 is declined. Safe to retry: a paid quote returns the same policy and is never charged twice.',
+      'Step 6. Pays with a TEST card (no real money), issues the policy and emails the PDF to the holder. Only call it after the user explicitly confirmed the summary and the total. Safeguards: terms must be accepted, amount_eur must equal the reviewed total, user_confirmation must carry the exact words with which the user agreed to pay, said AFTER they saw the review_order summary (stored as proof of consent), and only test cards work: 4242 4242 4242 4242 is approved, 4000 0000 0000 0002 is declined. Safe to retry: a paid quote returns the same policy and is never charged twice.',
     inputSchema: {
       type: 'object',
       properties: {
         quote_id: { type: 'string' },
         amount_eur: { type: 'number', description: 'Exact total shown in review_order.' },
         card_number: { type: 'string', description: 'Test card number, e.g. "4242 4242 4242 4242".' },
-        user_confirmed: { type: 'boolean', description: 'True only if the user explicitly said to pay.' },
+        user_confirmation: { type: 'string', description: "The user's exact words agreeing to pay, given after seeing the summary, e.g. «sí, paga». An instruction given before the summary does not count." },
       },
-      required: ['quote_id', 'amount_eur', 'card_number', 'user_confirmed'],
+      required: ['quote_id', 'amount_eur', 'card_number', 'user_confirmation'],
     },
     annotations: { consequentialHint: true },
     async run({ quote_id, ...rest }) {

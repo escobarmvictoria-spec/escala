@@ -12,7 +12,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node --test test/*.test.js",
-    "calibrate": "node scripts/calibrate.js"
+    "calibrate": "node scripts/calibrate.js",
+    "eval": "node scripts/eval-agent.js"
   },
   "dependencies": {
     "@fontsource/overpass": "^5.3.0",

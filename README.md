@@ -37,7 +37,11 @@ Una sola fuente de verdad: las herramientas WebMCP y los botones llaman a la mis
 | `pay` | Paga con tarjeta de prueba, emite la póliza y envía el email. |
 | `get_policy`, `get_order_status`, `get_product_info`, `resend_policy_email` | Consulta y soporte. |
 
-Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la revisión invalida el `review_token`; `pay` exige el importe exacto revisado y `user_confirmed: true` (y se marca con `consequentialHint`); solo tarjetas de prueba; idempotente (no cobra dos veces); cotizaciones que caducan a las 2 h. Cada error devuelve `code`, `message` y `how_to_fix` para que el agente se corrija solo. Cada compra guarda su canal (web o agente) y `/panel` muestra el embudo por canal.
+Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la revisión invalida el `review_token`; `review_order` obliga al agente a terminar su turno y esperar la respuesta; `pay` exige el importe exacto revisado y `user_confirmation` con las palabras del usuario, que se guardan como prueba de consentimiento y salen en la póliza (y se marca con `consequentialHint`); solo tarjetas de prueba; idempotente (no cobra dos veces); cotizaciones que caducan a las 2 h. Cada error devuelve `code`, `message` y `how_to_fix` para que el agente se corrija solo. Cada compra guarda su canal (web o agente) y `/panel` muestra el embudo por canal.
+
+## Prueba automática del agente
+
+`npm run eval` juega 16 escenarios: compras normales, casos difíciles (datos que faltan, un viajero de 72 años, tarjeta rechazada, cambio de plan tras el resumen, destino mal escrito) y casos en los que el agente no debe comprar (cliente que no confirma, 90 años, destino excluido, viaje de 120 días). Un modelo hace de cliente con sus datos y su forma de comportarse; Claude compra usando solo las herramientas WebMCP en un Chromium real; el resultado se comprueba contra el servidor. Informe en [`docs/agent-eval.md`](docs/agent-eval.md) y en `/panel`.
 
 ## Precios
 

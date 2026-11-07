@@ -233,11 +233,12 @@ api.post('/agent/turn', rateLimit(40, 60000), async (req, res) => {
     body: JSON.stringify({
       model: agentStatus().model,
       max_tokens: 2000,
-      system: agentSystemPrompt({ today: todayMadrid() }),
-      tools: tools.map((t) => ({
+      system: [{ type: 'text', text: agentSystemPrompt({ today: todayMadrid() }), cache_control: { type: 'ephemeral' } }],
+      tools: tools.map((t, i) => ({
         name: String(t.name).slice(0, 64),
         description: String(t.description || '').slice(0, 4000),
         input_schema: t.inputSchema && typeof t.inputSchema === 'object' ? t.inputSchema : { type: 'object', properties: {} },
+        ...(i === tools.length - 1 ? { cache_control: { type: 'ephemeral' } } : {}),
       })),
       messages,
     }),

@@ -177,6 +177,7 @@ export function publicOrder(order) {
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,
     review_token: atLeast(order, 'reviewed') ? order.review?.token ?? null : null,
+    payment: order.payment ? { card_last4: order.payment.card_last4, paid_at: order.payment.paid_at, user_confirmation: order.payment.user_confirmation } : null,
     terms_version: TERMS_VERSION,
     policy: order.policy
       ? {
@@ -441,10 +442,11 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
           status: 409,
           hint: 'Llama otra vez a review_order y a accept_terms.',
         });
-      if (input.user_confirmed !== true)
-        throw new ApiError('confirmation_required', 'Falta la confirmación explícita del usuario para pagar.', {
-          field: 'user_confirmed',
-          hint: 'Enseña al usuario el total y el plan, pregúntale si quiere pagar y envía user_confirmed: true solo si dice que sí.',
+      const confirmation = String(input.user_confirmation ?? '').trim();
+      if (confirmation.length < 2)
+        throw new ApiError('confirmation_required', 'Falta la confirmación del usuario para pagar.', {
+          field: 'user_confirmation',
+          hint: 'Enseña el resumen de review_order, pregunta si quiere pagar y espera su respuesta. Envía en user_confirmation sus palabras exactas (por ejemplo «sí, paga»). Una orden anterior al resumen no vale.',
         });
       const total = order.quote.plans[order.plan].total_eur;
       const amount = Number(input.amount_eur);
@@ -484,6 +486,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
         card_label: test.label,
         paid_at: new Date().toISOString(),
         by: actor,
+        user_confirmation: confirmation.slice(0, 200),
       };
       order.policy = issuePolicy(order);
       order.status = 'paid';
