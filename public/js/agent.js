@@ -1,6 +1,7 @@
 // Cajón del asistente: registro de actividad WebMCP y, si el servidor lo tiene activado,
 // un agente real (Claude) que descubre y usa las herramientas con document.modelContext.getTools()/executeTool().
 import { api, store } from './core.js';
+import { listTools, callTool } from './webmcp.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -69,10 +70,16 @@ function modelContext() {
   return document.modelContext ?? navigator.modelContext;
 }
 
+// Con el polyfill, el asistente descubre y ejecuta las herramientas a través de document.modelContext.
+// Con WebMCP nativo (que no expone getTools/executeTool), usa el mismo registro de herramientas de Escala.
 async function toolList() {
   const mc = modelContext();
-  const tools = await mc.getTools();
-  return tools;
+  return typeof mc?.getTools === 'function' ? mc.getTools() : listTools();
+}
+
+async function runTool(tool, input) {
+  const mc = modelContext();
+  return typeof mc?.executeTool === 'function' ? mc.executeTool(tool, input) : callTool(tool.name, input);
 }
 
 async function runAgent(userText) {
@@ -97,7 +104,7 @@ async function runAgent(userText) {
         const line = addMsg('tool', `→ ${call.name}`);
         let output;
         try {
-          output = tool ? await modelContext().executeTool(tool, call.input) : JSON.stringify({ ok: false, error: { code: 'unknown_tool', message: `No existe la herramienta ${call.name}.` } });
+          output = tool ? await runTool(tool, call.input) : JSON.stringify({ ok: false, error: { code: 'unknown_tool', message: `No existe la herramienta ${call.name}.` } });
         } catch (err) {
           output = JSON.stringify({ ok: false, error: { code: 'tool_exception', message: err.message } });
         }
@@ -185,7 +192,7 @@ export async function initAgentDrawer(toolsPromise) {
   const tools = await toolsPromise;
   const statusEl = $('#webmcp-status');
   if (tools.ok) {
-    statusEl.innerHTML = `<strong>WebMCP activo:</strong> ${tools.count} herramientas registradas en <code>document.modelContext</code>.`;
+    statusEl.innerHTML = `<strong>WebMCP activo:</strong> ${tools.count} herramientas registradas en <code>document.modelContext</code>${tools.mode === 'native' ? ' (WebMCP nativo del navegador)' : ''}.`;
     toggle.querySelector('.agent-dot').classList.add('is-live');
   } else {
     statusEl.textContent = 'WebMCP no está disponible en este navegador. La web funciona igual para personas.';

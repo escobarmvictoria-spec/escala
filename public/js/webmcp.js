@@ -1,6 +1,7 @@
 // Herramientas WebMCP de Escala.
-// Se registran con document.modelContext (estándar actual) y quedan también accesibles como
-// navigator.modelContext. Si el navegador no trae WebMCP, el polyfill @mcp-b/global lo aporta.
+// Si el navegador trae WebMCP nativo (por ejemplo, el navegador integrado de ChatGPT), las herramientas
+// se registran directamente en él y NO se carga el polyfill: envolver el objeto nativo rompe su enumerador.
+// Si no lo trae, se carga el polyfill @mcp-b/global, que aporta document.modelContext (y el puente MCP-B).
 import { api, store, ApiFailure } from './core.js';
 
 const AGENT = 'agent';
@@ -403,8 +404,40 @@ function summarize(result) {
   return 'Hecho';
 }
 
+const nativeContext = () => document.modelContext ?? navigator.modelContext ?? null;
+let mode = null;
+
+async function ensureModelContext() {
+  if (nativeContext()) {
+    mode = 'native';
+    return nativeContext();
+  }
+  await new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = '/vendor/webmcp-global.iife.js';
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('No se pudo cargar el polyfill de WebMCP'));
+    document.head.append(script);
+  });
+  mode = 'polyfill';
+  return nativeContext();
+}
+
+// Registro propio de las mismas herramientas, para el asistente integrado cuando el WebMCP nativo
+// no ofrece getTools()/executeTool() (son extensiones del polyfill, no del estándar).
+const REGISTERED = new Map();
+export const webmcpMode = () => mode;
+export function listTools() {
+  return [...REGISTERED.values()].map(({ name, description, inputSchema }) => ({ name, description, inputSchema }));
+}
+export async function callTool(name, input) {
+  const tool = REGISTERED.get(name);
+  if (!tool) return out({ ok: false, error: { code: 'unknown_tool', message: `No existe la herramienta ${name}.` } });
+  return tool.execute(input);
+}
+
 export async function registerEscalaTools() {
-  const mc = document.modelContext ?? navigator.modelContext;
+  const mc = await ensureModelContext();
   if (!mc?.registerTool) {
     console.warn('[Escala] WebMCP no disponible en este navegador.');
     return { ok: false, count: 0 };
@@ -420,8 +453,7 @@ export async function registerEscalaTools() {
   const controller = new AbortController();
   for (const tool of TOOLS) {
     const { run, ...definition } = tool;
-    await mc.registerTool(
-      {
+    const registration = {
         ...definition,
         async execute(input = {}) {
           const started = performance.now();
@@ -434,11 +466,11 @@ export async function registerEscalaTools() {
           store.log({ tool: tool.name, title: tool.title, ok: result.ok !== false, input, text: summarize(result), ms: Math.round(performance.now() - started) });
           return out(result);
         },
-      },
-      { signal: controller.signal }
-    );
+      };
+    REGISTERED.set(tool.name, registration);
+    await mc.registerTool(registration, { signal: controller.signal });
   }
   window.EscalaTools = { names: TOOLS.map((t) => t.name), unregister: () => controller.abort() };
-  console.info(`[Escala] ${TOOLS.length} herramientas WebMCP registradas:`, TOOLS.map((t) => t.name).join(', '));
-  return { ok: true, count: TOOLS.length };
+  console.info(`[Escala] ${TOOLS.length} herramientas WebMCP registradas (${mode}):`, TOOLS.map((t) => t.name).join(', '));
+  return { ok: true, count: TOOLS.length, mode };
 }
