@@ -4,6 +4,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 git pull --ff-only
 npm ci --omit=dev --no-audit --no-fund
+bash deploy/fetch-photos.sh || true
 sudo systemctl restart escala
 sleep 2
 curl -fsS "http://localhost:$(grep -E '^PORT=' .env | cut -d= -f2 || echo 3000)/api/health" && echo

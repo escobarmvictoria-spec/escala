@@ -18,6 +18,7 @@ node -v
 
 say "2/5 Dependencias"
 npm ci --omit=dev --no-audit --no-fund
+bash deploy/fetch-photos.sh || true
 
 say "3/5 Configuración (.env)"
 if [ ! -f .env ]; then

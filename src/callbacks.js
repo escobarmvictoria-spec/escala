@@ -125,6 +125,6 @@ export function teamEmail(cb) {
   return {
     subject: `Llamar a ${cb.full_name}: ${REASON_SHORT[cb.reason] ?? 'otro motivo'} (${cb.id})`,
     text: lines.join('\n'),
-    html: `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#15233F">${lines.map((l) => (l ? `<p style="margin:0 0 8px">${esc(l)}</p>` : '')).join('')}</div>`,
+    html: `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#19233F">${lines.map((l) => (l ? `<p style="margin:0 0 8px">${esc(l)}</p>` : '')).join('')}</div>`,
   };
 }

@@ -30,22 +30,23 @@ export function buildPolicyEmail(order, { baseUrl }) {
     '',
     'Escala es una marca inventada para una prueba técnica. No es una aseguradora y la póliza no tiene validez.',
   ].join('\n');
-  const html = `<!doctype html><html lang="es"><body style="margin:0;background:#F5F7F4;font-family:Arial,Helvetica,sans-serif;color:#15233F">
-<div style="background:#15233F;color:#FFC629;text-align:center;font-weight:bold;padding:10px 16px;font-size:14px">Demo — no es un seguro real</div>
+  const html = `<!doctype html><html lang="es"><body style="margin:0;background:#F6F3EC;font-family:Arial,Helvetica,sans-serif;color:#19233F">
+<div style="background:#19233F;color:#F2C75B;text-align:center;font-weight:bold;padding:10px 16px;font-size:14px">Demo — no es un seguro real</div>
 <div style="max-width:560px;margin:0 auto;padding:28px 20px">
-  <div style="font-size:28px;font-weight:900;letter-spacing:-0.5px">escala</div>
+  <div style="font-size:28px;font-weight:800;letter-spacing:-0.8px;font-family:Manrope,Arial,Helvetica,sans-serif">escala</div>
+  <p style="margin:2px 0 0;color:#4A536B;font-size:14px">Seguro de viaje que se entiende.</p>
   <h1 style="font-size:22px;margin:24px 0 8px">Ya tienes tu póliza, ${esc(order.holder.full_name.split(' ')[0])}.</h1>
-  <p style="font-size:16px;line-height:1.5;margin:0 0 20px">Va adjunta en PDF. Guárdala en el móvil: si pasa algo durante el viaje, es lo primero que te pedirán.</p>
+  <p style="font-size:16px;line-height:1.5;margin:0 0 20px">Va adjunta en PDF. Guárdala en el móvil: si pasa algo durante el viaje, es lo primero que te pedirán. Que disfrutes del viaje.</p>
   <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:8px;font-size:15px" cellpadding="10">
-    <tr><td style="color:#4A5468;width:40%">Póliza</td><td style="font-weight:bold">${esc(order.policy.number)}</td></tr>
-    <tr><td style="color:#4A5468">Plan</td><td style="font-weight:bold">${esc(plan.name)}</td></tr>
-    <tr><td style="color:#4A5468">Destino</td><td>${esc(destinations)}</td></tr>
-    <tr><td style="color:#4A5468">Fechas</td><td>${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)} (${order.trip.days} días)</td></tr>
-    <tr><td style="color:#4A5468">Asegurados</td><td>${insured}</td></tr>
-    <tr><td style="color:#4A5468">Total</td><td style="font-weight:bold">${esc(formatEur(plan.total_eur))} <span style="font-weight:normal;color:#4A5468">(pago de prueba)</span></td></tr>
+    <tr><td style="color:#4A536B;width:40%">Póliza</td><td style="font-weight:bold">${esc(order.policy.number)}</td></tr>
+    <tr><td style="color:#4A536B">Plan</td><td style="font-weight:bold">${esc(plan.name)}</td></tr>
+    <tr><td style="color:#4A536B">Destino</td><td>${esc(destinations)}</td></tr>
+    <tr><td style="color:#4A536B">Fechas</td><td>${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)} (${order.trip.days} días)</td></tr>
+    <tr><td style="color:#4A536B">Asegurados</td><td>${insured}</td></tr>
+    <tr><td style="color:#4A536B">Total</td><td style="font-weight:bold">${esc(formatEur(plan.total_eur))} <span style="font-weight:normal;color:#4A536B">(pago de prueba)</span></td></tr>
   </table>
-  <p style="margin:24px 0"><a href="${esc(pdfUrl)}" style="background:#FFC629;color:#15233F;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:6px;display:inline-block">Descargar la póliza</a></p>
-  <p style="font-size:13px;color:#4A5468;line-height:1.5">Escala es una marca inventada para una prueba técnica. No es una aseguradora, no se ha cobrado dinero y esta póliza no tiene validez.</p>
+  <p style="margin:24px 0"><a href="${esc(pdfUrl)}" style="background:#F2C75B;color:#19233F;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:6px;display:inline-block">Descargar la póliza</a></p>
+  <p style="font-size:13px;color:#4A536B;line-height:1.5">Escala es una marca inventada para una prueba técnica. No es una aseguradora, no se ha cobrado dinero y esta póliza no tiene validez.</p>
 </div></body></html>`;
   return { subject, text, html, pdfUrl };
 }

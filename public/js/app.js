@@ -205,7 +205,7 @@ function renderPlans(order) {
         }).join('')}
       </ul>
       ${p.available ? '' : `<p class="plan-unavailable">${esc(p.unavailable_reason)}</p>`}
-      <button class="${order.plan === id ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
+      <button class="${order.plan === id ? 'btn-navy' : meta?.recommended ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
     grid.append(el);
   }
   $$('[data-plan]', grid).forEach((b) =>
@@ -567,12 +567,38 @@ async function restoreOrder() {
   }
 }
 
+// Menú en el móvil
+function initMenu() {
+  const toggle = $('.menu-toggle');
+  const nav = $('#site-nav');
+  if (!toggle || !nav) return;
+  const set = (open) => {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  };
+  toggle.addEventListener('click', () => set(!nav.classList.contains('is-open')));
+  nav.addEventListener('click', (ev) => {
+    if (ev.target.closest('a')) set(false);
+  });
+}
+
+// Si una foto no está disponible, la sustituye un fondo de marca.
+function initPhotos() {
+  $$('.photo img').forEach((img) => {
+    const missing = () => img.closest('.photo').classList.add('is-missing');
+    img.addEventListener('error', missing);
+    if (img.complete && img.naturalWidth === 0) missing();
+  });
+}
+
 async function main() {
   store.subscribe(render);
   initQuoteForm();
   initTravelersForm();
   initPayForm();
   initHumanDialog();
+  initMenu();
+  initPhotos();
   $$('.route button').forEach((b) =>
     b.addEventListener('click', () => {
       viewStep = b.closest('li').dataset.step;

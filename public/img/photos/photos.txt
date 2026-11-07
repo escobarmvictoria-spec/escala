@@ -1,0 +1,5 @@
+# Fotos de Unsplash (licencia Unsplash: uso libre, también comercial). Formato: fichero  id-de-unsplash  autor
+# Para cambiar una foto, sustituye el id por el de otra foto gratuita de unsplash.com y ejecuta: bash deploy/fetch-photos.sh
+hero.jpg       _ktV46ZChUI   Dominic Chasse
+pareja.jpg     GrSfB6-OPoY   Hector Reyes
+tren.jpg       Tp1H7cLW0zM   Sir. Simo

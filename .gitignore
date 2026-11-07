@@ -3,3 +3,6 @@ data/
 .env
 *.log
 .DS_Store
+
+public/img/photos/*.jpg
+public/img/photos/.*.id

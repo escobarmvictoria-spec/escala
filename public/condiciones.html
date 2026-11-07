@@ -3,20 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Condiciones de Escala (demo)</title>
+  <title>Condiciones de contratación | Escala (demo)</title>
+  <meta name="description" content="Condiciones de contratación de Escala: quién puede contratar, coberturas, franquicias, exclusiones y desistimiento. Demo: no es un seguro real.">
+  <meta name="theme-color" content="#19233F">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/css/escala.css">
 </head>
 <body>
   <div class="demo-band" role="note"><strong>Demo — no es un seguro real.</strong><span>No se cobra dinero y las pólizas no tienen validez.</span></div>
   <header class="site-header">
-    <a class="brand" href="/" aria-label="Escala, inicio">
-      <svg class="brand-mark" viewBox="0 0 64 22" aria-hidden="true"><line x1="6" y1="11" x2="58" y2="11"/><circle class="end" cx="6" cy="11" r="5.5"/><circle class="end" cx="58" cy="11" r="5.5"/><circle class="stop" cx="32" cy="11" r="7"/></svg>
-      <span class="brand-word">escala</span>
-    </a>
+    <div class="wrap">
+      <a class="brand" href="/" aria-label="Escala, inicio">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path class="mark-route" d="M8 37 C 17 37, 17 11, 40 11"/><circle class="mark-end" cx="8" cy="37" r="5"/><circle class="mark-end" cx="40" cy="11" r="5"/><circle class="mark-stop" cx="18.75" cy="24" r="6.5"/></svg>
+        <span class="brand-word">escala</span>
+      </a>
+      <nav class="site-nav" aria-label="Principal">
+        <a href="/#coberturas">Coberturas</a>
+        <a href="/#como-funciona">Cómo funciona</a>
+        <a href="/#ayuda">Ayuda</a>
+      </nav>
+      <div class="header-actions"><a class="btn-primary btn-small" href="/#cotizar">Descubre tu seguro</a></div>
+    </div>
   </header>
   <main class="doc">
-    <h1>Condiciones generales</h1>
+    <h1>Condiciones de contratación</h1>
     <p><strong>Versión ESC-CG-2026.11.</strong> Escala es una marca inventada para una prueba técnica. Estas condiciones imitan la estructura de un seguro de viaje real para que la demo sea coherente, pero no son un contrato: no hay aseguradora detrás, no se cobra dinero y ninguna póliza da derecho a prestaciones.</p>
 
     <h2>1. Quién puede contratar</h2>
@@ -55,6 +65,36 @@
     <h2>10. Datos personales</h2>
     <p>Los datos que se introducen en la demo solo se usan para emitir la póliza de prueba y enviarla por email. No se comparten con terceros y se borran al terminar la prueba. No se guardan números de tarjeta: solo los 4 últimos dígitos de la tarjeta de prueba.</p>
   </main>
-  <footer class="site-footer"><p class="footer-demo"><strong>Demo — no es un seguro real.</strong> <a href="/">Volver a Escala</a></p></footer>
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="/" aria-label="Escala, inicio">
+        <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><path class="mark-route" d="M8 37 C 17 37, 17 11, 40 11"/><circle class="mark-end" cx="8" cy="37" r="5"/><circle class="mark-end" cx="40" cy="11" r="5"/><circle class="mark-stop" cx="18.75" cy="24" r="6.5"/></svg>
+        <span class="brand-word">escala</span>
+      </a>
+          <p>Seguro de viaje que se entiende.</p>
+        </div>
+        <nav class="footer-col" aria-labelledby="f-producto"><h2 id="f-producto">Producto</h2><ul>
+          <li><a href="/#cotizar">Seguro de viaje</a></li>
+          <li><a href="/#coberturas">Coberturas</a></li>
+          <li><a href="/#como-funciona">Cómo funciona</a></li>
+          <li><a href="/#ia">Asistente de IA</a></li>
+        </ul></nav>
+        <nav class="footer-col" aria-labelledby="f-ayuda"><h2 id="f-ayuda">Ayuda y contacto</h2><ul>
+          <li><a href="/#ayuda">Hablar con una persona</a></li>
+          <li><a href="/#preguntas">Preguntas frecuentes</a></li>
+          <li>Asistencia 24 h: +34 900 000 000 (ficticio)</li>
+        </ul></nav>
+        <nav class="footer-col" aria-labelledby="f-legal"><h2 id="f-legal">Legal</h2><ul>
+          <li><a href="/condiciones">Condiciones de contratación</a></li>
+          <li><a href="/privacidad">Privacidad y cookies</a></li>
+          <li><a href="/agentes">Para agentes y desarrolladores</a></li>
+          <li><a href="/panel">Panel de conversión</a></li>
+        </ul></nav>
+      </div>
+      <p class="footer-demo"><strong>Demo — no es un seguro real.</strong> Escala es una marca inventada para una prueba técnica. No es una aseguradora ni un mediador, no se cobra dinero y las pólizas no tienen validez.</p>
+    </div>
+  </footer>
 </body>
 </html>

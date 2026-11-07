@@ -64,6 +64,10 @@ Claves (solo en `.env`, nunca en el repositorio): `BREVO_API_KEY` y `SENDER_EMAI
 
 En local: `npm install && npm start` (http://localhost:3000) y `npm test`.
 
+## Marca
+
+Escala: «Seguro de viaje que se entiende». Paleta Midnight Navy `#19233F`, Warm Ivory `#F6F3EC`, Solar Yellow `#F2C75B` (acento y botones principales) y Calm Teal `#79B8AD` (asistencia e información); Manrope para titulares e Inter para texto, alojadas en el propio proyecto. El motivo propio es la ruta con una escala (dos puntos y una parada amarilla): está en el logo, en los pasos de compra, en «Cómo funciona», en las fotos, en el PDF y en el email. Todos los valores son variables en `public/css/escala.css`. Fotografías de Unsplash (licencia Unsplash), descargadas en el servidor con `deploy/fetch-photos.sh` según `public/img/photos/photos.txt`.
+
 ## Decisiones y límites
 
 - **Sencillo antes que ambicioso:** sin base de datos ni frameworks de frontend; un proceso, un fichero JSON y HTML/CSS/JS sin compilar.

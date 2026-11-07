@@ -6,7 +6,8 @@ import { coveragesFor, formatEur, EXCLUSIONS, TERMS_VERSION } from './catalog.js
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FONTS = path.join(here, '..', 'public', 'fonts');
-const C = { ink: '#15233F', signal: '#FFC629', paper: '#F5F7F4', grey: '#4A5468', line: '#D5DAD3', ok: '#1E7F4F' };
+// Paleta de marca: Midnight Navy, Solar Yellow, Warm Ivory, Calm Teal.
+const C = { ink: '#19233F', signal: '#F2C75B', paper: '#F6F3EC', grey: '#4A536B', line: '#DCD6C8', teal: '#79B8AD', tealSoft: '#E4F1EE' };
 
 const fmtDate = (iso) => {
   const [y, m, d] = iso.slice(0, 10).split('-');
@@ -21,9 +22,9 @@ export function renderPolicyPdf(order) {
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
-    doc.registerFont('display', path.join(FONTS, 'overpass-latin-800-normal.woff'));
-    doc.registerFont('body', path.join(FONTS, 'overpass-latin-400-normal.woff'));
-    doc.registerFont('bold', path.join(FONTS, 'overpass-latin-700-normal.woff'));
+    doc.registerFont('display', path.join(FONTS, 'manrope-latin-800-normal.woff'));
+    doc.registerFont('body', path.join(FONTS, 'inter-latin-400-normal.woff'));
+    doc.registerFont('bold', path.join(FONTS, 'inter-latin-600-normal.woff'));
 
     const W = doc.page.width;
     const L = 48;
@@ -41,14 +42,17 @@ export function renderPolicyPdf(order) {
     doc.rect(0, 0, W, 26).fill(C.ink);
     doc.font('bold').fontSize(10).fillColor(C.signal).text('Demo — no es un seguro real. Este documento no tiene validez.', L, 8, { width: R - L, align: 'center' });
 
-    // Cabecera con logotipo (ruta con escala)
+    // Cabecera con el logotipo: la ruta con una escala (mismo trazo que en la web)
     const y0 = 50;
-    doc.lineWidth(3).strokeColor(C.ink).moveTo(L, y0 + 14).lineTo(L + 44, y0 + 14).stroke();
-    doc.circle(L, y0 + 14, 5).fill(C.ink);
-    doc.circle(L + 44, y0 + 14, 5).fill(C.ink);
-    doc.circle(L + 22, y0 + 14, 6).fillAndStroke(C.signal, C.ink);
-    doc.font('display').fontSize(26).fillColor(C.ink).text('escala', L + 56, y0 - 2);
-    doc.font('body').fontSize(10).fillColor(C.grey).text('Seguro de viaje claro, humano y listo para IA', L + 57, y0 + 28);
+    const k = 0.78; // escala del isotipo (viewBox 48)
+    const P = (x, y) => [L + x * k, y0 - 6 + y * k];
+    doc.lineWidth(4 * k).lineCap('round').strokeColor(C.ink)
+      .moveTo(...P(8, 37)).bezierCurveTo(...P(17, 37), ...P(17, 11), ...P(40, 11)).stroke();
+    doc.circle(...P(8, 37), 5 * k).fill(C.ink);
+    doc.circle(...P(40, 11), 5 * k).fill(C.ink);
+    doc.lineWidth(3 * k).circle(...P(18.75, 24), 6.5 * k).fillAndStroke(C.signal, C.ink);
+    doc.font('display').fontSize(26).fillColor(C.ink).text('escala', L + 46, y0 - 2);
+    doc.font('body').fontSize(10).fillColor(C.grey).text('Seguro de viaje que se entiende.', L + 47, y0 + 28);
 
     doc.font('bold').fontSize(9).fillColor(C.grey).text('Número de póliza', 360, y0, { width: R - 360, align: 'right' });
     doc.font('display').fontSize(17).fillColor(C.ink).text(order.policy.number, 360, y0 + 12, { width: R - 360, align: 'right' });
@@ -56,7 +60,7 @@ export function renderPolicyPdf(order) {
 
     let y = 112;
     const section = (title) => {
-      y += 10;
+      y += 6;
       doc.font('display').fontSize(12).fillColor(C.ink).text(title, L, y);
       y += 18;
       doc.lineWidth(1).strokeColor(C.line).moveTo(L, y).lineTo(R, y).stroke();
@@ -101,11 +105,11 @@ export function renderPolicyPdf(order) {
     doc.text('Cobertura', L, y).text('Límite por asegurado', L + 290, y).text('Franquicia', R - 90, y, { width: 90, align: 'right' });
     y += 15;
     coveragesFor(order.plan, order.trip.zone).forEach((c, i) => {
-      if (i % 2 === 0) doc.rect(L - 4, y - 3, R - L + 8, 17).fill(C.paper);
+      if (i % 2 === 0) doc.rect(L - 4, y - 3, R - L + 8, 16).fill(C.paper);
       doc.font('body').fontSize(10).fillColor(C.ink).text(c.name, L, y, { width: 280 });
       doc.font('bold').text(c.limit_text, L + 290, y);
       doc.font('body').text(c.deductible_eur ? formatEur(c.deductible_eur, 0) : 'Sin franquicia', R - 90, y, { width: 90, align: 'right' });
-      y += 17;
+      y += 16;
     });
 
     section('Prima y pago');
@@ -124,8 +128,15 @@ export function renderPolicyPdf(order) {
     });
 
     // Pie: asistencia y aviso
-    const fy = doc.page.height - 112;
-    doc.roundedRect(L, fy, R - L, 50, 6).fill(C.signal);
+    let fy = Math.max(y + 8, doc.page.height - 112);
+    if (fy + 80 > doc.page.height) {
+      // Pólizas con muchos asegurados: el pie pasa a una segunda página, con su aviso de demo.
+      doc.addPage();
+      doc.rect(0, 0, W, 26).fill(C.ink);
+      doc.font('bold').fontSize(10).fillColor(C.signal).text('Demo — no es un seguro real. Este documento no tiene validez.', L, 8, { width: R - L, align: 'center' });
+      fy = 48;
+    }
+    doc.roundedRect(L, fy, R - L, 50, 8).fill(C.tealSoft);
     doc.font('display').fontSize(12).fillColor(C.ink).text('Asistencia 24 horas', L + 14, fy + 9);
     doc.font('body').fontSize(9.5).text('En un viaje real llamarías a este teléfono. En la demo es ficticio: +34 900 000 000.', L + 14, fy + 27, { width: R - L - 28 });
     doc.font('body').fontSize(7.5).fillColor(C.grey).text(

@@ -287,6 +287,7 @@ const pub = path.join(here, 'public');
 app.get('/condiciones', (req, res) => res.sendFile(path.join(pub, 'condiciones.html')));
 app.get('/panel', (req, res) => res.sendFile(path.join(pub, 'panel.html')));
 app.get('/agentes', (req, res) => res.sendFile(path.join(pub, 'agentes.html')));
+app.get('/privacidad', (req, res) => res.sendFile(path.join(pub, 'privacidad.html')));
 app.get('/poliza/:number', (req, res) => res.sendFile(path.join(pub, 'index.html')));
 app.use(express.static(pub, { extensions: ['html'], maxAge: '5m' }));
 
