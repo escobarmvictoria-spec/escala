@@ -31,13 +31,13 @@
     <p>La página principal registra 12 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
 
     <h2 id="contratar-con-tu-asistente">Contratar con tu propio asistente de IA</h2>
-    <p>Si tu asistente admite WebMCP, puede hacer la compra de prueba por ti usando las herramientas de Escala, sin tocar los formularios:</p>
+    <p>Si tu asistente admite WebMCP, puede contratar por ti usando las herramientas de Escala, sin tocar los formularios:</p>
     <ol>
       <li>Abre Escala en el navegador de tu asistente, con el acceso a las herramientas del sitio activado.</li>
       <li>Dile qué viaje quieres asegurar: destino, fechas, viajeros y edades, y a qué email enviar la póliza.</li>
       <li>Tu asistente cotiza, elige el plan (o te recomienda el de tu destino) y rellena los datos.</li>
-      <li>Antes del pago simulado, <strong>te muestra el resumen y espera tu confirmación</strong>. Sin tu «sí», no paga.</li>
-      <li>La póliza de prueba llega en PDF a tu email, y tu asistente puede recuperarla.</li>
+      <li>Antes de pagar, <strong>te muestra el resumen y espera tu confirmación</strong>. Sin tu «sí», no paga.</li>
+      <li>La póliza llega en PDF a tu email, y tu asistente puede recuperarla.</li>
     </ol>
     <p>Tienes un ejemplo paso a paso con ChatGPT en <a href="#como-probarlo">Cómo probarlo</a>. Si prefieres no usar un asistente propio, en la web puedes contratar tú o hablar con Alba para comparar planes y resolver dudas.</p>
 
@@ -83,8 +83,8 @@
         <pre class="prompt">Contrátame un seguro de viaje en Escala para Lucía Martín, 34 años, a Japón del 10 al 17 de diciembre de 2026. Envía la póliza a lucia.martin@example.com y paga con la tarjeta de prueba 4242 4242 4242 4242, caducidad 12/29, CVC 123. Usa las herramientas del sitio.</pre>
       </li>
       <li>El agente cotiza, elige el plan, rellena los datos y <strong>te muestra el resumen</strong> (plan, destino, fechas, asegurados y total). Ahí se detiene.</li>
-      <li><strong>Tú confirmas</strong> después de ver el resumen («Sí, acepto las condiciones, paga»). Solo entonces hace el pago simulado, con tus palabras guardadas en la póliza.</li>
-      <li>La póliza de prueba llega en PDF al email indicado, y el agente puede recuperarla con <code>get_policy</code>.</li>
+      <li><strong>Tú confirmas</strong> después de ver el resumen («Sí, acepto las condiciones, paga»). Solo entonces paga, y tus palabras quedan guardadas en la póliza.</li>
+      <li>La póliza llega en PDF al email indicado, y el agente puede recuperarla con <code>get_policy</code>.</li>
     </ol>
 
     <h2>Tarjetas de prueba</h2>

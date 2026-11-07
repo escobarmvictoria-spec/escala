@@ -1,5 +1,5 @@
 {
-  "ran_at": "2026-11-07T19:37:52.850Z",
+  "ran_at": "2026-11-07T23:47:56.730Z",
   "base_url": "http://localhost:3300",
   "agent_model": "claude-sonnet-5-5",
   "customer_model": "claude-haiku-5-5",
@@ -14,14 +14,14 @@
     "confirmed": 12,
     "tool_errors": 1,
     "median_tool_calls": 6,
-    "avg_seconds_purchase": 19,
+    "avg_seconds_purchase": 22,
     "tokens": {
-      "input": 497169,
-      "output": 28416,
-      "cache_read": 620586,
-      "cache_write": 0
+      "input": 528181,
+      "output": 32624,
+      "cache_read": 677069,
+      "cache_write": 4871
     },
-    "cost_usd": "1.40"
+    "cost_usd": "1.53"
   },
   "results": [
     {
@@ -64,14 +64,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-U967PC",
+      "policy": "ESC-2611-V8B8ZK",
       "plan": "completo",
       "total_eur": 158,
-      "tool_calls": 6,
+      "tool_calls": 7,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 2,
-      "seconds": 16,
+      "customer_turns": 3,
+      "seconds": 21,
       "ended": "customer_done"
     },
     {
@@ -114,14 +114,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-Y9M3SJ",
+      "policy": "ESC-2611-KFCRML",
       "plan": "esencial",
       "total_eur": 17.25,
       "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 3,
-      "seconds": 17,
+      "customer_turns": 4,
+      "seconds": 21,
       "ended": "customer_done"
     },
     {
@@ -168,7 +168,7 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-XWLYKY",
+      "policy": "ESC-2611-A2CA27",
       "plan": "completo",
       "total_eur": 172.8,
       "tool_calls": 6,
@@ -218,14 +218,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-CKA9ZE",
+      "policy": "ESC-2611-A3ZAH8",
       "plan": "completo",
       "total_eur": 332.64,
       "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 4,
-      "seconds": 23,
+      "customer_turns": 5,
+      "seconds": 28,
       "ended": "customer_done"
     },
     {
@@ -268,14 +268,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-VE368F",
+      "policy": "ESC-2611-UZN5S4",
       "plan": "total",
       "total_eur": 77.2,
-      "tool_calls": 7,
+      "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
       "customer_turns": 3,
-      "seconds": 18,
+      "seconds": 19,
       "ended": "customer_done"
     },
     {
@@ -314,14 +314,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-88KVUS",
+      "policy": "ESC-2611-KT5S3J",
       "plan": "completo",
       "total_eur": 26.8,
       "tool_calls": 7,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 3,
-      "seconds": 20,
+      "customer_turns": 5,
+      "seconds": 28,
       "ended": "customer_done"
     },
     {
@@ -364,14 +364,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-2X5VD2",
+      "policy": "ESC-2611-QGHMNX",
       "plan": "completo",
       "total_eur": 71,
       "tool_calls": 7,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 3,
-      "seconds": 18,
+      "customer_turns": 4,
+      "seconds": 21,
       "ended": "customer_done"
     },
     {
@@ -410,14 +410,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-ZYZC9N",
+      "policy": "ESC-2611-GC2AWM",
       "plan": "completo",
       "total_eur": 222.45,
-      "tool_calls": 7,
+      "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 3,
-      "seconds": 17,
+      "customer_turns": 4,
+      "seconds": 23,
       "ended": "customer_done"
     },
     {
@@ -456,14 +456,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-A5ARE8",
+      "policy": "ESC-2611-CECD9A",
       "plan": "completo",
       "total_eur": 25.4,
       "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 4,
-      "seconds": 19,
+      "customer_turns": 5,
+      "seconds": 24,
       "ended": "customer_done"
     },
     {
@@ -506,10 +506,10 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-X3WCX9",
+      "policy": "ESC-2611-6TSA5W",
       "plan": "total",
       "total_eur": 85.4,
-      "tool_calls": 9,
+      "tool_calls": 6,
       "tool_errors": 0,
       "error_codes": [],
       "customer_turns": 3,
@@ -560,7 +560,7 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-7Z93XE",
+      "policy": "ESC-2611-CXFDTX",
       "plan": "esencial",
       "total_eur": 14.75,
       "tool_calls": 6,
@@ -583,13 +583,13 @@
         }
       ],
       "policy": null,
-      "plan": "completo",
-      "total_eur": 43.2,
-      "tool_calls": 5,
+      "plan": null,
+      "total_eur": null,
+      "tool_calls": 2,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 5,
-      "seconds": 18,
+      "customer_turns": 4,
+      "seconds": 13,
       "ended": "customer_done"
     },
     {
@@ -661,7 +661,7 @@
       "tool_errors": 0,
       "error_codes": [],
       "customer_turns": 2,
-      "seconds": 7,
+      "seconds": 6,
       "ended": "customer_done"
     },
     {
@@ -713,7 +713,7 @@
       "tool_errors": 0,
       "error_codes": [],
       "customer_turns": 3,
-      "seconds": 13,
+      "seconds": 12,
       "ended": "customer_done"
     },
     {
@@ -756,14 +756,14 @@
           "ok": true
         }
       ],
-      "policy": "ESC-2611-8VWRFJ",
+      "policy": "ESC-2611-JRWVRV",
       "plan": "completo",
       "total_eur": 79,
-      "tool_calls": 6,
+      "tool_calls": 7,
       "tool_errors": 0,
       "error_codes": [],
-      "customer_turns": 2,
-      "seconds": 15,
+      "customer_turns": 3,
+      "seconds": 20,
       "ended": "customer_done"
     }
   ]
