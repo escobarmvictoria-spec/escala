@@ -88,6 +88,7 @@ for i in $(seq 1 30); do
   [ -n "$URL" ] && break
   sleep 2
 done
+bash deploy/install-watchdog.sh || true
 say "Listo"
 echo "URL pública: ${URL:-todavía no disponible, ejecuta: bash deploy/url.sh}"
 echo "Ojo: no reinicies escala-tunnel o la URL cambiará. Para actualizar la app: bash deploy/update.sh"
