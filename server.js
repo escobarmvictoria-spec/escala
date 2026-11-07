@@ -260,6 +260,23 @@ function agentStatus() {
   return { enabled: Boolean(env.ANTHROPIC_API_KEY), model: env.AGENT_MODEL || 'claude-sonnet-5-5', needs_passcode: Boolean(env.AGENT_PASSCODE) };
 }
 api.get('/agent/status', (req, res) => res.json({ ok: true, ...agentStatus() }));
+// Tope de gasto del asistente integrado: turnos por día (hora de Madrid), en total y por IP.
+// Protege el saldo de la API aunque la web sea pública y el asistente no pida código.
+const AGENT_DAILY_TURNS = Number(env.AGENT_DAILY_TURNS || 400);
+const AGENT_DAILY_TURNS_PER_IP = Number(env.AGENT_DAILY_TURNS_PER_IP || 120);
+const agentUsage = { day: null, total: 0, byIp: new Map() };
+function countAgentTurn(ip) {
+  const day = todayMadrid();
+  if (agentUsage.day !== day) Object.assign(agentUsage, { day, total: 0, byIp: new Map() });
+  const mine = agentUsage.byIp.get(ip) ?? 0;
+  if (agentUsage.total >= AGENT_DAILY_TURNS || mine >= AGENT_DAILY_TURNS_PER_IP)
+    throw new ApiError('agent_daily_limit', 'El asistente de la demo ha llegado a su límite de uso de hoy.', {
+      status: 429,
+      hint: 'Puedes contratar en la web como siempre o pedir que te llame una persona. El límite se reinicia a medianoche (hora de Madrid).',
+    });
+  agentUsage.total += 1;
+  agentUsage.byIp.set(ip, mine + 1);
+}
 api.post('/agent/turn', rateLimit(40, 60000), async (req, res) => {
   if (!env.ANTHROPIC_API_KEY)
     throw new ApiError('agent_disabled', 'El agente de demo no está configurado en este servidor.', { status: 503, hint: 'Añade ANTHROPIC_API_KEY al fichero .env y reinicia.' });
@@ -269,6 +286,7 @@ api.post('/agent/turn', rateLimit(40, 60000), async (req, res) => {
     if (a.length !== b.length || !crypto.timingSafeEqual(a, b))
       throw new ApiError('bad_passcode', 'Código de acceso incorrecto.', { status: 401 });
   }
+  countAgentTurn(req.ip);
   const { messages, tools } = req.body;
   if (!Array.isArray(messages) || messages.length > 80) throw new ApiError('bad_request', 'Conversación no válida.');
   if (!Array.isArray(tools) || tools.length > 30) throw new ApiError('bad_request', 'Lista de herramientas no válida.');
