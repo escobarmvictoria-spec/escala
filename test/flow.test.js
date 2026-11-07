@@ -109,3 +109,22 @@ test('en EE. UU. se recomienda Total y el sello compara con el plan de referenci
   const mayor = publicOrder(svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 72 }] }, 'web'));
   assert.equal(mayor.recommendation.compared_with, undefined, 'sin Esencial disponible, el sello no compara con él');
 });
+
+test('si no se puede contratar online, el error le dice al agente que ofrezca una persona', () => {
+  const { svc } = service();
+  const cases = [
+    { destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 90 }] },
+    { destinations: ['Italia'], start_date: future(20), end_date: future(139), travelers: [{ age: 35 }] },
+  ];
+  for (const input of cases) {
+    try {
+      svc.createQuote(input, 'agent');
+      assert.fail('debería rechazarse');
+    } catch (e) {
+      const body = e.toJSON();
+      assert.equal(body.error.human_help.tool, 'request_human_callback');
+      assert.equal(body.error.human_help.reason, 'no_asegurable');
+    }
+  }
+  try { svc.createQuote({ destinations: [] }, 'agent'); } catch (e) { assert.equal(e.toJSON().error.human_help, undefined); }
+});
