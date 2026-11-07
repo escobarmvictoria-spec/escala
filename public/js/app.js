@@ -820,10 +820,17 @@ async function resumeFromEmail(id) {
 function initSaveQuote() {
   const form = $('#save-quote');
   if (!form) return;
+  const fields = $('.save-fields', form);
+  const done = $('.save-done', form);
+  const err = $('.form-error', form);
+  const showFields = () => {
+    done.hidden = true;
+    fields.hidden = false;
+    form.email.focus();
+    form.email.select();
+  };
   form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
-    const err = $('.form-error', form);
-    const done = $('.save-done', form);
     err.hidden = true;
     done.hidden = true;
     const order = store.state.order;
@@ -831,12 +838,31 @@ function initSaveQuote() {
     await busy($('button', form), async () => {
       try {
         const data = await api.saveQuote(order.quote_id, { email: form.email.value });
-        done.textContent =
+        const link = data.resume_url || `${location.origin}/retomar/${order.quote_id}`;
+        const msg =
           data.email.status === 'sent'
             ? `Listo: te lo hemos enviado a ${data.email.to}. Puedes cerrar la página; el enlace del email te trae de vuelta aquí.`
             : data.email.status === 'simulated'
               ? `Envío simulado a ${data.email.to} (el servidor no tiene email configurado).`
-              : 'No hemos podido enviar el email. Vuelve a intentarlo en un momento.';
+              : 'No hemos podido enviar el email. Copia el enlace para no perder tu cotización.';
+        done.innerHTML = `<span class="save-msg">${esc(msg)}</span>
+          <span class="save-actions">
+            <button type="button" class="link-button" data-copy-link>Copiar enlace para retomar</button>
+            <button type="button" class="link-button" data-change-email>Cambiar email</button>
+          </span>
+          <span class="save-copied" role="status" hidden>Enlace copiado.</span>`;
+        $('[data-copy-link]', done).addEventListener('click', async () => {
+          const ok = $('.save-copied', done);
+          try {
+            await navigator.clipboard.writeText(link);
+            ok.textContent = 'Enlace copiado. Pégalo donde quieras para volver a esta cotización.';
+          } catch {
+            ok.innerHTML = `Copia este enlace: <a href="${esc(link)}">${esc(link)}</a>`;
+          }
+          ok.hidden = false;
+        });
+        $('[data-change-email]', done).addEventListener('click', showFields);
+        fields.hidden = true;
         done.hidden = false;
       } catch (e) {
         err.textContent = humanError(e);
