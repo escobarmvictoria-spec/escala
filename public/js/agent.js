@@ -246,7 +246,10 @@ export async function initAgentDrawer(toolsPromise) {
   toggle = $('.agent-toggle');
   toggle.addEventListener('click', () => (drawer.hidden ? open() : close()));
   $('.drawer-close').addEventListener('click', close);
-  document.querySelectorAll('[data-open-agent]').forEach((b) => b.addEventListener('click', () => open()));
+  // Delegado: también sirve para los botones que se crean después (la ayuda bajo los planes).
+  document.addEventListener('click', (ev) => {
+    if (ev.target.closest('[data-open-agent]')) open();
+  });
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape' && !drawer.hidden) close();
   });

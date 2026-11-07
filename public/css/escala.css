@@ -706,3 +706,8 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 
 /* Prompt de ejemplo en /agentes: que se lea sin desplazarse en el móvil */
 .doc pre.prompt { white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 8px; }
+
+/* Alba como ayuda contextual en la comparación: siempre por debajo del CTA principal */
+.compare-help { margin-top: var(--s-4); font-size: var(--fs-sm); color: var(--navy-soft); }
+.compare-help .btn-small { margin-left: 6px; vertical-align: middle; }
+.plans-help { line-height: 1.7; }

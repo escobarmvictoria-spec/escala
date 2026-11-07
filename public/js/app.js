@@ -187,7 +187,7 @@ function renderPlans(order) {
     const help = document.createElement('p');
     help.id = 'plans-help';
     help.className = 'plans-help';
-    help.innerHTML = '¿Dudas entre planes o tienes una enfermedad previa? Si tienes una, su cobertura está por confirmar y una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="dudas_coberturas">Pedir que me llamen</button>';
+    help.innerHTML = '¿Dudas entre dos planes? Alba te ayuda a comparar coberturas. <button type="button" class="human-link" data-open-agent>Hablar con Alba</button><br>¿Tienes una enfermedad previa? Su cobertura está por confirmar: una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button>';
     grid.after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';
