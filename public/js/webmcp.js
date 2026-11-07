@@ -340,6 +340,30 @@ const TOOLS = [
     },
   },
   {
+    name: 'save_quote',
+    title: 'Enviar la cotización por email para decidir más tarde',
+    description:
+      'Emails the current quote (the three plans with their final prices) to the user with a link to resume the purchase later, exactly where they left it. Offer it when the user hesitates, wants to think it over, compare, or ask someone first. Ask before sending: user_agreed must be true only if the user said yes. It sends one email only; it does not subscribe the user to anything. If the user comes back after the quote expired, the price is recalculated and shown again before paying.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        quote_id: { type: 'string' },
+        email: { type: 'string', description: 'Where the user wants to receive the quote.' },
+        user_agreed: { type: 'boolean', description: 'True only if the user said yes to receiving the quote by email.' },
+      },
+      required: ['quote_id', 'email', 'user_agreed'],
+    },
+    async run({ quote_id, email, user_agreed }) {
+      const data = await api.saveQuote(quote_id, { email, user_agreed }, AGENT);
+      return {
+        ok: true,
+        email: data.email,
+        resume_url: data.resume_url,
+        tell_the_user: `${data.email.status === 'simulated' ? 'Envío simulado' : 'Te he enviado la cotización'} a ${data.email.to}, con un enlace para retomar la compra cuando quieras. Si vuelves después de 2 horas, el precio se recalcula y lo verás antes de pagar.`,
+      };
+    },
+  },
+  {
     name: 'request_human_callback',
     title: 'Pedir que llame una persona',
     description:

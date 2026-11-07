@@ -172,8 +172,15 @@ function renderTripLine(order) {
   });
 }
 
+let savedFor = null;
 function renderPlans(order) {
   const coverages = store.state.coverages;
+  if (savedFor !== order.quote_id) {
+    savedFor = order.quote_id;
+    $$('#save-quote .save-done, #save-quote .form-error').forEach((el) => (el.hidden = true));
+    if (!order.from_saved) $('#resume-note').hidden = true;
+    if (order.holder?.email && !$('#s-email').value) $('#s-email').value = order.holder.email;
+  }
   const grid = $('#plans-grid');
   grid.innerHTML = '';
   if (!$('#plans-help')) {
@@ -495,7 +502,7 @@ function render(state, reason, extra = {}) {
   if (!order) {
     section.hidden = true;
     lastRenderedStep = null;
-    document.body.classList.remove('is-checkout');
+    document.body.classList.remove('is-checkout', 'has-quote');
     return;
   }
   if (reason === 'activity') return;
@@ -513,6 +520,8 @@ function render(state, reason, extra = {}) {
   if (step === 'poliza') renderPolicy(order);
   // Desde los datos hasta la póliza, la portada se aparta: solo la compra (y, al final, lo que toca hacer).
   document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
+  // Con una cotización en marcha, el botón flotante «Descubre tu seguro» ya no aporta: se oculta.
+  document.body.classList.toggle('has-quote', Boolean(step));
   const moved = step !== lastRenderedStep && lastRenderedStep !== null;
   if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   lastRenderedStep = step;
@@ -621,7 +630,68 @@ async function loadDestinations() {
   }
 }
 
+// Volver desde el email de «Envíame este precio» (/retomar/ID).
+async function resumeFromEmail(id) {
+  history.replaceState(null, '', '/');
+  try {
+    const data = await api.resumeQuote(id);
+    if (data.resumed === 'already_paid' && data.order.policy) {
+      location.replace(`/poliza/${data.order.policy.policy_number}`);
+      return;
+    }
+    store.apply(data, 'restore', { by: 'web' });
+    fillQuoteForm(data.order);
+    const note = $('#resume-note');
+    note.textContent =
+      data.resumed === 'repriced'
+        ? `Has vuelto a tu cotización. Como habían pasado más de 2 horas, hemos recalculado el precio con la tarifa de hoy${data.price_changed ? ` (antes: ${eur(data.previous_total_eur)})` : ''}.`
+        : 'Has vuelto a tu cotización: sigue donde la dejaste.';
+    note.hidden = false;
+    requestAnimationFrame(() => $('#compra').scrollIntoView({ block: 'start' }));
+  } catch (err) {
+    const prefill = err instanceof ApiFailure ? err.body.error?.details?.prefill : null;
+    if (prefill) {
+      const form = $('#quote-form');
+      form.destination.value = prefill.destinations.join(', ');
+      $('#ages-list').innerHTML = '';
+      prefill.ages.forEach((a) => $('#ages-list').append(ageChip(a)));
+    }
+    showError(err);
+  }
+}
+
+function initSaveQuote() {
+  const form = $('#save-quote');
+  if (!form) return;
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const err = $('.form-error', form);
+    const done = $('.save-done', form);
+    err.hidden = true;
+    done.hidden = true;
+    const order = store.state.order;
+    if (!order) return;
+    await busy($('button', form), async () => {
+      try {
+        const data = await api.saveQuote(order.quote_id, { email: form.email.value });
+        done.textContent =
+          data.email.status === 'sent'
+            ? `Listo: te lo hemos enviado a ${data.email.to}. Puedes cerrar la página; el enlace del email te trae de vuelta aquí.`
+            : data.email.status === 'simulated'
+              ? `Envío simulado a ${data.email.to} (el servidor no tiene email configurado).`
+              : 'No hemos podido enviar el email. Vuelve a intentarlo en un momento.';
+        done.hidden = false;
+      } catch (e) {
+        err.textContent = humanError(e);
+        err.hidden = false;
+      }
+    });
+  });
+}
+
 async function restoreOrder() {
+  const r = location.pathname.match(/^\/retomar\/([A-Za-z0-9-]+)$/);
+  if (r) return resumeFromEmail(r[1]);
   const m = location.pathname.match(/^\/poliza\/([A-Z0-9-]+)$/i);
   try {
     if (m) {
@@ -679,6 +749,7 @@ async function main() {
   initMenu();
   initPhotos();
   initQuoteLinks();
+  initSaveQuote();
   initFloatCta();
   renderExamplePrice();
   $$('.route button').forEach((b) =>

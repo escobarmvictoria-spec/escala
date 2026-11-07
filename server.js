@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { createStore } from './src/store.js';
 import { createOrderService, publicOrder, summaryOf, planSummary, keyCoverages, todayMadrid } from './src/orders.js';
 import { renderPolicyPdf } from './src/pdf.js';
-import { createMailer, buildPolicyEmail } from './src/email.js';
+import { createMailer, buildPolicyEmail, buildQuoteEmail } from './src/email.js';
 import { ApiError } from './src/errors.js';
 import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList } from './src/catalog.js';
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
@@ -178,6 +178,29 @@ api.get('/quotes/:id', (req, res) => {
   res.json({ ok: true, order: publicOrder(order), plans: Object.values(order.quote.plans).map(planSummary), coverages_by_plan: coveragesByPlan(order.trip.zone) });
 });
 
+// Guardar la cotización y enviarla por email con un enlace para retomarla (recuperación de abandonos).
+api.post('/quotes/:id/save', rateLimit(6, 60000), async (req, res) => {
+  const order = orders.saveQuote(req.params.id, req.body, actorOf(req));
+  const plans = Object.values(order.quote.plans).map(planSummary);
+  const mail = buildQuoteEmail(order, { baseUrl: publicBaseUrl || `http://localhost:${PORT}`, plans });
+  let email;
+  try {
+    const r = await mailer.send({ to: order.saved.email, subject: mail.subject, text: mail.text, html: mail.html });
+    email = { status: r.provider === 'outbox' ? 'simulated' : 'sent', to: order.saved.email };
+  } catch (err) {
+    console.error('[email] cotización', order.id, err.message);
+    email = { status: 'failed', to: order.saved.email };
+  }
+  order.saved.email_status = email.status;
+  store.putOrder(order);
+  res.json({ ok: true, quote_id: order.id, email, resume_url: mail.resumeUrl, note: 'El usuario puede retomar la compra con el enlace del email; si la cotización caduca, se recalcula con el precio del día.' });
+});
+
+api.post('/quotes/:id/resume', (req, res) => {
+  const { order, resumed, price_changed, previous_total_eur } = orders.resumeQuote(req.params.id, actorOf(req));
+  res.json({ ok: true, resumed, price_changed, previous_total_eur, order: publicOrder(order), plans: Object.values(order.quote.plans).map(planSummary), coverages_by_plan: coveragesByPlan(order.trip.zone) });
+});
+
 api.post('/quotes/:id/plan', (req, res) => {
   const order = orders.selectPlan(req.params.id, req.body.plan, actorOf(req));
   res.json({ ok: true, order: publicOrder(order), coverages: keyCoverages(order.plan, order.trip.zone) });
@@ -252,7 +275,17 @@ api.get('/metrics', (req, res) => {
     h.total += 1;
     h.reasons[cb.reason_text] = (h.reasons[cb.reason_text] || 0) + 1;
   }
-  res.json({ ok: true, steps, channels, handoffs });
+  // Recuperación de abandonos: cotizaciones guardadas por email, retomadas y compradas después.
+  const all = store.allOrders();
+  const saved = all.filter((o) => o.saved);
+  const resumed = all.filter((o) => o.from_saved);
+  const recovery = {
+    saved: saved.length,
+    resumed: new Set(resumed.map((o) => o.resumed_from ?? o.id)).size,
+    paid_after_resume: resumed.filter((o) => o.status === 'paid').length,
+    revenue_eur: Math.round(resumed.filter((o) => o.status === 'paid').reduce((a, o) => a + o.payment.amount_eur, 0) * 100) / 100,
+  };
+  res.json({ ok: true, steps, channels, handoffs, recovery });
 });
 
 // ---------- Agente de demo (opcional): proxy a la API de Anthropic con la clave del servidor ----------
@@ -321,6 +354,7 @@ app.get('/panel', (req, res) => res.sendFile(path.join(pub, 'panel.html')));
 app.get('/agentes', (req, res) => res.sendFile(path.join(pub, 'agentes.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(pub, 'privacidad.html')));
 app.get('/poliza/:number', (req, res) => res.sendFile(path.join(pub, 'index.html')));
+app.get('/retomar/:id', (req, res) => res.sendFile(path.join(pub, 'index.html')));
 app.use(express.static(pub, { extensions: ['html'], maxAge: '5m' }));
 
 app.use((err, req, res, next) => {

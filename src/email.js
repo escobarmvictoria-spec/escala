@@ -51,6 +51,48 @@ export function buildPolicyEmail(order, { baseUrl }) {
   return { subject, text, html, pdfUrl };
 }
 
+// Email con la cotización guardada: los tres planes y un enlace para retomarla.
+export function buildQuoteEmail(order, { baseUrl, plans }) {
+  const resumeUrl = `${baseUrl}/retomar/${encodeURIComponent(order.id)}`;
+  const destinations = order.trip.destinations.map((d) => d.name).join(', ');
+  const people = order.quote_ages.length === 1 ? '1 viajero' : `${order.quote_ages.length} viajeros`;
+  const subject = `Tu cotización de seguro de viaje: ${destinations}, ${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)}`;
+  const rows = plans
+    .filter((p) => p.available)
+    .map((p) => ({ ...p, recommended: p.plan === 'completo' }));
+  const text = [
+    'Demo — no es un seguro real.',
+    '',
+    `Aquí tienes tu cotización para ${destinations}, del ${fmtDate(order.trip.start_date)} al ${fmtDate(order.trip.end_date)} (${order.trip.days} días, ${people}).`,
+    '',
+    ...rows.map((p) => `${p.name}${p.recommended ? ' (recomendado)' : ''}: ${formatEur(p.total_eur)}, impuestos incluidos`),
+    '',
+    `Retoma la compra donde la dejaste: ${resumeUrl}`,
+    'Si el precio cambia cuando vuelvas, te lo diremos antes de pagar.',
+    '',
+    'Solo te escribimos esta vez, porque lo has pedido. Escala es una marca inventada para una prueba técnica.',
+  ].join('\n');
+  const html = `<!doctype html><html lang="es"><body style="margin:0;background:#F6F3EC;font-family:Arial,Helvetica,sans-serif;color:#19233F">
+<div style="background:#19233F;color:#F2C75B;text-align:center;font-weight:bold;padding:10px 16px;font-size:14px">Demo — no es un seguro real</div>
+<div style="max-width:560px;margin:0 auto;padding:28px 20px">
+  <div style="font-size:28px;font-weight:800;letter-spacing:-0.8px;font-family:Manrope,Arial,Helvetica,sans-serif">escala</div>
+  <p style="margin:2px 0 0;color:#4A536B;font-size:14px">Seguro de viaje que se entiende.</p>
+  <h1 style="font-size:22px;margin:24px 0 8px">Tu cotización, para cuando lo decidas.</h1>
+  <p style="font-size:16px;line-height:1.5;margin:0 0 20px">${esc(destinations)}, del ${fmtDate(order.trip.start_date)} al ${fmtDate(order.trip.end_date)} (${order.trip.days} días, ${people}). Precio final, con impuestos.</p>
+  <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:8px;font-size:15px" cellpadding="12">
+    ${rows
+      .map(
+        (p) => `<tr style="border-bottom:1px solid #DCD6C8"><td><strong>${esc(p.name)}</strong>${p.recommended ? ' <span style="background:#F2C75B;border-radius:4px;padding:2px 6px;font-size:12px;font-weight:bold">Recomendado</span>' : ''}</td><td style="text-align:right;font-weight:bold;font-size:17px">${esc(formatEur(p.total_eur))}</td></tr>`
+      )
+      .join('')}
+  </table>
+  <p style="margin:24px 0 8px"><a href="${esc(resumeUrl)}" style="background:#F2C75B;color:#19233F;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:6px;display:inline-block">Retomar mi compra</a></p>
+  <p style="font-size:14px;color:#4A536B;line-height:1.5;margin:0 0 20px">Vuelves al mismo viaje. Si el precio cambia, te lo diremos antes de pagar.</p>
+  <p style="font-size:13px;color:#4A536B;line-height:1.5">Solo te escribimos esta vez, porque lo has pedido. Escala es una marca inventada para una prueba técnica: no es una aseguradora y no se cobra dinero.</p>
+</div></body></html>`;
+  return { subject, text, html, resumeUrl };
+}
+
 export function createMailer(env, { outboxDir }) {
   const provider = env.BREVO_API_KEY ? 'brevo' : env.SMTP_URL ? 'smtp' : 'outbox';
   const sender = { email: env.SENDER_EMAIL || 'no-reply@escala.demo', name: env.SENDER_NAME || 'Escala (demo)' };

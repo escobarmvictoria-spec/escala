@@ -169,6 +169,7 @@ export function publicOrder(order) {
     quote_id: order.id,
     status: order.status,
     channel: order.channel,
+    from_saved: Boolean(order.from_saved),
     expires_at: order.status === 'paid' ? null : order.expires_at,
     trip: order.trip,
     plan: order.plan,
@@ -290,6 +291,66 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
       event(order, actor, 'quote_created');
       store.putOrder(order);
       return order;
+    },
+
+    // Guardar la cotización para más tarde: se envía por email con un enlace para retomarla.
+    saveQuote(id, input = {}, actor = 'web') {
+      const order = load(id);
+      assertNotPaid(order);
+      const email = String(input.email ?? '').trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))
+        throw new ApiError('invalid_email', `El email "${input.email ?? ''}" no es válido.`, {
+          field: 'email',
+          hint: 'Pide al usuario el email donde quiere recibir la cotización.',
+        });
+      if (actor === 'agent' && input.user_agreed !== true)
+        throw new ApiError('consent_required', 'Falta la conformidad del usuario para enviarle la cotización.', {
+          field: 'user_agreed',
+          hint: 'Pregunta al usuario si quiere recibir la cotización por email y envía user_agreed: true solo si dice que sí.',
+        });
+      order.saved = { email, at: new Date().toISOString(), by: actor, count: (order.saved?.count ?? 0) + 1 };
+      event(order, actor, 'quote_saved', email);
+      store.putOrder(order);
+      return order;
+    },
+
+    // Retomar una cotización guardada. Si caducó (2 h) pero el viaje sigue en el futuro,
+    // se crea una nueva con el mismo viaje y el precio de hoy.
+    resumeQuote(id, actor = 'web') {
+      const original = store.getOrder(String(id ?? '').trim());
+      if (!original)
+        throw new ApiError('quote_not_found', `No existe ninguna cotización con quote_id "${id}".`, { field: 'quote_id', status: 404, hint: 'Pide una cotización nueva.' });
+      if (original.status === 'paid') return { order: original, resumed: 'already_paid' };
+      const prefill = { destinations: original.trip.destinations.map((d) => d.name), ages: original.quote_ages };
+      if (original.trip.start_date < todayMadrid())
+        throw new ApiError('start_in_past', 'La fecha de salida de esta cotización ya ha pasado.', {
+          status: 410,
+          hint: 'Elige fechas nuevas: mantenemos el destino y las edades.',
+          details: { prefill },
+        });
+      const fresh = new Date(original.expires_at) >= new Date();
+      let order = original;
+      if (!fresh) {
+        order = this.createQuote(
+          { destinations: original.trip.destinations.map((d) => d.code ?? d.name), start_date: original.trip.start_date, end_date: original.trip.end_date, travelers: original.quote_ages.map((age) => ({ age })) },
+          actor
+        );
+        order.channel = original.channel;
+        order.resumed_from = original.id;
+        if (original.plan) {
+          order.plan = original.plan;
+          order.status = 'plan_selected';
+        }
+        original.recovered_by = order.id;
+        store.putOrder(original);
+      }
+      order.resumed = (order.resumed ?? 0) + 1;
+      order.from_saved = true;
+      event(order, actor, 'quote_resumed', fresh ? 'misma cotización' : `recalculada desde ${original.id}`);
+      store.putOrder(order);
+      const before = original.plan ? original.quote.plans[original.plan].total_eur : null;
+      const after = order.plan ? order.quote.plans[order.plan].total_eur : null;
+      return { order, resumed: fresh ? 'same' : 'repriced', price_changed: before !== null && after !== null && before !== after, previous_total_eur: before };
     },
 
     selectPlan(id, planInput, actor = 'web') {

@@ -590,7 +590,7 @@ body.is-checkout .home-section { display: none; }
   position: fixed; z-index: 45; right: var(--s-5); bottom: var(--s-5);
   box-shadow: 0 10px 28px rgba(25, 35, 63, 0.28); transition: opacity .2s ease, transform .2s ease, visibility 0s linear 0s;
 }
-body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .float-cta {
+body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .float-cta, body.drawer-open .float-cta {
   opacity: 0; visibility: hidden; transform: translateY(12px); pointer-events: none;
   transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
 }
@@ -598,4 +598,19 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 @media (max-width: 560px) {
   .float-cta { left: var(--s-4); right: var(--s-4); bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); justify-content: center; text-align: center; }
   .site-footer { padding-bottom: calc(var(--s-6) + 72px); }
+}
+
+/* «¿Lo quieres pensar?»: guardar la cotización por email (recuperación de abandonos). */
+.save-quote { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: var(--s-2) var(--s-5); align-items: center; margin-top: var(--s-5); padding: var(--s-4) var(--s-5); border: 1px dashed var(--line-strong); border-radius: var(--r-l); background: var(--white); }
+.save-copy h3 { font-size: var(--fs-md); }
+.save-copy p { font-size: var(--fs-sm); color: var(--navy-soft); margin-top: 2px; }
+.save-fields { display: flex; gap: var(--s-2); }
+.save-fields input { flex: 1; min-width: 0; }
+.save-fields button { white-space: nowrap; }
+.save-quote .form-error, .save-done { grid-column: 1 / -1; }
+.save-done { font-size: var(--fs-sm); color: var(--teal-deep); font-weight: 500; }
+.resume-note { margin-bottom: var(--s-4); padding: var(--s-3) var(--s-4); border-radius: var(--r-m); background: var(--teal-soft); font-size: var(--fs-sm); font-weight: 500; }
+@media (max-width: 720px) {
+  .save-quote { grid-template-columns: 1fr; }
+  .save-fields { flex-direction: column; }
 }

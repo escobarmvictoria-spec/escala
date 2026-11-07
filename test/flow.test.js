@@ -72,3 +72,25 @@ test('validaciones con mensajes útiles', () => {
   const o = svc.createQuote({ destinations: ['Japón'], start_date: future(1), end_date: future(5), travelers: [{ age: 72 }] });
   assert.throws(() => svc.selectPlan(o.id, 'esencial'), { code: 'plan_not_available' });
 });
+
+test('guardar la cotización por email y retomarla: misma cotización o recalculada si caducó', async () => {
+  const { svc } = service();
+  const o = svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 40 }] }, 'web');
+  assert.throws(() => svc.saveQuote(o.id, { email: 'no-es-email' }, 'web'), { code: 'invalid_email' });
+  assert.throws(() => svc.saveQuote(o.id, { email: 'ana@example.com' }, 'agent'), { code: 'consent_required' });
+  svc.saveQuote(o.id, { email: 'Ana@Example.com' }, 'web');
+  assert.equal(svc.load(o.id).saved.email, 'ana@example.com');
+  const same = svc.resumeQuote(o.id, 'web');
+  assert.equal(same.resumed, 'same');
+  assert.equal(same.order.id, o.id);
+  // Caducada: se crea otra con el mismo viaje y el plan que tenía elegido.
+  svc.selectPlan(o.id, 'completo', 'web');
+  const stored = svc.load(o.id);
+  stored.expires_at = new Date(Date.now() - 1000).toISOString();
+  const again = svc.resumeQuote(o.id, 'web');
+  assert.equal(again.resumed, 'repriced');
+  assert.notEqual(again.order.id, o.id);
+  assert.equal(again.order.resumed_from, o.id);
+  assert.equal(again.order.plan, 'completo');
+  assert.equal(again.order.trip.days, 7);
+});

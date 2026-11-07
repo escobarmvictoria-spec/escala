@@ -14,7 +14,7 @@ const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 
 async function load() {
   const res = await fetch('/api/metrics');
-  const { steps, channels, handoffs = {} } = await res.json();
+  const { steps, channels, handoffs = {}, recovery } = await res.json();
   const keys = Object.keys(CHANNELS);
   const table = document.getElementById('funnel');
   const cell = (c, s) => {
@@ -32,6 +32,9 @@ async function load() {
         .map((k) => `<td>${Object.entries(channels[k]?.plans ?? {}).map(([p, n]) => `${p} ${n}`).join(', ') || '—'}</td>`)
         .join('')}</tr>
     </tbody>`;
+  const rec = document.getElementById('recovery');
+  if (rec && recovery)
+    rec.innerHTML = `<strong>Recuperación de abandonos:</strong> ${recovery.saved} cotizaciones enviadas por email («Envíame este precio»), ${recovery.resumed} retomadas desde el email (${pct(recovery.resumed, recovery.saved)}) y ${recovery.paid_after_resume} compradas después (${eur(recovery.revenue_eur)}).`;
   document.getElementById('updated').textContent = `Actualizado a las ${new Date().toLocaleTimeString('es-ES')}. Se refresca cada 10 segundos.`;
 }
 

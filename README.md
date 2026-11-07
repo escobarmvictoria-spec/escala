@@ -35,6 +35,7 @@ Una sola fuente de verdad: las herramientas WebMCP y los botones llaman a la mis
 | `review_order` | Resumen completo + `review_token`. |
 | `accept_terms` | Registra la aceptación con el `review_token` vigente. |
 | `pay` | Paga con tarjeta de prueba, emite la póliza y envía el email. |
+| `save_quote` | Envía la cotización por email con un enlace para retomar la compra (recuperación de abandonos). Pide la conformidad del usuario; si vuelve con la cotización caducada, se recalcula. |
 | `request_human_callback` | Pide que una persona del equipo llame al cliente, con el contexto de la compra y aviso por email al equipo. |
 | `get_policy`, `get_order_status`, `get_product_info`, `resend_policy_email` | Consulta y soporte. |
 

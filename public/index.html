@@ -120,7 +120,21 @@
         <div class="trip-line" id="trip-line"></div>
 
         <div class="step" id="step-plan" data-step="plan">
+          <p class="resume-note" id="resume-note" role="status" hidden></p>
           <div class="plans" id="plans-grid"></div>
+          <form class="save-quote" id="save-quote" novalidate>
+            <div class="save-copy">
+              <h3>¿Lo quieres pensar?</h3>
+              <p>Te enviamos los tres precios por email, con un enlace para seguir donde lo dejas. Solo ese email.</p>
+            </div>
+            <div class="save-fields">
+              <label class="visually-hidden" for="s-email">Tu email</label>
+              <input id="s-email" name="email" type="email" autocomplete="email" placeholder="tu@email.com" required>
+              <button class="btn-secondary" type="submit">Envíame este precio</button>
+            </div>
+            <p class="form-error" role="alert" hidden></p>
+            <p class="save-done" role="status" hidden></p>
+          </form>
         </div>
 
         <div class="step" id="step-viajeros" data-step="viajeros" hidden>
