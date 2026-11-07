@@ -207,7 +207,7 @@ function renderPlans(order) {
       <p class="plan-tagline">${esc(meta?.description ?? '')}</p>
       <p class="plan-price">${eur(p.total_eur)}</p>
       <p class="plan-price-note">Total para ${p.per_traveler.length === 1 ? '1 viajero' : `${p.per_traveler.length} viajeros`}, impuestos incluidos. ${perPerson}.${p.group_discount_pct ? ` Incluye ${p.group_discount_pct} % de descuento de grupo.` : ''}</p>
-      ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : ''}
+      ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : '<div class="plan-why is-empty" aria-hidden="true"></div>'}
       <ul class="plan-list">
         ${COVERAGE_ORDER.map((name) => {
           const c = covs.find((x) => x.coverage === name || (name.startsWith('Gastos médicos') && x.coverage.startsWith('Gastos médicos')));
@@ -215,7 +215,7 @@ function renderPlans(order) {
           return `<li><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span></li>`;
         }).join('')}
       </ul>
-      ${p.available ? '' : `<p class="plan-unavailable">${esc(p.unavailable_reason)}</p>`}
+      ${p.available ? '<div class="plan-unavailable is-empty" aria-hidden="true"></div>' : `<p class="plan-unavailable">${esc(p.unavailable_reason)}</p>`}
       <button class="${order.plan === id ? 'btn-navy' : isRec ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
     grid.append(el);
   }

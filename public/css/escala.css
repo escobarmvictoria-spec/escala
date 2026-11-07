@@ -679,3 +679,16 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .link-button { background: none; border: 0; padding: 0; font: inherit; font-weight: 600; color: var(--navy); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .link-button:focus-visible { outline: 2px solid var(--navy); outline-offset: 3px; border-radius: 2px; }
 .save-copied { color: var(--navy-soft); font-weight: 400; word-break: break-all; }
+
+/* Tarjetas de plan alineadas fila a fila en escritorio: el nombre, el precio y la primera cobertura
+   empiezan a la misma altura aunque una tarjeta tenga sello o frase de comparación. */
+.plan-why.is-empty, .plan-unavailable.is-empty { margin: 0; padding: 0; background: none; }
+@media (min-width: 961px) {
+  @supports (grid-template-rows: subgrid) {
+    .plans { row-gap: 0; }
+    .plan { display: grid; grid-row: span 9; grid-template-rows: subgrid; row-gap: 0; }
+    .plan-flag { justify-self: start; align-self: start; }
+    .plan-list { align-self: start; }
+    .plan > button { align-self: end; }
+  }
+}
