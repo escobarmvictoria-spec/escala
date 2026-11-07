@@ -143,7 +143,10 @@ async function runAgent(userText) {
       passcode = null;
       try { sessionStorage.removeItem('escala.passcode'); } catch { /* nada */ }
     }
-    addMsg('system', e ? `${e.message}${e.how_to_fix ? ` ${e.how_to_fix}` : ''}` : err.message);
+    const down = e?.code === 'agent_unavailable' || e?.code === 'bad_response' || (err.status ?? 0) >= 500;
+    addMsg('system', down
+      ? 'Alba no está disponible en este momento. Puedes cotizar y contratar directamente en la web, o pedir que te llame una persona.'
+      : e ? `${e.message}${e.how_to_fix ? ` ${e.how_to_fix}` : ''}` : err.message);
     messages.pop();
   } finally {
     running = false;

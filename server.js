@@ -344,7 +344,15 @@ api.post('/agent/turn', rateLimit(40, 60000), async (req, res) => {
     }),
   });
   const body = await r.json().catch(() => ({}));
-  if (!r.ok) throw new ApiError('agent_upstream_error', `La API del modelo respondió ${r.status}: ${body?.error?.message || 'error desconocido'}`, { status: 502 });
+  if (!r.ok) {
+    // El detalle técnico (crédito, clave, caída del proveedor) va al log; a la persona, un mensaje útil.
+    // 503 y no 502: Cloudflare sustituye las respuestas 502 por su propia página y el chat no podría leer el mensaje.
+    console.error(`[alba] la API del modelo respondió ${r.status}: ${body?.error?.message || 'error desconocido'}`);
+    throw new ApiError('agent_unavailable', 'Alba no está disponible en este momento.', {
+      status: 503,
+      hint: 'Puedes cotizar y contratar directamente en la web, o pedir que te llame una persona.',
+    });
+  }
   res.json({ ok: true, content: body.content, stop_reason: body.stop_reason, usage: body.usage });
 });
 
