@@ -692,3 +692,14 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
     .plan > button { align-self: end; }
   }
 }
+
+/* Tablas en las respuestas de Alba: legibles en el panel estrecho, con desplazamiento lateral si no caben */
+.msg-table { overflow-x: auto; margin: 8px 0; white-space: normal; }
+.msg-table table { border-collapse: collapse; font-size: var(--fs-xs); min-width: 100%; }
+.msg-table th, .msg-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.msg-table thead th { font-weight: 700; border-bottom: 2px solid var(--navy); white-space: nowrap; }
+.msg-table tbody th { font-weight: 600; min-width: 7.5em; }
+.msg-table td { white-space: normal; }
+.chat-log { grid-template-columns: minmax(0, 1fr); }
+.msg { min-width: 0; }
+.msg.assistant:has(.msg-table) { justify-self: stretch; max-width: 100%; }

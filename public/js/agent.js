@@ -31,11 +31,40 @@ function close() {
 }
 
 // Markdown mínimo y seguro para las respuestas del asistente: negritas, viñetas y enlaces.
-function miniMarkdown(text) {
+// Formato mínimo y seguro para las respuestas de Alba: negritas, listas, enlaces y tablas.
+// Todo se escapa antes; solo se generan etiquetas conocidas.
+function inline(text) {
   return esc(text)
+    .replace(/(\d) (€|%|h\b)/g, '$1\u00a0$2') // «1.000.000 €» no se parte en dos líneas
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^- /gm, '• ')
     .replace(/(https?:\/\/[^\s<)]+)/g, (url) => `<a href="${url}" target="_blank" rel="noopener">${url.replace(/^https?:\/\//, '').slice(0, 48)}${url.length > 56 ? '…' : ''}</a>`);
+}
+const isRow = (l) => /^\s*\|.*\|\s*$/.test(l);
+const isRule = (l) => /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/.test(l);
+const cells = (l) => l.trim().replace(/^\||\|$/g, '').split('|').map((c) => c.trim());
+export function miniMarkdown(text) {
+  const lines = String(text ?? '').split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (isRow(lines[i]) && i + 1 < lines.length && isRule(lines[i + 1])) {
+      const head = cells(lines[i]);
+      const body = [];
+      i += 2;
+      while (i < lines.length && isRow(lines[i])) body.push(cells(lines[i++]));
+      i--;
+      out.push(`<div class="msg-table"><table><thead><tr>${head.map((c) => `<th scope="col">${inline(c)}</th>`).join('')}</tr></thead><tbody>${body
+        .map((r) => `<tr>${r.map((c, j) => (j === 0 ? `<th scope="row">${inline(c)}</th>` : `<td>${inline(c)}</td>`)).join('')}</tr>`)
+        .join('')}</tbody></table></div>`);
+      continue;
+    }
+    const l = lines[i];
+    const h = /^#{1,4}\s+(.*)$/.exec(l);
+    if (h) out.push(`<strong>${inline(h[1])}</strong>`);
+    else if (/^\s*[-*•]\s+/.test(l)) out.push(`${/^\s{2,}/.test(l) ? '   ' : ''}• ${inline(l.replace(/^\s*[-*•]\s+/, ''))}`);
+    else out.push(inline(l));
+  }
+  // Las tablas no llevan salto de línea extra alrededor (el mensaje usa pre-wrap).
+  return out.join('\n').replace(/\n?(<div class="msg-table">[\s\S]*?<\/div>)\n?/g, '$1');
 }
 
 function addMsg(role, text, extra = '') {
