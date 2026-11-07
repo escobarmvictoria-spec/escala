@@ -94,14 +94,18 @@ test('guardar la cotización por email y retomarla: misma cotización o recalcul
   assert.equal(again.order.plan, 'completo');
   assert.equal(again.order.trip.days, 7);
 });
-test('en EE. UU. se recomienda Total y el sello dice cuánto más cuesta que Completo', () => {
+test('en EE. UU. se recomienda Total y el sello compara con el plan de referencia', () => {
   const { svc } = service();
   const nyc = publicOrder(svc.createQuote({ destinations: ['Estados Unidos'], start_date: future(20), end_date: future(26), travelers: [{ age: 35 }] }, 'web'));
   assert.equal(nyc.recommendation.plan, 'total');
   const extra = Math.round((nyc.quote.plans.total.total_eur - nyc.quote.plans.completo.total_eur) * 100) / 100;
-  assert.equal(nyc.recommendation.extra_vs_completo_eur, extra);
-  assert.match(nyc.recommendation.reason, /más\.$/);
+  assert.equal(nyc.recommendation.extra_eur, extra);
+  assert.equal(nyc.recommendation.compared_with, 'completo');
+  assert.match(nyc.recommendation.reason, /más que Completo en todo el viaje, tu límite médico sube de 1\.000\.000\s€ a 5\.000\.000\s€/);
   const roma = publicOrder(svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 35 }] }, 'web'));
   assert.equal(roma.recommendation.plan, 'completo');
-  assert.equal(roma.recommendation.extra_vs_completo_eur, undefined);
+  assert.equal(roma.recommendation.compared_with, 'esencial');
+  assert.match(roma.recommendation.reason, /más que Esencial en todo el viaje, añades cancelación, subes el límite médico de 150\.000\s€ a 1\.000\.000\s€ y quitas la franquicia de 75\s€/);
+  const mayor = publicOrder(svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 72 }] }, 'web'));
+  assert.equal(mayor.recommendation.compared_with, undefined, 'sin Esencial disponible, el sello no compara con él');
 });

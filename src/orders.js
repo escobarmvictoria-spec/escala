@@ -5,7 +5,7 @@
 import crypto from 'node:crypto';
 import {
   PLANS, ZONES, ZONE_ORDER, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, QUOTE_TTL_MINUTES,
-  MAX_DAYS_IN_ADVANCE, EXCLUDED, EXCLUSIONS, resolveDestination, planById, coveragesFor, formatEur, countryName, recommendPlan,
+  MAX_DAYS_IN_ADVANCE, EXCLUDED, EXCLUSIONS, resolveDestination, planById, coveragesFor, formatEur, countryName, recommendPlan, COVERAGES,
 } from './catalog.js';
 import { priceTrip } from './pricing.js';
 import { ApiError } from './errors.js';
@@ -164,13 +164,24 @@ function keyCoverages(planId, zone) {
   }));
 }
 
-// El sello dice qué gana la persona y, si el recomendado no es Completo, cuánto más cuesta frente a Completo.
+// El sello compara con el plan de referencia: cuánto más cuesta en todo el viaje y qué se gana.
+const medicalLimit = (zone, plan) => {
+  const c = COVERAGES.find((x) => x.id === 'medical');
+  return (zone === 'espana' && c.limits_espana ? c.limits_espana : c.limits)[plan];
+};
 function recommendationFor(order) {
   const rec = recommendPlan({ zone: order.trip.zone });
   const plans = order.quote.plans;
-  if (rec.plan === 'completo' || !plans[rec.plan] || !plans.completo) return rec;
-  const extra = Math.round((plans[rec.plan].total_eur - plans.completo.total_eur) * 100) / 100;
-  return { ...rec, extra_vs_completo_eur: extra, reason: `${rec.reason} Por ${formatEur(extra)} más.` };
+  const ref = rec.plan === 'total' ? 'completo' : 'esencial';
+  if (!plans[rec.plan]?.available || !plans[ref]?.available) return rec;
+  const extra = Math.round((plans[rec.plan].total_eur - plans[ref].total_eur) * 100) / 100;
+  const zone = order.trip.zone;
+  const from = formatEur(medicalLimit(zone, ref), 0);
+  const to = formatEur(medicalLimit(zone, rec.plan), 0);
+  const reason = rec.plan === 'total'
+    ? `Por ${formatEur(extra)} más que Completo en todo el viaje, tu límite médico sube de ${from} a ${to}.`
+    : `Por ${formatEur(extra)} más que Esencial en todo el viaje, añades cancelación, subes el límite médico de ${from} a ${to} y quitas la franquicia de ${formatEur(COVERAGES.find((x) => x.id === 'medical').deductible.esencial, 0)}.`;
+  return { ...rec, compared_with: ref, extra_eur: extra, reason };
 }
 
 export function publicOrder(order) {

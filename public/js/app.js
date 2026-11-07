@@ -356,7 +356,7 @@ function renderReview(order) {
     <div class="summary-total"><span>Total, impuestos incluidos</span><span>${esc(s.total_text)}</span></div>
     <form id="terms-form" class="actions" novalidate>
       <label class="check"><input type="checkbox" name="accept" ${accepted ? 'checked disabled' : ''}> He leído y acepto las condiciones</label>
-      <button class="btn-primary" type="submit">${accepted ? 'Ir al pago' : 'Aceptar y pagar'}</button>
+      <button class="btn-primary" type="submit">Continuar al pago</button>
       <p class="form-error" role="alert" hidden></p>
     </form>`;
   // Corregir donde se detecta el error: vuelve al paso sin perder lo ya escrito.
