@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createStore } from '../src/store.js';
-import { createOrderService } from '../src/orders.js';
+import { createOrderService, publicOrder } from '../src/orders.js';
 
 function service() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'escala-'));
@@ -93,4 +93,15 @@ test('guardar la cotización por email y retomarla: misma cotización o recalcul
   assert.equal(again.order.resumed_from, o.id);
   assert.equal(again.order.plan, 'completo');
   assert.equal(again.order.trip.days, 7);
+});
+test('en EE. UU. se recomienda Total y el sello dice cuánto más cuesta que Completo', () => {
+  const { svc } = service();
+  const nyc = publicOrder(svc.createQuote({ destinations: ['Estados Unidos'], start_date: future(20), end_date: future(26), travelers: [{ age: 35 }] }, 'web'));
+  assert.equal(nyc.recommendation.plan, 'total');
+  const extra = Math.round((nyc.quote.plans.total.total_eur - nyc.quote.plans.completo.total_eur) * 100) / 100;
+  assert.equal(nyc.recommendation.extra_vs_completo_eur, extra);
+  assert.match(nyc.recommendation.reason, /más\.$/);
+  const roma = publicOrder(svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 35 }] }, 'web'));
+  assert.equal(roma.recommendation.plan, 'completo');
+  assert.equal(roma.recommendation.extra_vs_completo_eur, undefined);
 });

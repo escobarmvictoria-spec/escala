@@ -164,6 +164,15 @@ function keyCoverages(planId, zone) {
   }));
 }
 
+// El sello dice qué gana la persona y, si el recomendado no es Completo, cuánto más cuesta frente a Completo.
+function recommendationFor(order) {
+  const rec = recommendPlan({ zone: order.trip.zone });
+  const plans = order.quote.plans;
+  if (rec.plan === 'completo' || !plans[rec.plan] || !plans.completo) return rec;
+  const extra = Math.round((plans[rec.plan].total_eur - plans.completo.total_eur) * 100) / 100;
+  return { ...rec, extra_vs_completo_eur: extra, reason: `${rec.reason} Por ${formatEur(extra)} más.` };
+}
+
 export function publicOrder(order) {
   return {
     quote_id: order.id,
@@ -175,7 +184,7 @@ export function publicOrder(order) {
     trip: order.trip,
     plan: order.plan,
     quote: order.quote,
-    recommendation: order.quote ? recommendPlan({ zone: order.trip.zone }) : null,
+    recommendation: order.quote ? recommendationFor(order) : null,
     holder: order.holder,
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,

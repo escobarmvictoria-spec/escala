@@ -6,19 +6,32 @@ El plan recomendado depende del destino, con la misma regla para la web y para l
 
 | Viaje | Plan destacado | Texto debajo del sello |
 |---|---|---|
-| EE. UU. o Canadá | Total · Recomendado para tu destino | «Hasta 5.000.000 € en gastos médicos, frente a 1.000.000 € con Completo». |
+| EE. UU. o Canadá | Total · Recomendado para tu destino | «Hasta 5.000.000 € en gastos médicos, frente a 1.000.000 € con Completo. Por X € más». La diferencia de precio se calcula con la cotización, para que la persona valore qué obtiene por ese importe. |
 | Resto de destinos | Completo · Recomendado para tu viaje | «Incluye cancelación y equipaje, con gastos médicos sin franquicia». |
 
 El plan del medio ya tiene ventaja por su posición: con tres opciones, quien está indeciso tiende a la intermedia porque parece un compromiso razonable (efecto compromiso, Itamar Simonson). Por eso el sello no dice «el que elige la mayoría», una frase que solo tendría sentido con datos que la respalden. En cambio, explica qué gana la persona con ese plan para el viaje que acaba de cotizar.
 
+## Qué hace el mercado
+
+| Player | Qué se ve en su sitio |
+|---|---|
+| InterMundial | En su comparativa para afiliados orienta por destino: Mini para Europa, Totaltravel para Europa y mundo, Premium para EE. UU. y Canadá. Es el paralelo más directo. |
+| IATI | Marca Estrella, su plan más completo, como «Más vendido» y lo recomienda para EE. UU., Canadá y Japón, con un motivo concreto: asistencia médica ilimitada. |
+| Heymondo | En su página de EE. UU. marca como «Recomendado» el intermedio, Viaje Top, con 5 millones de euros de asistencia médica (Premium es ilimitado). |
+| World Nomads | En EE. UU. destaca Explorer, el intermedio, y explica para qué viaje encaja cada plan. |
+| Squaremouth | Ordena los resultados por volumen de ventas y deja filtrar por necesidades del viaje. |
+
+No hay tasas públicas comparables de cotización a póliza, ni un experimento publicado que compare un sello fijo con uno por destino. «Más vendido» habla de volumen, no de conversión. Los casos públicos más cercanos: Bupa, +17,5 % en ventas confirmadas combinando cambios de página y tabla de precios, sin aislar el sello ([Webtrends Optimize](https://www.webtrends-optimize.com/resources/case-studies/bupa/)); Aardy, +12 % de cotización a venta dando más visibilidad a su garantía de precio ([Fresh Egg](https://www.freshegg.co.uk/case-studies/aardycom-grabs-25m-revenue-win/)).
+
+El dato clave: Heymondo destaca para EE. UU. un plan con 5 millones de euros, el mismo límite que el Total de Escala. En la comparativa de Escala el salto es de 1 a 5 millones, una razón concreta para probar Total en EE. UU. y Canadá.
+
 ## Cómo lo mediría
 
-- **A, control:** Completo recomendado en todos los viajes.
-- **B, variante:** recomendación según el destino, con el sello explicativo.
-- Mismo orden de tarjetas y mismos precios en las dos.
-- **Métrica principal:** pólizas emitidas por cotización, sobre todo en EE. UU. y Canadá.
-- **Métrica secundaria:** ingreso por cotización.
-- **Lectura:** si sube la proporción que elige Total pero cae la contratación, el sello habrá cambiado qué plan se elige a costa de perder compradores.
+- **Empezar en EE. UU. y Canadá**, que es donde cambia el plan destacado.
+- **A, control:** Completo recomendado. **B, variante:** Total recomendado, con el sello explicativo y la diferencia de precio.
+- Mismos precios, mismo orden y mismo diseño de tarjetas.
+- **Métrica principal:** pólizas emitidas por cada 100 cotizaciones. **Secundaria:** ingreso por cotización.
+- **Lectura:** la proporción que elige Total dice cómo cambió la elección; la tasa de emisión dice si se vendió más. Si sube Total pero cae la emisión, el sello cambió qué plan se elige a costa de perder compradores.
 
 ## Hipótesis para después
 
