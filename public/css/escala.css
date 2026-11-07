@@ -621,3 +621,11 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .floa
 .review-head { display: flex; justify-content: space-between; align-items: baseline; margin-top: var(--s-4); }
 .review-head h4 { font-size: var(--fs-base); }
 .summary-grid .edit-link { display: block; padding: 4px 0 0; }
+
+/* Buscador de destino con sugerencias */
+.combo { position: relative; }
+.combo-list { position: absolute; z-index: 30; left: 0; right: 0; min-width: min(320px, 86vw); top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none; background: var(--white); border: 1px solid var(--line-strong); border-radius: var(--r-m); box-shadow: var(--shadow-m); max-height: 300px; overflow-y: auto; }
+.combo-list li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); padding: 10px 12px; border-radius: var(--r-s); cursor: pointer; }
+.combo-list li small { color: var(--navy-soft); font-size: var(--fs-xs); white-space: nowrap; }
+.combo-list li:hover, .combo-list li[aria-selected="true"] { background: var(--ivory); }
+.combo-list li[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--yellow); }

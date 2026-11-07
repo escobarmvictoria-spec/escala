@@ -66,7 +66,10 @@
             <div class="trip-fields">
               <div class="field f-dest">
                 <label for="q-destination">Destino</label>
-                <input id="q-destination" name="destination" list="destinations" autocomplete="off" placeholder="Japón, Nueva York…" aria-describedby="q-destination-help" required>
+                <div class="combo">
+                  <input id="q-destination" name="destination" autocomplete="off" placeholder="Japón, Nueva York…" aria-describedby="q-destination-help" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dest-options">
+                  <ul class="combo-list" id="dest-options" role="listbox" aria-label="Destinos sugeridos" hidden></ul>
+                </div>
               </div>
               <p class="field-help f-help" id="q-destination-help">Un país, una ciudad o «Europa». Si son varios, sepáralos con comas.</p>
               <div class="field f-start">
@@ -365,6 +368,5 @@
     </details>
   </aside>
 
-  <datalist id="destinations"></datalist>
 </body>
 </html>

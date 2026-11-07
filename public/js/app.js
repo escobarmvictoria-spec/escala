@@ -629,14 +629,94 @@ function initQuoteLinks() {
   );
 }
 
+// Buscador de destino con sugerencias: países, ciudades e islas habituales y regiones.
+// Funciona por la última parte escrita, así que también sirve para varios destinos separados por comas.
+const fold = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+const POPULAR = ['Japón', 'Italia', 'Estados Unidos', 'Francia', 'Tailandia', 'Nueva York', 'Europa'];
+// Destinos frecuentes desde España: a igual coincidencia, salen primero.
+const FREQUENT = new Set(['Japón', 'Italia', 'Estados Unidos', 'Francia', 'Reino Unido', 'Portugal', 'Alemania', 'Grecia', 'Tailandia', 'México', 'Marruecos', 'Argentina', 'Nueva York', 'Londres', 'París', 'Roma', 'Tokio', 'Lisboa', 'Cancún', 'Europa']);
 async function loadDestinations() {
+  let items = [];
   try {
     const res = await fetch('/api/destinations');
-    const { destinations } = await res.json();
-    $('#destinations').innerHTML = destinations.map((d) => `<option value="${esc(d.name)}"></option>`).join('');
+    const { destinations, places = [] } = await res.json();
+    items = [
+      ...destinations.map((d) => ({ name: d.name, hint: '' })),
+      ...places.map((p) => ({ name: p.name, hint: p.kind === 'region' ? 'Región' : p.country })),
+    ].map((i) => ({ ...i, key: fold(i.name), words: fold(i.name).split(/[\s-]+/) }));
   } catch {
-    /* el campo funciona igual sin sugerencias */
+    return; /* el campo funciona igual sin sugerencias */
   }
+  const input = $('#q-destination');
+  const list = $('#dest-options');
+  let shown = [];
+  let active = -1;
+  const parts = () => input.value.split(',');
+  const close = () => {
+    list.hidden = true;
+    input.setAttribute('aria-expanded', 'false');
+    input.removeAttribute('aria-activedescendant');
+    active = -1;
+  };
+  const paint = () => {
+    list.innerHTML = shown
+      .map((i, n) => `<li role="option" id="dest-opt-${n}" aria-selected="${n === active}" data-n="${n}"><span>${esc(i.name)}</span>${i.hint ? `<small>${esc(i.hint)}</small>` : ''}</li>`)
+      .join('');
+    if (active >= 0) input.setAttribute('aria-activedescendant', `dest-opt-${active}`);
+    else input.removeAttribute('aria-activedescendant');
+  };
+  const open = () => {
+    const segs = parts();
+    const q = fold(segs[segs.length - 1]);
+    const taken = new Set(segs.slice(0, -1).map(fold));
+    if (!q) shown = POPULAR.map((n) => items.find((i) => i.name === n)).filter(Boolean).filter((i) => !taken.has(i.key));
+    else {
+      shown = items
+        .filter((i) => !taken.has(i.key))
+        .map((i) => ({ i, score: i.key.startsWith(q) ? 0 : i.words.some((w) => w.startsWith(q)) ? 1 : q.length >= 3 && i.key.includes(q) ? 2 : 9 }))
+        .filter((x) => x.score < 9)
+        .sort((a, b) => a.score - b.score || FREQUENT.has(b.i.name) - FREQUENT.has(a.i.name) || a.i.name.localeCompare(b.i.name, 'es'))
+        .slice(0, 7)
+        .map((x) => x.i);
+      if (shown.length === 1 && shown[0].key === q) shown = [];
+    }
+    active = -1;
+    if (!shown.length) return close();
+    paint();
+    list.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+  };
+  const choose = (n) => {
+    const segs = parts();
+    segs[segs.length - 1] = (segs.length > 1 ? ' ' : '') + shown[n].name;
+    input.value = segs.join(',');
+    close();
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  };
+  input.addEventListener('input', open);
+  input.addEventListener('focus', open);
+  input.addEventListener('blur', () => setTimeout(close, 120));
+  input.addEventListener('keydown', (ev) => {
+    if (list.hidden) {
+      if (ev.key === 'ArrowDown') open();
+      return;
+    }
+    if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp') {
+      ev.preventDefault();
+      active = (active + (ev.key === 'ArrowDown' ? 1 : -1) + shown.length) % shown.length;
+      paint();
+    } else if (ev.key === 'Enter' && active >= 0) {
+      ev.preventDefault();
+      choose(active);
+    } else if (ev.key === 'Escape') {
+      close();
+    }
+  });
+  list.addEventListener('mousedown', (ev) => ev.preventDefault());
+  list.addEventListener('click', (ev) => {
+    const li = ev.target.closest('li[data-n]');
+    if (li) choose(Number(li.dataset.n));
+  });
 }
 
 // Volver desde el email de «Enviarme la cotización» (/retomar/ID).

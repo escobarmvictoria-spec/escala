@@ -263,6 +263,33 @@ export function formatEur(n, decimals = 2) {
   }).format(n);
 }
 
+// Sugerencias del buscador de destino: ciudades e islas habituales y regiones, con su nombre bien escrito.
+// Cada una se resuelve con resolveDestination, así que lo que se sugiere siempre se puede cotizar.
+const PLACE_SUGGESTIONS = [
+  'Tokio', 'Kioto', 'Osaka', 'Nueva York', 'Miami', 'Los Ángeles', 'San Francisco', 'Las Vegas', 'Chicago', 'Orlando', 'Hawái', 'Boston', 'Washington',
+  'Toronto', 'Montreal', 'Vancouver', 'Londres', 'Edimburgo', 'Manchester', 'París', 'Niza', 'Roma', 'Milán', 'Florencia', 'Venecia', 'Nápoles', 'Sicilia', 'Cerdeña',
+  'Lisboa', 'Oporto', 'Madeira', 'Azores', 'Berlín', 'Múnich', 'Ámsterdam', 'Bruselas', 'Praga', 'Viena', 'Budapest', 'Dublín', 'Reikiavik', 'Oslo', 'Copenhague',
+  'Estocolmo', 'Zúrich', 'Ginebra', 'Varsovia', 'Cracovia', 'Atenas', 'Santorini', 'Mykonos', 'Estambul', 'Capadocia', 'Marrakech', 'Tánger', 'El Cairo',
+  'Cancún', 'Riviera Maya', 'Ciudad de México', 'Tulum', 'Punta Cana', 'La Habana', 'Buenos Aires', 'Bariloche', 'Lima', 'Cusco', 'Machu Picchu', 'Bogotá', 'Medellín',
+  'Santiago de Chile', 'Río de Janeiro', 'São Paulo', 'Montevideo', 'Bangkok', 'Phuket', 'Bali', 'Dubái', 'Abu Dabi', 'Pekín', 'Shanghái', 'Seúl', 'Singapur', 'Hanói',
+  'Nueva Delhi', 'Sídney', 'Melbourne', 'Maldivas', 'Zanzíbar', 'Ciudad del Cabo', 'Mallorca', 'Ibiza', 'Menorca', 'Tenerife', 'Gran Canaria', 'Canarias', 'Baleares',
+  'Madrid', 'Barcelona', 'Sevilla', 'Valencia', 'Inglaterra', 'Escocia',
+];
+const REGION_SUGGESTIONS = ['Europa', 'Zona Schengen', 'Asia', 'Sudeste asiático', 'Latinoamérica', 'Caribe', 'África', 'Oriente Medio', 'Oceanía', 'Norteamérica', 'Todo el mundo'];
+
+export function placeSuggestions() {
+  const out = [];
+  for (const name of PLACE_SUGGESTIONS) {
+    const r = resolveDestination(name);
+    if (r.code && !EXCLUDED.has(r.code) && r.code !== name) out.push({ name, kind: 'lugar', country: countryName(r.code), zone: zoneOf(r.code) });
+  }
+  for (const name of REGION_SUGGESTIONS) {
+    const r = resolveDestination(name);
+    if (r.zone) out.push({ name, kind: 'region', zone: r.zone });
+  }
+  return out;
+}
+
 export function destinationList() {
   return ISO.filter((c) => !EXCLUDED.has(c) && namesEs.of(c))
     .map((code) => ({ code, name: countryName(code), zone: zoneOf(code) }))

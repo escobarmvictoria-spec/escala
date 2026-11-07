@@ -9,7 +9,7 @@ import { createOrderService, publicOrder, summaryOf, planSummary, keyCoverages, 
 import { renderPolicyPdf } from './src/pdf.js';
 import { createMailer, buildPolicyEmail, buildQuoteEmail } from './src/email.js';
 import { ApiError } from './src/errors.js';
-import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList } from './src/catalog.js';
+import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList, placeSuggestions } from './src/catalog.js';
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
 import { agentSystemPrompt } from './src/agent-prompt.js';
 import { createCallbackService, publicCallback, teamEmail, CALLBACK_REASONS } from './src/callbacks.js';
@@ -165,7 +165,7 @@ const coveragesByPlan = (zone) => Object.fromEntries(PLANS.map((p) => [p.id, key
 
 api.get('/destinations', (req, res) => {
   res.set('Cache-Control', 'public, max-age=3600');
-  res.json({ ok: true, destinations: destinationList() });
+  res.json({ ok: true, destinations: destinationList(), places: placeSuggestions() });
 });
 
 api.post('/quotes', (req, res) => {
