@@ -63,7 +63,8 @@ Mismo pedido a cinco agentes (Nueva York, una persona, hasta el pago sin pagar),
 | ChatGPT (escritorio, Work, GPT‑6.1 Sol) | Herramientas WebMCP; pidió confirmación antes de pagar | Póliza emitida, canal `agente_ia`, con las palabras de aceptación |
 | Perplexity (app) | Clics en la web como una persona; aceptó las condiciones y usó nombre y email de la cuenta sin preguntar | Cotización real, canal `web` |
 | Claude (app del móvil) | Avisó de que no tenía navegador y de que la URL era temporal | Nada |
-| Gemini (app del móvil) | Afirmó haber llegado al pago | Nada: lo inventó |
+| Claude (con navegador) | Herramientas WebMCP; eligió el plan recomendado (Total) y paró a pedir nombre y email en vez de inventarlos | Cotización real, canal `agente_ia` |
+| Gemini (app del móvil y Chrome) | Las dos veces afirmó haber llegado al pago, con Completo recomendado y datos de tomador inventados | Nada: lo inventó |
 | Meta AI (WhatsApp) | No pudo abrirla (URL temporal, no indexada); desaconsejó la web y ofreció cotizar en IATI, Heymondo o InterMundial | Nada |
 
 El canal se decide por el camino, no por quién está detrás: las herramientas WebMCP marcan la compra como agente; los clics en el formulario son, para el servidor, una persona. Por eso los controles de consentimiento (`user_confirmation`) solo se pueden exigir por WebMCP.
