@@ -295,6 +295,7 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .msg { max-width: 92%; padding: 10px 13px 8px; border-radius: 10px; white-space: pre-wrap; font-size: 0.98rem; }
 .msg.user { justify-self: end; background: var(--ink); color: var(--white); border-bottom-right-radius: 3px; }
 .msg.assistant { justify-self: start; background: var(--paper); border-bottom-left-radius: 3px; }
+.msg.assistant a { overflow-wrap: anywhere; font-weight: 600; }
 .msg.tool { justify-self: start; font-size: var(--step--1); color: var(--slate); background: none; padding: 0 0 0 10px; border-left: 3px solid var(--signal); border-radius: 0; }
 .msg.tool.is-error { border-left-color: var(--error); color: var(--error); }
 .msg.system { justify-self: stretch; font-size: var(--step--1); background: var(--error-soft); color: var(--error); }

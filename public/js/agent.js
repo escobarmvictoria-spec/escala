@@ -21,10 +21,19 @@ function close() {
   toggle.focus();
 }
 
+// Markdown mínimo y seguro para las respuestas del asistente: negritas, viñetas y enlaces.
+function miniMarkdown(text) {
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^- /gm, '• ')
+    .replace(/(https?:\/\/[^\s<)]+)/g, (url) => `<a href="${url}" target="_blank" rel="noopener">${url.replace(/^https?:\/\//, '').slice(0, 48)}${url.length > 56 ? '…' : ''}</a>`);
+}
+
 function addMsg(role, text, extra = '') {
   const el = document.createElement('div');
   el.className = `msg ${role} ${extra}`.trim();
-  el.textContent = text;
+  if (role === 'assistant') el.innerHTML = miniMarkdown(text);
+  else el.textContent = text;
   $('#chat-log').append(el);
   el.scrollIntoView({ block: 'end' });
   return el;
