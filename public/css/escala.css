@@ -629,3 +629,16 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.has-quote .floa
 .combo-list li small { color: var(--navy-soft); font-size: var(--fs-xs); white-space: nowrap; }
 .combo-list li:hover, .combo-list li[aria-selected="true"] { background: var(--ivory); }
 .combo-list li[aria-selected="true"] { box-shadow: inset 3px 0 0 var(--yellow); }
+
+/* Pago: lo que se contrata, siempre a la vista */
+.pay-summary { display: grid; gap: var(--s-3); padding: var(--s-4); border-radius: var(--r-m); background: var(--ivory); border: 1px solid var(--line); }
+.pay-total { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); }
+.pay-total span { font-size: var(--fs-sm); color: var(--navy-soft); }
+.pay-total strong { font-family: var(--font-head); font-weight: 800; font-size: var(--fs-xl); letter-spacing: -0.02em; }
+.pay-summary dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-3) var(--s-4); margin: 0; }
+.pay-summary dt { font-size: var(--fs-xs); color: var(--navy-soft); }
+.pay-summary dd { margin: 2px 0 0; font-weight: 600; font-size: var(--fs-sm); }
+.pay-summary dd .edit-link { display: inline; padding-left: 6px; font-weight: 500; }
+.pay-summary > .edit-link { justify-self: start; padding: 0; }
+.trip-plan { font-weight: 600; color: var(--navy); }
+@media (max-width: 560px) { .pay-summary { padding: var(--s-3); } .pay-summary dl { gap: var(--s-2) var(--s-3); } .pay-total strong { font-size: var(--fs-lg); } }

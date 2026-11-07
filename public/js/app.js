@@ -164,6 +164,7 @@ function renderTripLine(order) {
     <span>${t.days} días</span>
     <span>${n} ${n === 1 ? 'viajero' : 'viajeros'}</span>
     <span>${esc(t.zone_name)}</span>
+    ${order.plan && order.status !== 'paid' ? `<span class="trip-plan">Plan ${esc(order.quote.plans[order.plan].name)}, ${eur(order.total_eur)}</span>` : ''}
     ${order.status === 'paid' ? '' : '<button class="btn-quiet edit" type="button" data-edit-trip>Cambiar el viaje</button>'}`;
   $('[data-edit-trip]')?.addEventListener('click', () => {
     fillQuoteForm(order);
@@ -394,7 +395,26 @@ async function ensureSummary(order) {
   }
 }
 
+// En el pago queda a la vista qué se contrata, con enlaces para corregir sin perder el viaje.
 function renderPay(order) {
+  const t = order.trip;
+  const plan = order.quote.plans[order.plan];
+  const names = (order.travelers ?? []).map((x) => x.full_name);
+  $('#pay-summary').innerHTML = `
+    <div class="pay-total"><span>Vas a contratar</span><strong>${eur(order.total_eur)}</strong></div>
+    <dl>
+      <div><dt>Destino</dt><dd>${esc(t.destinations.map((d) => d.name).join(', '))}</dd></div>
+      <div><dt>Fechas</dt><dd>${fmtDate(t.start_date)} – ${fmtDate(t.end_date)} (${t.days} días)</dd></div>
+      <div><dt>Plan</dt><dd>${esc(plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
+      <div><dt>${names.length === 1 ? 'Asegurado' : 'Asegurados'}</dt><dd>${names.map(esc).join(', ')} <button type="button" class="edit-link" data-goto="viajeros">Editar</button></dd></div>
+    </dl>
+    <button type="button" class="edit-link" data-goto="revision">Ver el resumen completo</button>`;
+  $$('[data-goto]', $('#pay-summary')).forEach((b) =>
+    b.addEventListener('click', () => {
+      viewStep = b.dataset.goto;
+      render(store.state, 'nav');
+    })
+  );
   $('#pay-button').textContent = `Pagar ${eur(order.total_eur)}`;
 }
 

@@ -52,14 +52,13 @@ export function buildPolicyEmail(order, { baseUrl }) {
 }
 
 // Email con la cotización guardada: los tres planes y un enlace para retomarla.
-// Escrito como un email transaccional (lo pidió la persona): sin etiquetas promocionales ni botones grandes,
-// para que Gmail lo deje en Principal y no en Promociones.
+// Transaccional (lo pidió la persona): sin etiquetas promocionales; mismo diseño que el de la póliza.
 export function buildQuoteEmail(order, { baseUrl, plans }) {
   const resumeUrl = `${baseUrl}/retomar/${encodeURIComponent(order.id)}`;
   const destinations = order.trip.destinations.map((d) => d.name).join(', ');
   const people = order.quote_ages.length === 1 ? '1 viajero' : `${order.quote_ages.length} viajeros`;
   const dates = `del ${fmtDate(order.trip.start_date)} al ${fmtDate(order.trip.end_date)}`;
-  const subject = `Tu cotización ${order.id}: ${destinations}, ${dates}`;
+  const subject = `Tu cotización de Escala: ${destinations}, ${dates}`;
   const rows = plans.filter((p) => p.available);
   const chosen = order.plan ? rows.find((p) => p.plan === order.plan) : null;
   const text = [
@@ -76,17 +75,24 @@ export function buildQuoteEmail(order, { baseUrl, plans }) {
     'No te enviaremos más emails sobre esta cotización.',
     'Escala (demo de una prueba técnica: no es un seguro real y no se cobra dinero).',
   ].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n');
-  const html = `<!doctype html><html lang="es"><body style="margin:0;padding:24px 16px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#19233F;font-size:15px;line-height:1.55">
-<div style="max-width:560px;margin:0 auto">
-  <p style="margin:0 0 14px">Hola:</p>
-  <p style="margin:0 0 14px">Esta es la cotización que pediste guardar (${esc(order.id)}): <strong>${esc(destinations)}</strong>, ${dates}, ${order.trip.days} días, ${people}.${chosen ? ` Habías elegido el plan <strong>${esc(chosen.name)}</strong>.` : ''}</p>
-  <table style="border-collapse:collapse;margin:0 0 16px;font-size:15px" cellpadding="6">
-    ${rows.map((p) => `<tr><td style="padding-left:0">${esc(p.name)}</td><td style="text-align:right;font-weight:bold">${esc(formatEur(p.total_eur))}</td></tr>`).join('')}
+  // Mismo diseño que el email de la póliza (que Gmail deja en Principal): marca, una tabla y un botón.
+  const html = `<!doctype html><html lang="es"><body style="margin:0;background:#F6F3EC;font-family:Arial,Helvetica,sans-serif;color:#19233F">
+<div style="background:#19233F;color:#F2C75B;text-align:center;font-weight:bold;padding:10px 16px;font-size:14px">Demo — no es un seguro real</div>
+<div style="max-width:560px;margin:0 auto;padding:28px 20px">
+  <div style="font-size:28px;font-weight:800;letter-spacing:-0.8px;font-family:Manrope,Arial,Helvetica,sans-serif">escala</div>
+  <p style="margin:2px 0 0;color:#4A536B;font-size:14px">Seguro de viaje que se entiende.</p>
+  <h1 style="font-size:22px;margin:24px 0 8px">Tu cotización, guardada.</h1>
+  <p style="font-size:16px;line-height:1.5;margin:0 0 20px">Aquí la tienes para cuando lo decidas. Al volver, sigues donde lo dejaste${chosen ? `, con el plan ${esc(chosen.name)} elegido` : ''}.</p>
+  <table style="width:100%;border-collapse:collapse;background:#fff;border-radius:8px;font-size:15px" cellpadding="10">
+    <tr><td style="color:#4A536B;width:40%">Destino</td><td style="font-weight:bold">${esc(destinations)}</td></tr>
+    <tr><td style="color:#4A536B">Fechas</td><td>${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)} (${order.trip.days} días)</td></tr>
+    <tr><td style="color:#4A536B">Viajeros</td><td>${people}</td></tr>
+    ${rows.map((p) => `<tr><td style="color:#4A536B">Plan ${esc(p.name)}${chosen && chosen.plan === p.plan ? ' (elegido)' : ''}</td><td style="font-weight:bold">${esc(formatEur(p.total_eur))}</td></tr>`).join('')}
   </table>
-  <p style="margin:0 0 6px">Precios finales, impuestos incluidos. Para seguir donde lo dejaste:</p>
-  <p style="margin:0 0 16px"><a href="${esc(resumeUrl)}" style="color:#19233F">${esc(resumeUrl)}</a></p>
-  <p style="margin:0 0 16px">Si pasan más de 2 horas, recalculamos el precio y te avisamos antes de pagar si ha cambiado.</p>
-  <p style="margin:0;color:#4A536B;font-size:13px">No te enviaremos más emails sobre esta cotización.<br>Escala, seguro de viaje que se entiende. Demo de una prueba técnica: no es un seguro real y no se cobra dinero.</p>
+  <p style="font-size:13px;color:#4A536B;margin:8px 0 0">Precios finales, impuestos incluidos.</p>
+  <p style="margin:24px 0 12px"><a href="${esc(resumeUrl)}" style="background:#F2C75B;color:#19233F;text-decoration:none;font-weight:bold;padding:12px 18px;border-radius:6px;display:inline-block">Retomar mi compra</a></p>
+  <p style="font-size:14px;color:#4A536B;line-height:1.5;margin:0 0 20px">Si pasan más de 2 horas, recalculamos el precio y te avisamos antes de pagar si ha cambiado.</p>
+  <p style="font-size:13px;color:#4A536B;line-height:1.5">No te enviaremos más emails sobre esta cotización (${esc(order.id)}). Escala es una marca inventada para una prueba técnica: no es una aseguradora y no se cobra dinero.</p>
 </div></body></html>`;
   return { subject, text, html, resumeUrl };
 }
