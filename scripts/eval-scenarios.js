@@ -103,7 +103,7 @@ export function buildScenarios() {
       opening: `Me voy dos meses a Australia, ${t.australia.text}. 27 años.`,
       facts: 'Te llamas Nerea Castillo, 27 años. Email nerea.castillo@example.com.',
       behavior: 'Acepta el plan recomendado. Confirma el pago.',
-      expect: { paid: true, plans: ['total'], travelers: 1, zone: 'mundo', start: t.australia.start, end: t.australia.end, email: 'nerea.castillo@example.com' },
+      expect: { paid: true, travelers: 1, zone: 'mundo', start: t.australia.start, end: t.australia.end, email: 'nerea.castillo@example.com' },
     },
     {
       id: 'faltan-datos',

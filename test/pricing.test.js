@@ -46,9 +46,9 @@ test('destinos: países, ciudades, regiones y errores con sugerencia', () => {
   assert.ok(RATES.mundo);
 });
 
-test('el plan recomendado depende del riesgo del viaje', () => {
-  assert.equal(recommendPlan({ zone: 'europa', days: 7 }).plan, 'completo');
-  assert.equal(recommendPlan({ zone: 'mundo', days: 30 }).plan, 'completo');
-  assert.equal(recommendPlan({ zone: 'mundo', days: 31 }).plan, 'total');
-  assert.equal(recommendPlan({ zone: 'usa_canada', days: 5 }).plan, 'total');
+test('el plan recomendado depende del destino, no de la duración', () => {
+  assert.equal(recommendPlan({ zone: 'europa' }).plan, 'completo');
+  assert.equal(recommendPlan({ zone: 'mundo' }).plan, 'completo');
+  assert.equal(recommendPlan({ zone: 'usa_canada' }).plan, 'total');
+  assert.match(recommendPlan({ zone: 'usa_canada' }).label, /destino/);
 });

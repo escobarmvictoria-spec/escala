@@ -670,5 +670,5 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .quick-replies button:hover { background: var(--navy); color: var(--white); }
 .activity .webmcp-status { margin: 8px 0; border: 0; border-radius: var(--r-s); }
 
-/* Motivo del plan recomendado (depende del viaje) */
-.plans-reason { margin: 0 0 20px; padding: 14px 18px; background: var(--yellow-soft); border-radius: 12px; color: var(--navy); }
+/* Motivo del plan recomendado, debajo del sello */
+.plan-why { margin: -4px 0 12px; font-size: .9rem; font-weight: 600; color: var(--navy); }

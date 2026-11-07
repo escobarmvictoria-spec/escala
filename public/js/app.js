@@ -191,17 +191,7 @@ function renderPlans(order) {
     grid.after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';
-  let why = $('#plans-reason');
-  if (!why) {
-    why = document.createElement('p');
-    why.id = 'plans-reason';
-    why.className = 'plans-reason';
-    grid.before(why);
-  }
-  why.innerHTML = order.recommendation && order.quote.plans[rec]?.available
-    ? `<strong>Te recomendamos ${esc(order.quote.plans[rec].name)}.</strong> ${esc(order.recommendation.reason)}`
-    : '';
-  why.hidden = !why.innerHTML;
+  $('#plans-reason')?.remove();
   for (const id of ['esencial', 'completo', 'total']) {
     const p = order.quote.plans[id];
     const isRec = id === rec && p.available;
@@ -212,7 +202,8 @@ function renderPlans(order) {
     const el = document.createElement('article');
     el.className = `plan${isRec ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}`;
     el.innerHTML = `
-      <span class="plan-flag${isRec ? '' : ' is-empty'}">Recomendado</span>
+      <span class="plan-flag${isRec ? '' : ' is-empty'}">${isRec ? esc(order.recommendation?.label ?? 'Recomendado') : 'Recomendado'}</span>
+      ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : ''}
       <h3>${esc(p.name)}</h3>
       <p class="plan-tagline">${esc(meta?.description ?? '')}</p>
       <p class="plan-price">${eur(p.total_eur)}</p>

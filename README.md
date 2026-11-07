@@ -20,7 +20,7 @@ Node 22 + Express, HTML/CSS/JS sin compilar y un fichero JSON. Las herramientas 
 ## Decisiones
 
 - **Precios de mercado:** `(base + tarifa por día) × factor de edad`, por zona y plan, IPS incluido. Calibrado con 41 precios publicados y 26 cotizaciones hechas a mano en Heymondo, IATI e InterMundial el 7/11/2026; error medio del 9,2 % y un 4 % por debajo de la mediana.
-- **Plan recomendado según el riesgo:** Total para EE. UU. y Canadá o viajes de más de 30 días, Completo en el resto. La misma regla para la web y para los agentes, con el motivo a la vista.
+- **Plan recomendado según el destino:** Total para EE. UU. y Canadá, Completo en el resto, y el sello dice qué gana la persona con ese plan. Misma regla para la web y los agentes. La duración queda como hipótesis para probar.
 - **Medido, no supuesto:** `npm run eval` simula 18 clientes (compras, casos difíciles, casos en los que no hay que vender y una clienta que lo quiere pensar). Resultado: **18/18**, verificado contra el servidor.
 - **Humano cuando hace falta:** `request_human_callback` pasa el caso a una persona con el contexto (más de 84 años, destino excluido, enfermedad previa o si el cliente lo pide).
 - **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran.

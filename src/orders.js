@@ -175,7 +175,7 @@ export function publicOrder(order) {
     trip: order.trip,
     plan: order.plan,
     quote: order.quote,
-    recommendation: order.quote ? recommendPlan({ zone: order.trip.zone, days: order.trip.days }) : null,
+    recommendation: order.quote ? recommendPlan({ zone: order.trip.zone }) : null,
     holder: order.holder,
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,

@@ -34,14 +34,13 @@ export const PLANS = [
 ];
 
 // limit: importe máximo por asegurado y siniestro. null = no incluido. 'ilimitado' = sin tope.
-// Plan recomendado según el riesgo del viaje. La misma regla para la web y para los agentes.
-export const LONG_TRIP_DAYS = 30;
-export function recommendPlan({ zone, days }) {
+// Plan recomendado según el destino (la misma regla para la web y para los agentes).
+// El sello explica qué gana la persona con ese plan en el viaje que acaba de cotizar.
+// La duración queda como hipótesis para probar: un viaje largo y barato puede justificar Completo.
+export function recommendPlan({ zone }) {
   if (zone === 'usa_canada')
-    return { plan: 'total', reason: 'Viajas a Estados Unidos o Canadá, donde la sanidad es muy cara: Total cubre hasta 5 millones en gastos médicos.' };
-  if (days > LONG_TRIP_DAYS)
-    return { plan: 'total', reason: `Es un viaje largo (${days} días): más tiempo fuera, más riesgo. Total te cubre más.` };
-  return { plan: 'completo', reason: 'Gastos médicos altos, cancelación y equipaje a buen precio: lo que necesita un viaje normal.' };
+    return { plan: 'total', label: 'Recomendado para tu destino', reason: 'Hasta 5.000.000 € en gastos médicos, frente a 1.000.000 € con Completo.' };
+  return { plan: 'completo', label: 'Recomendado para tu viaje', reason: 'Incluye cancelación y equipaje, con gastos médicos sin franquicia.' };
 }
 
 export const COVERAGES = [
