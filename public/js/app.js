@@ -593,6 +593,13 @@ async function renderExamplePrice() {
   }
 }
 
+// El botón flotante se esconde mientras el cotizador está a la vista (sería un botón repetido).
+function initFloatCta() {
+  const form = $('#quote-form');
+  if (!form || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(([entry]) => document.body.classList.toggle('quote-visible', entry.isIntersecting), { threshold: 0.25 }).observe(form);
+}
+
 // Los botones «Descubre tu seguro» de la página llevan al cotizador y ponen el cursor en el destino.
 function initQuoteLinks() {
   $$('[data-focus-quote]').forEach((a) =>
@@ -672,6 +679,7 @@ async function main() {
   initMenu();
   initPhotos();
   initQuoteLinks();
+  initFloatCta();
   renderExamplePrice();
   $$('.route button').forEach((b) =>
     b.addEventListener('click', () => {

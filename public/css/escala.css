@@ -383,7 +383,11 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .help .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: var(--s-7); align-items: start; }
 .help-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
 .help-list li { display: grid; grid-template-columns: 40px 1fr; gap: var(--s-4); padding: var(--s-4) 0; border-bottom: 1px solid var(--line); }
-.help-list svg { width: 26px; height: 26px; stroke: var(--teal-deep); stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
+/* Iconos con la gramática del logo: trazo navy y una parada amarilla que marca lo importante. */
+.brand-icon { width: 32px; height: 32px; stroke: var(--navy); stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
+.brand-icon .dash { stroke-dasharray: 1 4.5; stroke-width: 2.2; }
+.brand-icon .end { fill: var(--navy); stroke: none; }
+.brand-icon .stop { fill: var(--yellow); stroke: var(--navy); stroke-width: 2; }
 .help-list h3 { font-size: var(--fs-base); font-weight: 700; }
 .help-list p { color: var(--navy-soft); font-size: var(--fs-sm); margin-top: 2px; }
 .help-photo { aspect-ratio: 1 / 1; }
@@ -430,7 +434,15 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .checklist p { color: var(--navy-soft); font-size: var(--fs-sm); margin-top: 4px; max-width: 60ch; }
 
 /* Pie */
-.site-footer { background: var(--navy); color: #D5DAE6; font-size: var(--fs-sm); padding: var(--s-8) 0 var(--s-6); }
+.site-footer { background: var(--navy); color: #D5DAE6; font-size: var(--fs-sm); padding: var(--s-6) 0 calc(var(--s-6) + 64px); }
+/* El pie es la llegada de la ruta: la línea discontinua termina aquí, con la parada amarilla de Escala. */
+.footer-route { position: relative; height: 24px; max-width: calc(var(--max) - 2 * var(--gutter)); width: calc(100% - 2 * var(--gutter)); margin: 0 auto var(--s-7); }
+.footer-route::before { content: ''; position: absolute; left: 0; right: 0; top: 11px; border-top: 2px dashed rgba(246, 243, 236, 0.35); }
+.footer-route i { position: absolute; top: 5px; width: 14px; height: 14px; border-radius: 50%; background: var(--ivory); }
+.footer-route i:first-child { left: 0; }
+.footer-route i:last-child { right: 0; }
+.footer-route i.stop { left: 30%; top: 0; width: 24px; height: 24px; background: var(--yellow); border: 3px solid var(--ivory); box-sizing: border-box; }
+.footer-claim { font-family: var(--font-head); font-weight: 800; font-size: var(--fs-lg); line-height: 1.15; letter-spacing: -0.02em; color: var(--ivory); max-width: 14ch; }
 .site-footer a { color: #F4F1EA; text-decoration: none; }
 .site-footer a:hover { text-decoration: underline; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: var(--s-6); }
@@ -570,4 +582,20 @@ body.is-checkout .home-section { display: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .agent-dot.is-busy { animation: none; }
+}
+
+/* Botón flotante «Descubre tu seguro»: siempre a mano, salvo cuando ya se ve el cotizador,
+   durante la compra (no compite con «Pagar») o con el asistente abierto. */
+.float-cta {
+  position: fixed; z-index: 45; right: var(--s-5); bottom: var(--s-5);
+  box-shadow: 0 10px 28px rgba(25, 35, 63, 0.28); transition: opacity .2s ease, transform .2s ease, visibility 0s linear 0s;
+}
+body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .float-cta {
+  opacity: 0; visibility: hidden; transform: translateY(12px); pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+@media (prefers-reduced-motion: reduce) { .float-cta { transition: none; } }
+@media (max-width: 560px) {
+  .float-cta { left: var(--s-4); right: var(--s-4); bottom: calc(var(--s-3) + env(safe-area-inset-bottom)); justify-content: center; text-align: center; }
+  .site-footer { padding-bottom: calc(var(--s-6) + 72px); }
 }
