@@ -62,7 +62,7 @@ export const COVERAGES = [
   {
     id: 'cancellation',
     name: 'Cancelación del viaje',
-    plain: 'Hasta el límite por persona, los gastos que no puedas recuperar si cancelas por una causa cubierta. La lista cerrada de causas está en las condiciones.',
+    plain: 'Hasta el límite por persona, los gastos que no puedas recuperar si cancelas por una causa cubierta. La lista cerrada de causas y desde cuándo cubre están en las condiciones (apartado 6).',
     limits: { esencial: null, completo: 1500, total: 5000 },
     deductible: { esencial: 0, completo: 0, total: 0 },
   },
