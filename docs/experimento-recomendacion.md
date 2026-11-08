@@ -62,6 +62,17 @@ Salió de una auditoría del flujo en móvil a 390 px. Guardar la cotización fu
 
 Ya está implementado. Cada cotización web guarda su variante (`experiments.guardar_atajo`) y el dispositivo (`device`: `movil` o `escritorio`). Al guardar, se registra si fue desde el atajo o desde el formulario (`saved.source`). Por defecto todas las cotizaciones ven B. Con `AB_GUARDAR_ATAJO=on` en `.env`, se reparten 50/50. El experimento está instrumentado pero todavía no está en marcha: hoy todas las cotizaciones ven B, así que no le atribuyo ningún aumento de conversión. Falta el informe en `/panel`, aunque los datos ya quedan en cada pedido. Cuando lo haga, compararé solo las cotizaciones del reparto 50/50 que ya hayan completado los 7 días de seguimiento.
 
+## Cabecera de resultados compacta en móvil
+
+Salió de otra auditoría a 390 y 360 px. En Nueva York, entre el indicador de pasos, el destino, las fechas, el viajero, la zona y los dos enlaces de gestión, «Elegir Total» quedaba cerca del borde inferior de la primera pantalla.
+
+- **A:** la cabecera actual, un dato por elemento.
+- **B:** «10/12/2026 – 16/12/2026 · 7 días · 1 viajero» en una línea, la zona visible en la suya, y «Cambiar el viaje» y «Guardar para más tarde» en una misma fila. Medido a 390 px, «Elegir Total» sube 26 px (33 px a 360 px). El orden de los planes, los precios y el sello no cambian.
+- **Métrica principal:** % de cotizaciones móviles que llegan a Viajeros.
+- **Control:** uso de «Guardar para más tarde», para comprobar que el atajo sigue siendo fácil de encontrar.
+
+Igual que el otro: cada cotización web guarda su variante (`experiments.cabecera_movil`) y el dispositivo. Hoy todas ven B, así que no le atribuyo ninguna mejora. Con `AB_CABECERA_MOVIL=on` se reparte 50/50. El informe comparará solo cotizaciones del reparto.
+
 ## Primera versión del experimento
 
 Antes de tener la frase, el planteamiento era A = Completo recomendado siempre, B = Total recomendado en EE. UU. y Canadá, con métrica principal de pólizas por cada 100 cotizaciones. Esa decisión ya se tomó a favor de B (recomendar según el destino); lo que queda por medir es si la frase del sello ayuda.

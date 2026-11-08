@@ -144,6 +144,7 @@ function fillQuoteForm(order) {
   form.start_date.value = order.trip.start_date;
   form.end_date.value = order.trip.end_date;
   form.departure_country.value = 'ES';
+  $('#q-origin-note').hidden = true;
   const list = $('#ages-list');
   list.innerHTML = '';
   const ages = order.travelers?.map((t) => t.age) ?? order.quote.plans.completo.per_traveler.map((t) => t.age);
@@ -160,6 +161,11 @@ function initQuoteForm() {
   form.start_date.addEventListener('change', () => {
     form.end_date.min = form.start_date.value;
     if (form.end_date.value < form.start_date.value) form.end_date.value = isoPlusDays(form.start_date.value, 6);
+  });
+  // Origen fuera de España: se avisa en cuanto se elige, sin esperar a pulsar «Ver precios».
+  const originNote = $('#q-origin-note');
+  form.departure_country.addEventListener('change', () => {
+    originNote.hidden = form.departure_country.value === 'ES';
   });
   $('#ages-list').append(ageChip());
   $('#add-traveler').addEventListener('click', () => {
@@ -248,15 +254,15 @@ function renderRoute(order, step) {
 function renderTripLine(order) {
   const t = order.trip;
   const n = order.travelers?.length ?? order.quote.plans.completo.per_traveler.length;
+  // A/B «cabecera compacta en móvil»: B agrupa fechas, días y viajeros en una línea y las dos acciones en una fila.
+  // En escritorio las dos variantes se ven igual (los grupos usan display: contents).
+  $('#trip-line').classList.toggle('is-compact', order.experiments?.cabecera_movil === 'B');
   $('#trip-line').innerHTML = `
     <strong>${esc(t.destinations.map((d) => d.label ?? d.name).join(', '))}</strong>
-    <span>${fmtDate(t.start_date)} – ${fmtDate(t.end_date)}</span>
-    <span>${t.days} días</span>
-    <span>${n} ${n === 1 ? 'viajero' : 'viajeros'}</span>
+    <span class="tl-when"><span>${fmtDate(t.start_date)} – ${fmtDate(t.end_date)}</span><span>${t.days} días</span><span>${n} ${n === 1 ? 'viajero' : 'viajeros'}</span></span>
     <span>Zona de cobertura: ${esc(t.zone_name)}</span>
     ${order.plan && order.status !== 'paid' ? `<span class="trip-plan">Plan ${esc(order.quote.plans[order.plan].name)}, ${eur(order.total_eur)}</span>` : ''}
-    ${order.status === 'paid' ? '' : '<button class="btn-quiet edit" type="button" data-edit-trip>Cambiar el viaje</button>'}
-    ${order.experiments?.guardar_atajo === 'B' && currentStep(order) === 'plan' ? '<button class="btn-quiet edit" type="button" data-save-later>Guardar para más tarde</button>' : ''}`;
+    <span class="tl-actions">${order.status === 'paid' ? '' : '<button class="btn-quiet edit" type="button" data-edit-trip>Cambiar el viaje</button>'}${order.experiments?.guardar_atajo === 'B' && currentStep(order) === 'plan' ? '<button class="btn-quiet edit" type="button" data-save-later>Guardar para más tarde</button>' : ''}</span>`;
   $('[data-save-later]')?.addEventListener('click', () => {
     saveSource = 'atajo';
     $('#save-quote').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -269,6 +275,11 @@ function renderTripLine(order) {
   });
 }
 
+const PLANS_STACKED = matchMedia('(max-width: 960px)');
+PLANS_STACKED.addEventListener('change', () => {
+  const o = store.state.order;
+  if (o && currentStep(o) === 'plan') renderPlans(o);
+});
 let savedFor = null;
 let saveSource = 'formulario'; // A/B: ¿se guardó desde el atajo o desde el formulario al pie?
 function renderPlans(order) {
@@ -297,7 +308,11 @@ function renderPlans(order) {
   }
   const rec = order.recommendation?.plan ?? 'completo';
   $('#plans-reason')?.remove();
-  for (const id of ['esencial', 'completo', 'total']) {
+  // En una columna (móvil y tablet) el recomendado va primero en el HTML, no solo en pantalla:
+  // así el orden del teclado y del lector de pantalla coincide con lo que se ve.
+  const ids = ['esencial', 'completo', 'total'];
+  const ordered = PLANS_STACKED.matches && order.quote.plans[rec]?.available ? [rec, ...ids.filter((x) => x !== rec)] : ids;
+  for (const id of ordered) {
     const p = order.quote.plans[id];
     const isRec = id === rec && p.available;
     const meta = product?.plans.find((x) => x.id === id);

@@ -357,7 +357,11 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
         // A/B «Guardar para más tarde»: B muestra el atajo junto al resumen del viaje. Con AB_GUARDAR_ATAJO=on se reparte 50/50.
         // Para leer el A/B por dispositivo: la web indica si la cotización se hizo en móvil o escritorio.
         device: ['movil', 'escritorio'].includes(input.device) ? input.device : null,
-        experiments: actor === 'agent' ? {} : { guardar_atajo: process.env.AB_GUARDAR_ATAJO === 'on' ? (Math.random() < 0.5 ? 'A' : 'B') : 'B' },
+        experiments: actor === 'agent' ? {} : {
+          guardar_atajo: process.env.AB_GUARDAR_ATAJO === 'on' ? (Math.random() < 0.5 ? 'A' : 'B') : 'B',
+          // A/B «cabecera compacta en móvil»: B agrupa la cabecera de resultados. Con AB_CABECERA_MOVIL=on se reparte 50/50.
+          cabecera_movil: process.env.AB_CABECERA_MOVIL === 'on' ? (Math.random() < 0.5 ? 'A' : 'B') : 'B',
+        },
       };
       reprice(order, ages);
       event(order, actor, 'quote_created');

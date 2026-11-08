@@ -187,6 +187,7 @@ test('conserva la ciudad escrita y registra variante y dispositivo de la cotizac
   assert.equal(o.trip.zone, 'usa_canada');
   assert.equal(o.device, 'movil');
   assert.equal(publicOrder(o).experiments.guardar_atajo, 'B');
+  assert.equal(publicOrder(o).experiments.cabecera_movil, 'B');
   const j = svc.createQuote({ destinations: ['Japón'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }] }, 'agent');
   assert.equal(j.trip.destinations[0].label, undefined); // país escrito tal cual: sin duplicar
   assert.deepEqual(publicOrder(j).experiments, {});
