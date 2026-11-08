@@ -9,6 +9,11 @@ const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const STEPS = ['plan', 'viajeros', 'revision', 'pago', 'poliza'];
+// Resumen de la cancelación dentro de la cotización: decide si compensa pagar más sin salir de los resultados.
+const CANCEL_DETAILS = `<details class="cov-more"><summary>Ver causas y cuándo empieza a cubrir</summary>
+  <div><p>Cubre 10 causas concretas, entre ellas enfermedad grave, accidente u hospitalización tuya o de un familiar cercano, fallecimiento de un familiar, despido o una citación judicial.</p>
+  <p>Si contratas en los 7 días siguientes a tu primera reserva, cubre desde que contratas. Si contratas más tarde, empieza a cubrir 72 horas después. Termina al empezar el viaje.</p>
+  <p><a href="/condiciones#cancelacion" target="_blank" rel="noopener">Ver las 10 causas en las condiciones</a></p></div></details>`;
 const COVERAGE_ORDER = ['Gastos médicos en el extranjero', 'Repatriación o traslado sanitario', 'Cancelación del viaje', 'Robo, pérdida o daños del equipaje', 'Retraso del equipaje (más de 12 h)', 'Retraso del vuelo (más de 6 h)', 'Responsabilidad civil privada', 'Accidentes (fallecimiento o invalidez)'];
 const STEP_OF = { quoted: 'plan', plan_selected: 'viajeros', travelers_set: 'revision', reviewed: 'revision', terms_accepted: 'pago', paid: 'poliza' };
 let viewStep = null; // paso al que vuelve la persona al pulsar en la ruta
@@ -194,7 +199,7 @@ function renderPlans(order) {
     const help = document.createElement('p');
     help.id = 'plans-help';
     help.className = 'plans-help';
-    help.innerHTML = '<span class="help-line">¿Dudas entre dos planes? Alba te ayuda a comparar coberturas. <button type="button" class="human-link" data-open-agent>Hablar con Alba</button></span><span class="help-line">¿Tienes una enfermedad previa? Su cobertura está por confirmar: una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button></span><span class="help-line">¿Qué cubre la cancelación de Completo y Total? <a class="human-link" href="/condiciones#cancelacion">Las 10 causas cubiertas y desde cuándo cubre</a>.</span><span class="help-line">Cómo se usa el seguro: <a class="human-link" href="/condiciones#urgencia">Tengo una urgencia</a>, <a class="human-link" href="/condiciones#reembolso">He pagado un gasto</a> y <a class="human-link" href="/condiciones#desistir">Quiero desistir</a>.</span>';
+    help.innerHTML = '<span class="help-line">¿Dudas entre planes? <button type="button" class="human-link" data-open-agent>Hablar con Alba</button></span><span class="help-line">¿Dudas sobre una enfermedad previa? La cobertura está por confirmar. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button></span>';
     grid.after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';
@@ -219,8 +224,11 @@ function renderPlans(order) {
       <ul class="plan-list">
         ${COVERAGE_ORDER.map((name) => {
           const c = covs.find((x) => x.coverage === name || (name.startsWith('Gastos médicos') && x.coverage.startsWith('Gastos médicos')));
-          if (!c) return missing.includes(name) ? `<li class="is-missing"><span>${esc(shortName(name))}</span><span>No incluido</span></li>` : '';
-          return `<li><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span></li>`;
+          // La fila de cancelación lleva un desplegable en los planes que la incluyen; en el que no, se reserva el mismo alto para que las filas sigan alineadas.
+          const spacer = name === 'Cancelación del viaje' ? '<span class="cov-more-spacer" aria-hidden="true">No incluida en este plan</span>' : '';
+          if (!c) return missing.includes(name) ? `<li class="is-missing${spacer ? ' has-more' : ''}"><span>${esc(shortName(name))}</span><span>No incluido</span>${spacer}</li>` : '';
+          const more = name === 'Cancelación del viaje' ? CANCEL_DETAILS : '';
+          return `<li${more ? ' class="has-more"' : ''}><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span>${more}</li>`;
         }).join('')}
       </ul>
       <div class="plan-unavailable is-empty" aria-hidden="true"></div>
@@ -358,7 +366,7 @@ function renderReview(order) {
     </tbody></table>
     <div class="terms-box">
       <strong>Condiciones (versión ${esc(s.terms.version)})</strong>
-      <ul>${s.terms.key_points.map((k) => `<li>${esc(k)}</li>`).join('')}</ul>
+      <ul>${s.terms.key_points.map((k) => `<li>${esc(k)}${/^Desistimiento/.test(k) ? ' <a href="/condiciones#desistir" target="_blank" rel="noopener">Cómo desistir</a>' : ''}</li>`).join('')}</ul>
       <p style="margin-top:8px"><a href="/ficha-producto.pdf" target="_blank" rel="noopener">Ficha del producto (PDF)</a> y <a href="/condiciones" target="_blank" rel="noopener">condiciones completas</a></p>
     </div>
     <div class="summary-total"><span>Total, impuestos incluidos</span><span>${esc(s.total_text)}</span></div>
@@ -502,7 +510,8 @@ function renderPolicy(order) {
     <div class="actions">
       <a class="btn-primary" href="${esc(p.pdf_url)}" target="_blank" rel="noopener">Descargar la póliza (PDF)</a>
       <button class="btn-secondary" type="button" data-new-quote>Cotizar otro viaje</button>
-      <a class="human-link" href="/condiciones#urgencia">¿Problemas en el viaje? Asistencia 24 h</a>
+      <a class="human-link" href="/condiciones#urgencia">Tengo una urgencia</a>
+      <a class="human-link" href="/condiciones#reembolso">He pagado un gasto</a>
     </div>
     <form class="resend" id="resend-form" novalidate>
       <div class="field"><label for="r-email">¿No te ha llegado? Reenvíala</label><input id="r-email" type="email" value="${esc(order.holder.email)}"></div>

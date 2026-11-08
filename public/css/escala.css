@@ -734,3 +734,16 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 
 .plans-help .help-line { display: block; }
 .plans-help .help-line + .help-line { margin-top: 8px; }
+
+/* Cancelación: detalle desplegable dentro de la fila, sin salir de la cotización */
+.plan-list li.has-more { flex-wrap: wrap; }
+.cov-more { flex-basis: 100%; font-size: var(--fs-xs); color: var(--navy-soft); }
+.cov-more summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; width: fit-content; padding: 2px 0; }
+.cov-more summary:focus-visible { outline: 2px solid var(--navy); outline-offset: 2px; border-radius: 2px; }
+.cov-more > div { display: grid; gap: 6px; padding: 8px 0 4px; }
+.cov-more p { margin: 0; }
+.cov-more-spacer { flex-basis: 100%; font-size: var(--fs-xs); padding: 2px 0; visibility: hidden; }
+@media (max-width: 960px) { .cov-more-spacer { display: none; } }
+
+.plan-list li > span:nth-of-type(2) { font-weight: 600; text-align: right; white-space: nowrap; }
+.plan-list li.is-missing > span:nth-of-type(2) { font-weight: 400; }
