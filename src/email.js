@@ -12,7 +12,7 @@ export function buildPolicyEmail(order, { baseUrl }) {
   const plan = order.quote.plans[order.plan];
   const pdfUrl = `${baseUrl}/api/policies/${order.policy.number}/pdf?token=${order.policy.pdf_token}`;
   const subject = `Tu póliza de viaje Escala ${order.policy.number} (demo, no es un seguro real)`;
-  const destinations = order.trip.destinations.map((d) => d.name).join(', ');
+  const destinations = order.trip.destinations.map((d) => d.label ?? d.name).join(', ');
   const insured = order.travelers.map((t) => esc(t.full_name)).join(', ');
   const text = [
     'Demo — no es un seguro real.',
@@ -55,7 +55,7 @@ export function buildPolicyEmail(order, { baseUrl }) {
 // Transaccional (lo pidió la persona): sin etiquetas promocionales; mismo diseño que el de la póliza.
 export function buildQuoteEmail(order, { baseUrl, plans }) {
   const resumeUrl = `${baseUrl}/retomar/${encodeURIComponent(order.id)}`;
-  const destinations = order.trip.destinations.map((d) => d.name).join(', ');
+  const destinations = order.trip.destinations.map((d) => d.label ?? d.name).join(', ');
   const people = order.quote_ages.length === 1 ? '1 viajero' : `${order.quote_ages.length} viajeros`;
   const dates = `del ${fmtDate(order.trip.start_date)} al ${fmtDate(order.trip.end_date)}`;
   const subject = `Tu cotización de Escala: ${destinations}, ${dates}`;

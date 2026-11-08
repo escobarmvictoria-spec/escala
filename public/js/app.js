@@ -136,7 +136,7 @@ function ageChip(value = '') {
 
 function fillQuoteForm(order) {
   const form = $('#quote-form');
-  form.destination.value = order.trip.destinations.map((d) => d.name).join(', ');
+  form.destination.value = order.trip.destinations.map((d) => d.place ?? d.name).join(', ');
   form.start_date.value = order.trip.start_date;
   form.end_date.value = order.trip.end_date;
   const list = $('#ages-list');
@@ -186,6 +186,7 @@ function initQuoteForm() {
         start_date: form.start_date.value,
         end_date: form.end_date.value,
         travelers: ages.map((a) => ({ age: Number(a) })),
+        device: matchMedia('(max-width: 640px)').matches ? 'movil' : 'escritorio',
       };
       try {
         const data = await api.quote(input);
@@ -215,7 +216,7 @@ function initQuoteForm() {
 function tripLabel(order) {
   const ages = order.travelers?.map((t) => t.age) ?? order.quote.plans.completo.per_traveler.map((t) => t.age);
   const who = ages.length === 1 ? `1 viajero de ${ages[0]} años` : `${ages.length} viajeros (${ages.join(', ')} años)`;
-  return `${order.trip.destinations.map((d) => d.name).join(', ')} · ${who}`;
+  return `${order.trip.destinations.map((d) => d.label ?? d.name).join(', ')} · ${who}`;
 }
 
 // ---------- pasos de compra ----------
@@ -242,13 +243,19 @@ function renderTripLine(order) {
   const t = order.trip;
   const n = order.travelers?.length ?? order.quote.plans.completo.per_traveler.length;
   $('#trip-line').innerHTML = `
-    <strong>${esc(t.destinations.map((d) => d.name).join(', '))}</strong>
+    <strong>${esc(t.destinations.map((d) => d.label ?? d.name).join(', '))}</strong>
     <span>${fmtDate(t.start_date)} – ${fmtDate(t.end_date)}</span>
     <span>${t.days} días</span>
     <span>${n} ${n === 1 ? 'viajero' : 'viajeros'}</span>
-    <span>${esc(t.zone_name)}</span>
+    <span>Zona de cobertura: ${esc(t.zone_name)}</span>
     ${order.plan && order.status !== 'paid' ? `<span class="trip-plan">Plan ${esc(order.quote.plans[order.plan].name)}, ${eur(order.total_eur)}</span>` : ''}
-    ${order.status === 'paid' ? '' : '<button class="btn-quiet edit" type="button" data-edit-trip>Cambiar el viaje</button>'}`;
+    ${order.status === 'paid' ? '' : '<button class="btn-quiet edit" type="button" data-edit-trip>Cambiar el viaje</button>'}
+    ${order.experiments?.guardar_atajo === 'B' && currentStep(order) === 'plan' ? '<button class="btn-quiet edit" type="button" data-save-later>Guardar para más tarde</button>' : ''}`;
+  $('[data-save-later]')?.addEventListener('click', () => {
+    saveSource = 'atajo';
+    $('#save-quote').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    $('#s-email').focus({ preventScroll: true });
+  });
   $('[data-edit-trip]')?.addEventListener('click', () => {
     fillQuoteForm(order);
     $('#cotizar').scrollIntoView({ behavior: 'smooth' });
@@ -257,6 +264,7 @@ function renderTripLine(order) {
 }
 
 let savedFor = null;
+let saveSource = 'formulario'; // A/B: ¿se guardó desde el atajo o desde el formulario al pie?
 function renderPlans(order) {
   const coverages = store.state.coverages;
   if (savedFor !== order.quote_id) {
@@ -360,22 +368,47 @@ function renderTravelers(order) {
   list.innerHTML = ages
     .map((age, i) => {
       const t = order.travelers?.[i];
-      return `<div class="traveler-row">
+      // Si quien contrata también viaja, el viajero 1 se muestra como resumen (su nombre ya está arriba), con «Editar».
+      const summary = i === 0 ? `<p class="traveler-summary" hidden><span>Viajero asegurado · <strong data-t-summary></strong> · <span data-t-summary-age>${esc(age)}</span> años</span><button type="button" class="edit-link" data-t-edit>Editar</button></p>` : '';
+      return `<div class="traveler-row-wrap">${summary}<div class="traveler-row">
         <div class="field"><label for="t-name-${i}">Viajero ${i + 1}: nombre y apellidos</label><input id="t-name-${i}" data-t-name autocomplete="${i === 0 ? 'name' : 'off'}" value="${esc(t?.full_name ?? '')}" required></div>
         <div class="field"><label for="t-age-${i}">Edad</label><input id="t-age-${i}" data-t-age type="number" min="0" max="84" value="${esc(age)}" required></div>
-        <div class="field"><label for="t-doc-${i}">DNI, NIE o pasaporte <span class="optional">(opcional)</span></label><input id="t-doc-${i}" data-t-doc value="${esc(t?.document_id ?? '')}"></div>
-      </div>`;
+      </div></div>`;
     })
     .join('');
+  // Datos opcionales, agrupados: teléfono y un documento por viajero.
+  $('#docs-list').innerHTML = ages
+    .map((_, i) => `<div class="field"><label for="t-doc-${i}">DNI, NIE o pasaporte <span data-doc-who="${i}">del viajero ${i + 1}</span></label><input id="t-doc-${i}" data-t-doc value="${esc(order.travelers?.[i]?.document_id ?? '')}"></div>`)
+    .join('');
+  $('#optional-data').open = Boolean(order.holder?.phone || order.travelers?.some((t) => t.document_id));
   const firstName = $('[data-t-name]', list);
-  const syncHolder = () => {
-    if ($('#holder-travels').checked && firstName && (!firstName.value || firstName.dataset.mirrored === '1')) {
-      firstName.value = form.holder_name.value;
-      firstName.dataset.mirrored = '1';
-    }
+  const firstAge = $('[data-t-age]', list);
+  const summary = $('.traveler-summary', list);
+  const row0 = list.querySelector('.traveler-row');
+  let editing = Boolean(order.travelers?.[0] && order.holder && order.travelers[0].full_name !== order.holder.full_name);
+  if (order.holder && order.travelers?.[0]) $('#holder-travels').checked = order.travelers[0].full_name === order.holder.full_name;
+  firstName.dataset.mirrored = !order.travelers?.[0] || order.travelers[0].full_name === order.holder?.full_name ? '1' : '0';
+  const docWho = () => $$('[data-doc-who]').forEach((el) => {
+    const n = $$('[data-t-name]', list)[Number(el.dataset.docWho)]?.value.trim();
+    el.textContent = n ? `de ${n}` : `del viajero ${Number(el.dataset.docWho) + 1}`;
+  });
+  const sync = () => {
+    const travels = $('#holder-travels').checked;
+    if (travels && firstName.dataset.mirrored === '1') firstName.value = form.holder_name.value;
+    const collapsed = travels && firstName.dataset.mirrored === '1' && !editing;
+    summary.hidden = !collapsed;
+    row0.hidden = collapsed;
+    $('[data-t-summary]', summary).textContent = form.holder_name.value.trim() || 'tu nombre';
+    $('[data-t-summary-age]', summary).textContent = firstAge.value;
+    if (!travels && firstName.dataset.mirrored === '1') { firstName.value = ''; }
+    docWho();
   };
-  form.holder_name.oninput = syncHolder;
-  firstName.oninput = () => (firstName.dataset.mirrored = '0');
+  form.holder_name.oninput = sync;
+  $('#holder-travels').onchange = () => { if ($('#holder-travels').checked) { firstName.dataset.mirrored = '1'; editing = false; } sync(); };
+  firstName.oninput = () => { firstName.dataset.mirrored = '0'; docWho(); };
+  $$('[data-t-name]', list).slice(1).forEach((el) => (el.oninput = docWho));
+  $('[data-t-edit]', summary).onclick = () => { editing = true; sync(); firstName.focus(); };
+  sync();
 }
 
 function initTravelersForm() {
@@ -385,12 +418,14 @@ function initTravelersForm() {
     showError(form, null);
     const order = store.state.order;
     const rows = $$('.traveler-row', form);
+    const docs = $$('[data-t-doc]', form);
+    if ($('#holder-travels').checked && $('[data-t-name]', rows[0]).dataset.mirrored === '1') $('[data-t-name]', rows[0]).value = form.holder_name.value;
     const payload = {
       holder: { full_name: form.holder_name.value.trim(), email: form.holder_email.value.trim(), phone: form.holder_phone.value.trim() || undefined },
-      travelers: rows.map((r) => ({
+      travelers: rows.map((r, i) => ({
         full_name: $('[data-t-name]', r).value.trim(),
         age: Number($('[data-t-age]', r).value),
-        document_id: $('[data-t-doc]', r).value.trim() || undefined,
+        document_id: docs[i]?.value.trim() || undefined,
       })),
     };
     await busy($('button[type=submit]', form), async () => {
@@ -424,7 +459,7 @@ function renderReview(order) {
     <div class="summary-total summary-total-top"><span>${esc(s.plan.name)}, total con impuestos</span><span>${esc(s.total_text)}</span></div>
     <dl class="summary-grid">
       <div><dt>Plan</dt><dd>${esc(s.plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
-      <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}</dd></div>
+      <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}<br><span class="optional">Zona de cobertura: ${esc(s.trip.zone)}</span></dd></div>
       <div><dt>Fechas</dt><dd>${fmtDate(s.trip.start_date)} – ${fmtDate(s.trip.end_date)} (${s.trip.days} días)</dd></div>
       <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional">${esc(s.holder.email)}</span></dd></div>
     </dl>
@@ -494,7 +529,7 @@ function renderPay(order) {
   $('#pay-summary').innerHTML = `
     <div class="pay-total"><span>Vas a contratar</span><strong>${eur(order.total_eur)}</strong></div>
     <dl>
-      <div><dt>Destino</dt><dd>${esc(t.destinations.map((d) => d.name).join(', '))}</dd></div>
+      <div><dt>Destino</dt><dd>${esc(t.destinations.map((d) => d.label ?? d.name).join(', '))}</dd></div>
       <div><dt>Fechas</dt><dd>${fmtDate(t.start_date)} – ${fmtDate(t.end_date)} (${t.days} días)</dd></div>
       <div><dt>Plan</dt><dd>${esc(plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
       <div><dt>${names.length === 1 ? 'Asegurado' : 'Asegurados'}</dt><dd>${names.map(esc).join(', ')} <button type="button" class="edit-link" data-goto="viajeros">Editar</button></dd></div>
@@ -559,7 +594,7 @@ function renderPolicy(order) {
   const sheet = $('#policy-sheet');
   const p = order.policy;
   const plan = order.quote.plans[order.plan];
-  const destinations = order.trip.destinations.map((d) => d.name).join(', ');
+  const destinations = order.trip.destinations.map((d) => d.label ?? d.name).join(', ');
   // El momento en que el mensaje de marca es literalmente cierto: el viaje ya está protegido.
   sheet.innerHTML = `
     <div class="policy-hero">
@@ -983,7 +1018,8 @@ function initSaveQuote() {
     if (!order) return;
     await busy($('button', form), async () => {
       try {
-        const data = await api.saveQuote(order.quote_id, { email: form.email.value });
+        const data = await api.saveQuote(order.quote_id, { email: form.email.value, source: saveSource });
+        saveSource = 'formulario';
         const link = data.resume_url || `${location.origin}/retomar/${order.quote_id}`;
         const msg =
           data.email.status === 'sent'

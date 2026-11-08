@@ -176,3 +176,15 @@ test('si la cancelación no llegaría a activarse, la recomendación y el resume
   o.plan = 'completo';
   assert.equal(summaryOf(o).cancellation_warning, undefined);
 });
+
+test('conserva la ciudad escrita y registra variante y dispositivo de la cotización web', () => {
+  const { svc } = service();
+  const o = svc.createQuote({ destinations: ['Nueva York'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }], device: 'movil' }, 'web');
+  assert.deepEqual(o.trip.destinations[0], { code: 'US', name: 'Estados Unidos', place: 'Nueva York', label: 'Nueva York, Estados Unidos' });
+  assert.equal(o.trip.zone, 'usa_canada');
+  assert.equal(o.device, 'movil');
+  assert.equal(publicOrder(o).experiments.guardar_atajo, 'B');
+  const j = svc.createQuote({ destinations: ['Japón'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }] }, 'agent');
+  assert.equal(j.trip.destinations[0].label, undefined); // país escrito tal cual: sin duplicar
+  assert.deepEqual(publicOrder(j).experiments, {});
+});

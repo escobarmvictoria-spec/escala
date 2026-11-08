@@ -106,7 +106,7 @@ function resolveDestinations(input) {
     throw new ApiError('missing_destination', 'Falta el destino del viaje.', { field: 'destinations', hint: 'Indica al menos un país.' });
   // Si hay varios destinos, manda la zona más cara.
   const zone = resolved.map((r) => r.zone).sort((a, b) => ZONE_ORDER.indexOf(b) - ZONE_ORDER.indexOf(a))[0];
-  return { destinations: resolved.map((r) => ({ code: r.code, name: r.name })), zone };
+  return { destinations: resolved.map((r) => ({ code: r.code, name: r.name, ...(r.place ? { place: r.place, label: `${r.place}, ${r.name}` } : {}) })), zone };
 }
 
 function validateTrip({ start_date, end_date }) {
@@ -214,6 +214,7 @@ export function publicOrder(order) {
     quote: order.quote,
     recommendation: order.quote ? recommendationFor(order) : null,
     cancellation_check: order.cancellation_check ?? null,
+    experiments: order.experiments ?? {},
     holder: order.holder,
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,
@@ -326,6 +327,10 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
         payment: null,
         policy: null,
         events: [],
+        // A/B «Guardar para más tarde»: B muestra el atajo junto al resumen del viaje. Con AB_GUARDAR_ATAJO=on se reparte 50/50.
+        // Para leer el A/B por dispositivo: la web indica si la cotización se hizo en móvil o escritorio.
+        device: ['movil', 'escritorio'].includes(input.device) ? input.device : null,
+        experiments: actor === 'agent' ? {} : { guardar_atajo: process.env.AB_GUARDAR_ATAJO === 'on' ? (Math.random() < 0.5 ? 'A' : 'B') : 'B' },
       };
       reprice(order, ages);
       event(order, actor, 'quote_created');
@@ -348,7 +353,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
           field: 'user_agreed',
           hint: 'Pregunta al usuario si quiere recibir la cotización por email y envía user_agreed: true solo si dice que sí.',
         });
-      order.saved = { email, at: new Date().toISOString(), by: actor, count: (order.saved?.count ?? 0) + 1 };
+      order.saved = { email, at: new Date().toISOString(), by: actor, count: (order.saved?.count ?? 0) + 1, source: input.source === 'atajo' ? 'atajo' : 'formulario' };
       event(order, actor, 'quote_saved', email);
       store.putOrder(order);
       return order;
@@ -361,7 +366,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
       if (!original)
         throw new ApiError('quote_not_found', `No existe ninguna cotización con quote_id "${id}".`, { field: 'quote_id', status: 404, hint: 'Pide una cotización nueva.' });
       if (original.status === 'paid') return { order: original, resumed: 'already_paid' };
-      const prefill = { destinations: original.trip.destinations.map((d) => d.name), ages: original.quote_ages };
+      const prefill = { destinations: original.trip.destinations.map((d) => d.place ?? d.name), ages: original.quote_ages };
       if (original.trip.start_date < todayMadrid())
         throw new ApiError('start_in_past', 'La fecha de salida de esta cotización ya ha pasado.', {
           status: 410,
@@ -372,7 +377,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
       let order = original;
       if (!fresh) {
         order = this.createQuote(
-          { destinations: original.trip.destinations.map((d) => d.code ?? d.name), start_date: original.trip.start_date, end_date: original.trip.end_date, travelers: original.quote_ages.map((age) => ({ age })) },
+          { destinations: original.trip.destinations.map((d) => d.place ?? d.code ?? d.name), start_date: original.trip.start_date, end_date: original.trip.end_date, travelers: original.quote_ages.map((age) => ({ age })) },
           actor
         );
         order.channel = original.channel;
@@ -632,7 +637,7 @@ export function summaryOf(order) {
   return {
     plan: { id: order.plan, name: p.name },
     trip: {
-      destinations: order.trip.destinations.map((d) => d.name).join(', '),
+      destinations: order.trip.destinations.map((d) => d.label ?? d.name).join(', '),
       zone: order.trip.zone_name,
       start_date: order.trip.start_date,
       end_date: order.trip.end_date,

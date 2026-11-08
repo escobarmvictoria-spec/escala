@@ -304,7 +304,16 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .sheet h3:not(:first-child) { margin-top: var(--s-3); }
 .sheet-help { color: var(--navy-soft); margin-top: -8px; font-size: var(--fs-sm); }
 .traveler-row { display: grid; grid-template-columns: 2fr 0.7fr 1.3fr; gap: var(--s-3); padding: var(--s-4) 0; border-top: 1px solid var(--line); }
-.traveler-row:first-child { border-top: 0; padding-top: 0; }
+.traveler-row-wrap + .traveler-row-wrap { border-top: 1px solid var(--line); }
+.traveler-row-wrap .traveler-row { border-top: 0; }
+.traveler-row-wrap:first-child .traveler-row { padding-top: 0; }
+.traveler-row { grid-template-columns: 2fr 0.7fr; }
+.traveler-summary { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--s-2) var(--s-3); margin: 0; padding: var(--s-3) var(--s-4); border-radius: var(--r-m); background: var(--ivory); font-size: var(--fs-sm); }
+.traveler-row-wrap:not(:first-child) .traveler-summary { margin-top: var(--s-4); }
+.optional-data { margin-top: var(--s-4); border-top: 1px solid var(--line); padding-top: var(--s-3); }
+.optional-data summary { cursor: pointer; font-weight: 600; font-size: var(--fs-sm); padding: 10px 0; }
+.optional-fields { display: grid; gap: var(--s-3); padding-top: var(--s-2); }
+#docs-list { display: grid; gap: var(--s-3); }
 .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
 .test-card { background: var(--teal-soft); border-radius: var(--r-m); padding: 12px 14px; font-size: var(--fs-sm); }
 .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px 24px; margin: 0; }
@@ -580,8 +589,7 @@ body.is-checkout .home-section { display: none; }
   .brand-mark { width: 30px; height: 30px; }
   .brand-word { font-size: 1.4rem; }
   .agent-toggle-label { font-size: var(--fs-xs); }
-  .traveler-row { grid-template-columns: 1fr 1fr; }
-  .traveler-row .field:first-child { grid-column: 1 / -1; }
+  .traveler-row { grid-template-columns: minmax(0, 1fr) 6.5rem; }
   .route button { font-size: 0.72rem; }
   .footer-grid { grid-template-columns: 1fr; }
 }

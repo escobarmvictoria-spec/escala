@@ -51,6 +51,17 @@ En la competencia: Heymondo explica los plazos y deja añadir cancelación desde
 - **Lectura aparte:** qué elige quien recibe el aviso de que la cancelación no se activaría. Si parte de ese grupo elige un plan más barato y compra, es un buen resultado aunque baje el importe medio: menos reclamaciones y menos desistimientos.
 - Cada comprobación queda registrada en el pedido (`cancellation_checked`), así que se puede cruzar con el plan elegido.
 
+## Test con mejor ICE: «Guardar para más tarde» en móvil
+
+Salió de una auditoría del flujo en móvil a 390 px. Guardar la cotización funcionaba, pero en Nueva York había unos 2.250 px entre «Elegir Total» y «Enviarme la cotización». Quien quiere decidir más tarde tenía que bajar por las tres tarjetas y las ayudas hasta llegar al formulario. ICE estimado: 8 × 9 × 9 = 648, el más alto de los cinco hallazgos.
+
+- **Hipótesis:** ofrecer «Guardar para más tarde» junto al resumen del viaje en móvil hará que más personas retomen y completen su compra.
+- **A:** el formulario al pie, como hasta ahora. **B:** además, un enlace «Guardar para más tarde» junto a «Cambiar el viaje» que lleva al mismo formulario. No hay un campo de email nuevo arriba.
+- **Métrica principal:** pólizas emitidas en los 7 días siguientes, por cotización hecha en móvil.
+- **Lecturas aparte:** cuántas cotizaciones se guardan y cuántas avanzan a Viajeros en la misma sesión. Así se distingue si el atajo recupera compras que se iban a perder o si solo aplaza compras que habrían ocurrido en el momento.
+
+Ya está implementado. Cada cotización web guarda su variante (`experiments.guardar_atajo`) y el dispositivo (`device`: `movil` o `escritorio`). Al guardar, se registra si fue desde el atajo o desde el formulario (`saved.source`). Por defecto todas las cotizaciones ven B. Con `AB_GUARDAR_ATAJO=on` en `.env`, se reparten 50/50. Lo que falta es el informe del A/B en `/panel`: los datos ya quedan en cada pedido.
+
 ## Primera versión del experimento
 
 Antes de tener la frase, el planteamiento era A = Completo recomendado siempre, B = Total recomendado en EE. UU. y Canadá, con métrica principal de pólizas por cada 100 cotizaciones. Esa decisión ya se tomó a favor de B (recomendar según el destino); lo que queda por medir es si la frase del sello ayuda.

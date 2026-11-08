@@ -150,12 +150,16 @@
               <div class="field"><label for="h-name">Nombre y apellidos</label><input id="h-name" name="holder_name" autocomplete="name" required></div>
               <div class="field"><label for="h-email">Email</label><input id="h-email" name="holder_email" type="email" autocomplete="email" required></div>
             </div>
-            <div class="field-row">
-              <div class="field"><label for="h-phone">Teléfono <span class="optional">(opcional)</span></label><input id="h-phone" name="holder_phone" type="tel" autocomplete="tel"></div>
-              <label class="check"><input type="checkbox" id="holder-travels" checked> También viajo</label>
-            </div>
+            <label class="check"><input type="checkbox" id="holder-travels" checked> También viajo</label>
             <h3>Viajeros asegurados</h3>
             <div id="travelers-list"></div>
+            <details class="optional-data" id="optional-data">
+              <summary>Añadir datos opcionales <span class="optional">(teléfono y documento)</span></summary>
+              <div class="optional-fields">
+                <div class="field"><label for="h-phone">Teléfono de contacto</label><input id="h-phone" name="holder_phone" type="tel" autocomplete="tel"></div>
+                <div id="docs-list"></div>
+              </div>
+            </details>
             <p class="form-error" role="alert" hidden></p>
             <div class="actions"><button class="btn-primary" type="submit">Revisar el resumen</button></div>
           </form>

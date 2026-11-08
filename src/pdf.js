@@ -77,7 +77,11 @@ export function renderPolicyPdf(order) {
     doc.font('bold').fontSize(9).fillColor(C.grey).text('Plan', L + 14, y + 10);
     doc.font('display').fontSize(20).fillColor(C.ink).text(plan.name, L + 14, y + 22);
     doc.font('bold').fontSize(9).fillColor(C.grey).text('Destino', L + 150, y + 10);
-    doc.font('bold').fontSize(11).fillColor(C.ink).text(order.trip.destinations.map((d) => d.name).join(', '), L + 150, y + 24, { width: 170 });
+    // Con la ciudad si cabe en una línea («Nueva York, Estados Unidos»); si no, solo los países.
+    doc.font('bold').fontSize(11);
+    const withPlace = order.trip.destinations.map((d) => d.label ?? d.name).join(', ');
+    const destText = doc.widthOfString(withPlace) <= 170 ? withPlace : order.trip.destinations.map((d) => d.name).join(', ');
+    doc.fillColor(C.ink).text(destText, L + 150, y + 24, { width: 170, height: 14, ellipsis: true });
     doc.font('body').fontSize(8.5).fillColor(C.grey).text(order.trip.zone_name, L + 150, y + 39, { width: 170 });
     doc.font('bold').fontSize(9).fillColor(C.grey).text('Fechas de cobertura', L + 335, y + 10);
     doc.font('bold').fontSize(11).fillColor(C.ink).text(`${fmtDate(order.trip.start_date)} – ${fmtDate(order.trip.end_date)}`, L + 335, y + 24);

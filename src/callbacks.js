@@ -70,7 +70,7 @@ export function createCallbackService({ store, notifyTeam }) {
           context = {
             quote_id: order.id,
             status: order.status,
-            trip: `${order.trip.destinations.map((d) => d.name).join(', ')}, ${order.trip.start_date} a ${order.trip.end_date} (${order.trip.days} días)`,
+            trip: `${order.trip.destinations.map((d) => d.label ?? d.name).join(', ')}, ${order.trip.start_date} a ${order.trip.end_date} (${order.trip.days} días)`,
             travelers: (order.travelers ?? order.quote_ages.map((age) => ({ age }))).map((t) => (t.full_name ? `${t.full_name} (${t.age})` : `${t.age} años`)).join(', '),
             plan: p ? `${p.name}, ${formatEur(p.total_eur)}` : null,
           };

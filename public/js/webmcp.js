@@ -118,7 +118,7 @@ const TOOLS = [
         quote_id: o.quote_id,
         valid_until: o.expires_at,
         trip: {
-          destinations: o.trip.destinations.map((d) => d.name),
+          destinations: o.trip.destinations.map((d) => d.label ?? d.name),
           zone: o.trip.zone_name,
           start_date: o.trip.start_date,
           end_date: o.trip.end_date,

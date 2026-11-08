@@ -230,7 +230,12 @@ export function resolveDestination(input) {
     return { region: true, code: null, name: raw, zone };
   }
   const code = index.get(key);
-  if (code) return { code, name: countryName(code), zone: zoneOf(code) };
+  if (code) {
+    // Si escribió una ciudad o isla («Nueva York»), se conserva para mostrar «Nueva York, Estados Unidos».
+    const place = PLACE_BY_KEY.get(key);
+    const name = countryName(code);
+    return { code, name, zone: zoneOf(code), ...(place && normalize(place) !== normalize(name) ? { place } : {}) };
+  }
   // Sugerencias por cercanía de texto
   const scored = [];
   for (const [k, c] of index) {
@@ -284,6 +289,7 @@ const PLACE_SUGGESTIONS = [
   'Nueva Delhi', 'Sídney', 'Melbourne', 'Maldivas', 'Zanzíbar', 'Ciudad del Cabo', 'Mallorca', 'Ibiza', 'Menorca', 'Tenerife', 'Gran Canaria', 'Canarias', 'Baleares',
   'Madrid', 'Barcelona', 'Sevilla', 'Valencia', 'Inglaterra', 'Escocia',
 ];
+const PLACE_BY_KEY = new Map(PLACE_SUGGESTIONS.map((p) => [normalize(p), p]));
 const REGION_SUGGESTIONS = ['Europa', 'Zona Schengen', 'Asia', 'Sudeste asiático', 'Latinoamérica', 'Caribe', 'África', 'Oriente Medio', 'Oceanía', 'Norteamérica', 'Todo el mundo'];
 
 export function placeSuggestions() {
