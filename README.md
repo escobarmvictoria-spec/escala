@@ -2,7 +2,7 @@
 
 **Demo — no es un seguro real.** Marca inventada, pagos de prueba y pólizas sin validez.
 
-Escala vende seguro de viaje con tres planes (Esencial, Completo y Total). Lo puede contratar una persona en la web o un agente de IA de punta a punta con **12 herramientas WebMCP**: cotizar → elegir plan → datos → revisar y aceptar → pagar → póliza en PDF por email. Claro, humano y listo para IA.
+Escala vende seguro de viaje con tres planes (Esencial, Completo y Total). Lo puede contratar una persona en la web o un agente de IA de punta a punta con **13 herramientas WebMCP**: cotizar → elegir plan → datos → revisar y aceptar → pagar → póliza en PDF por email. Claro, humano y listo para IA.
 
 ## Probarlo
 

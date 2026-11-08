@@ -43,6 +43,8 @@ export class ApiFailure extends Error {
 const CARD_HELP = 'En la demo funciona la tarjeta de prueba 4242 4242 4242 4242.';
 const HUMAN_ERRORS = {
   missing_destination: () => 'Escribe a dónde viajas.',
+  invalid_first_booking_date: () => 'Elige la fecha de tu primera reserva.',
+  first_booking_in_future: () => 'La primera reserva no puede ser posterior a hoy. Si aún no has reservado nada, la cancelación cubre desde que contrates.',
   unknown_destination: (e) => {
     const typed = /"(.+)"/.exec(e.message)?.[1];
     const guess = /¿Querías decir ([^?]+)\?/.exec(e.how_to_fix ?? '')?.[1]?.replace(/\s*\([A-Z]{2}\)/g, '');
@@ -114,6 +116,7 @@ export const api = {
   policy: (number, actor) => request('GET', `/api/policies/${encodeURIComponent(number)}`, null, actor),
   resend: (number, email, actor) => request('POST', `/api/policies/${encodeURIComponent(number)}/resend`, email ? { email } : {}, actor),
   callback: (input, actor) => request('POST', '/api/callbacks', input, actor),
+  cancellationCheck: (id, firstBookingDate, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/cancellation-check`, { first_booking_date: firstBookingDate }, actor),
   saveQuote: (id, input, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/save`, input, actor),
   resumeQuote: (id, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/resume`, {}, actor),
   agentStatus: () => request('GET', '/api/agent/status'),

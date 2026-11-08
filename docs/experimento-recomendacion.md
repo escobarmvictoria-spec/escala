@@ -40,6 +40,17 @@ El dato clave: Heymondo destaca para EE. UU. un plan con 5 millones de euros, el
 - **Decisión:** si B mejora el avance a Viajeros sin empeorar la emisión, se queda la frase. Si no mueve el avance, se simplifica a solo el sello. Si sube la mezcla de Total pero cae la emisión, se revisa el texto de EE. UU.
 - **Lo único que faltaría implementar:** asignar la variante A o B a cada cotización y guardarla en el pedido, para cortar el embudo por variante.
 
+## Siguiente experimento: ¿la cancelación llegaría a cubrir?
+
+Dentro de «Ver causas y cuándo empieza a cubrir», una pregunta opcional, «¿Cuándo hiciste tu primera reserva?», aplica la regla de las condiciones a las fechas de la cotización (cubre desde la contratación si es en los 7 días siguientes a la primera reserva; si no, 72 horas después; termina al empezar el viaje). Si no llegaría a activarse antes de salir, lo dice antes de elegir plan. La web y los agentes (`check_cancellation_start`) consultan la misma regla en el servidor y dan la misma respuesta.
+
+En la competencia: Heymondo explica los plazos y deja añadir cancelación desde los resultados; InterMundial deja elegir qué reservas asegurar y ajusta el precio; IATI publica las reglas de activación y carencia. En sus páginas públicas no encontramos una respuesta personalizada a las fechas del viajero junto al precio del plan. Es una oportunidad que explorar, no una exclusiva.
+
+- **A:** el desplegable actual. **B:** el mismo desplegable con el cálculo opcional.
+- **Métrica principal:** pólizas emitidas por cotización.
+- **Lectura aparte:** qué elige quien recibe el aviso de que la cancelación no se activaría. Si parte de ese grupo elige un plan más barato y compra, es un buen resultado aunque baje el importe medio: menos reclamaciones y menos desistimientos.
+- Cada comprobación queda registrada en el pedido (`cancellation_checked`), así que se puede cruzar con el plan elegido.
+
 ## Primera versión del experimento
 
 Antes de tener la frase, el planteamiento era A = Completo recomendado siempre, B = Total recomendado en EE. UU. y Canadá, con métrica principal de pólizas por cada 100 cotizaciones. Esa decisión ya se tomó a favor de B (recomendar según el destino); lo que queda por medir es si la frase del sello ayuda.

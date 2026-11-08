@@ -14,6 +14,7 @@ import { ApiError } from './src/errors.js';
 import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVELERS, MAX_AGE, coveragesFor, destinationList, placeSuggestions } from './src/catalog.js';
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
 import { agentSystemPrompt } from './src/agent-prompt.js';
+import { cancellationStart } from './src/cancellation.js';
 import { createCallbackService, publicCallback, teamEmail, CALLBACK_REASONS } from './src/callbacks.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -185,6 +186,15 @@ api.post('/quotes', (req, res) => {
 api.get('/quotes/:id', (req, res) => {
   const order = orders.load(req.params.id);
   res.json({ ok: true, order: publicOrder(order), plans: Object.values(order.quote.plans).map(planSummary), coverages_by_plan: coveragesByPlan(order.trip.zone) });
+});
+
+// ¿La cancelación empezaría a cubrir antes de salir? La misma regla para la web y para los agentes.
+api.post('/quotes/:id/cancellation-check', rateLimit(30, 60000), (req, res) => {
+  const order = orders.load(req.params.id);
+  const check = cancellationStart({ firstBookingDate: req.body?.first_booking_date, departureDate: order.trip.start_date });
+  order.events.push({ at: new Date().toISOString(), actor: actorOf(req), action: 'cancellation_checked', detail: check.covered_before_departure ? check.rule : 'despues_de_salir' });
+  store.putOrder(order);
+  res.json({ ok: true, quote_id: order.id, departure_date: order.trip.start_date, ...check });
 });
 
 // Guardar la cotización y enviarla por email con un enlace para retomarla (recuperación de abandonos).

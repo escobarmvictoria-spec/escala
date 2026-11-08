@@ -12,7 +12,7 @@
 - Precio final con impuestos (IPS 8 %). Menores −40 %, grupos de 3 o más −10 %.
 
 ## Para agentes de IA
-- La página principal registra herramientas WebMCP: get_quote, select_plan, set_travelers, review_order, accept_terms, pay, get_policy, get_product_info, get_order_status, resend_policy_email, save_quote, request_human_callback.
+- La página principal registra herramientas WebMCP: get_quote, select_plan, set_travelers, review_order, accept_terms, pay, get_policy, get_product_info, check_cancellation_start, get_order_status, resend_policy_email, save_quote, request_human_callback.
 - Si el cliente quiere pensarlo, save_quote le envía la cotización por email con un enlace para retomar la compra (un solo email, con su conformidad).
 - Si el caso no se puede contratar online o el cliente prefiere hablar con alguien, request_human_callback pide que una persona del equipo le llame.
 - Flujo: get_quote → select_plan → set_travelers → review_order → accept_terms → pay → get_policy.

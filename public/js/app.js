@@ -13,6 +13,11 @@ const STEPS = ['plan', 'viajeros', 'revision', 'pago', 'poliza'];
 const CANCEL_DETAILS = `<details class="cov-more"><summary>Ver causas y cuándo empieza a cubrir</summary>
   <div><p>Cubre 10 causas concretas, entre ellas enfermedad grave, accidente u hospitalización tuya o de un familiar cercano, fallecimiento de un familiar, despido o una citación judicial.</p>
   <p>Si contratas en los 7 días siguientes a tu primera reserva, cubre desde que contratas. Si contratas más tarde, empieza a cubrir 72 horas después. Termina al empezar el viaje.</p>
+  <form class="cancel-check" novalidate>
+    <label>¿Cuándo hiciste tu primera reserva? <span class="optional">(opcional)</span><input type="date" name="first_booking" required></label>
+    <button type="submit" class="btn-secondary btn-small">Comprobar para mis fechas</button>
+    <p class="cancel-result" role="status" hidden></p>
+  </form>
   <p><a href="/condiciones#cancelacion" target="_blank" rel="noopener">Ver las 10 causas en las condiciones</a></p></div></details>`;
 const COVERAGE_ORDER = ['Gastos médicos en el extranjero', 'Repatriación o traslado sanitario', 'Cancelación del viaje', 'Robo, pérdida o daños del equipaje', 'Retraso del equipaje (más de 12 h)', 'Retraso del vuelo (más de 6 h)', 'Responsabilidad civil privada', 'Accidentes (fallecimiento o invalidez)'];
 const STEP_OF = { quoted: 'plan', plan_selected: 'viajeros', travelers_set: 'revision', reviewed: 'revision', terms_accepted: 'pago', paid: 'poliza' };
@@ -20,7 +25,37 @@ let viewStep = null; // paso al que vuelve la persona al pulsar en la ruta
 let product = null;
 let lastRenderedStep = null;
 let loadingSummary = false;
-let browsingHome = false; // la persona abrió una sección de la portada (p. ej. Coberturas) en mitad de la compra
+let browsingHome = false;
+
+// «¿Cuándo hiciste tu primera reserva?»: aplica la regla de la cancelación a las fechas de esta cotización.
+// La web y los agentes consultan la misma regla en el servidor (check_cancellation_start).
+document.addEventListener('submit', async (ev) => {
+  const form = ev.target.closest('.cancel-check');
+  if (!form) return;
+  ev.preventDefault();
+  const out = $('.cancel-result', form);
+  const order = store.state.order;
+  if (!order) return;
+  if (!form.first_booking.value) {
+    out.textContent = 'Elige la fecha de tu primera reserva (vuelo, alojamiento…).';
+    out.className = 'cancel-result is-error';
+    out.hidden = false;
+    return;
+  }
+  await busy($('button', form), async () => {
+    try {
+      const r = await api.cancellationCheck(order.quote_id, form.first_booking.value);
+      out.textContent = r.message;
+      out.className = `cancel-result ${r.covered_before_departure ? 'is-ok' : 'is-warn'}`;
+      // La misma respuesta en Completo y en Total: la regla no depende del plan.
+      $$('.cancel-check').forEach((f) => { if (f !== form) { f.first_booking.value = form.first_booking.value; const o = $('.cancel-result', f); o.textContent = r.message; o.className = out.className; o.hidden = false; } });
+    } catch (err) {
+      out.textContent = humanError(err);
+      out.className = 'cancel-result is-error';
+    }
+    out.hidden = false;
+  });
+}); // la persona abrió una sección de la portada (p. ej. Coberturas) en mitad de la compra
 
 // Durante la compra la portada se oculta; un enlace a una de sus secciones la vuelve a mostrar sin perder la compra.
 document.addEventListener('click', (ev) => {

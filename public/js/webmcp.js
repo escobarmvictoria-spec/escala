@@ -341,6 +341,25 @@ const TOOLS = [
     },
   },
   {
+    name: 'check_cancellation_start',
+    title: 'Comprobar cuándo empezaría a cubrir la cancelación',
+    description:
+      'Read-only. Tells whether trip cancellation (included in Completo and Total) would start covering before departure if the user buys now. Rule: buying within 7 days of the first booking covers from purchase; later, cover starts 72 hours after purchase; it ends when the trip starts. Use it when cancellation is a reason to choose Completo or Total, or when the user asks: ask the user when they made their first booking (flight, hotel…). If it would not start before departure, say so before they choose a plan.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        quote_id: { type: 'string' },
+        first_booking_date: { type: 'string', description: 'Date of the first booking for this trip, YYYY-MM-DD.' },
+      },
+      required: ['quote_id', 'first_booking_date'],
+    },
+    annotations: { readOnlyHint: true },
+    async run({ quote_id, first_booking_date }) {
+      const data = await api.cancellationCheck(quote_id, first_booking_date, AGENT);
+      return { ok: true, covered_before_departure: data.covered_before_departure, starts_at: data.starts_at_text, rule: data.rule, tell_the_user: data.message };
+    },
+  },
+  {
     name: 'save_quote',
     title: 'Enviar la cotización por email para decidir más tarde',
     description:

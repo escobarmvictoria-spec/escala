@@ -755,3 +755,13 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
   .plan-switch:not([hidden]) { position: sticky; top: var(--band-h, 0px); z-index: 5; box-shadow: 0 6px 12px -8px rgba(25, 35, 63, .25); }
   #coberturas { padding-bottom: calc(var(--s-6) + 88px); }
 }
+
+/* Cancelación: comprobar si empezaría a cubrir antes de salir, con las fechas de la cotización */
+.cancel-check { display: grid; gap: 8px; padding: 10px 12px; background: var(--ivory); border-radius: var(--r-s); }
+.cancel-check label { display: grid; gap: 6px; font-weight: 600; color: var(--navy); }
+.cancel-check input[type=date] { min-height: 40px; font: inherit; padding: 6px 10px; border: 1px solid var(--line-strong); border-radius: var(--r-s); background: var(--white); max-width: 220px; }
+.cancel-check .btn-small { justify-self: start; }
+.cancel-result { margin: 0; padding: 8px 10px; border-radius: var(--r-s); font-weight: 500; }
+.cancel-result.is-ok { background: var(--teal-soft); color: var(--teal-deep); }
+.cancel-result.is-warn { background: var(--yellow-soft); color: var(--navy); }
+.cancel-result.is-error { background: var(--error-soft); color: var(--error); }
