@@ -25,9 +25,9 @@ En un Ubuntu: `git clone` del repositorio, `bash deploy/setup.sh` (instala Node 
 
 - **Precios de mercado:** `(base + tarifa por día) × factor de edad`, por zona y plan, IPS incluido. Calibrado con 41 precios publicados y 26 cotizaciones hechas a mano en Heymondo, IATI e InterMundial el 7/11/2026; error medio del 9,2 % y un 4 % por debajo de la mediana.
 - **Plan recomendado según el destino:** Total para EE. UU. y Canadá, Completo en el resto, y el sello dice qué gana la persona con ese plan. Misma regla para la web y los agentes. La duración queda como hipótesis; el experimento A/B para medirlo está en docs/.
-- **Medido, no supuesto:** `npm run eval` simula 19 clientes (compras, casos difíciles, casos en los que no hay que vender, como un viaje que sale de Lisboa, y una clienta que lo quiere pensar). Resultado: **19/19**, verificado contra el servidor. Y `npm run eval:pair` comprueba un contraste en la misma cotización: preguntar por Completo la deja sin plan, «Me quedo con Completo» inicia la contratación y el pago espera el sí después del resumen (19/19).
+- **Medido, no supuesto:** `npm run eval` simula 19 clientes (compras, casos difíciles, casos en los que no hay que vender, como un viaje que sale de Lisboa, y una clienta que lo quiere pensar). Resultado: **19/19**, verificado contra el servidor. Y `npm run eval:pair` comprueba un contraste en la misma cotización: preguntar por Completo la deja sin plan, «Me quedo con Completo» inicia la contratación y el pago espera el sí después del resumen (19/19). `npm run eval:callback` comprueba la llamada con Alba (11/11) y `npm test` las reglas y el flujo (29/29).
 - **Humano cuando hace falta:** `request_human_callback` pasa el caso a una persona con el contexto (destino excluido, viaje de más de 90 días, enfermedad previa o si el cliente lo pide). La edad máxima (84 años en la fecha de salida) y que el viaje empiece en España son límites firmes: se explican y se cierran, sin ofrecer llamada ni dar precios.
-- **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran.
+- **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran, y muestra las últimas pólizas con su canal.
 - **Sencillo antes que ambicioso:** sin base de datos ni frameworks. No apto para producción: sin aseguradora detrás y la consulta de pólizas no tiene autenticación.
 
 ## Cómo se hizo
@@ -40,4 +40,4 @@ Créditos: fuentes Inter y Manrope (SIL Open Font License), polyfill de WebMCP `
 
 [Arquitectura, herramientas y controles](docs/architecture.md) · [Precios y calibración](docs/pricing.md) · [Prueba automática](docs/agent-eval.md) · [Decisiones y cambios](docs/decisiones.md) · [Experimento del plan recomendado](docs/experimento-recomendacion.md) · [Despliegue y operación](docs/deploy.md) · [Marca](docs/brand.md)
 
-En local: `npm install && npm start` (http://localhost:3000) y `npm test`. Claves solo en `.env`, nunca en el repositorio.
+En local: `npm install && npm start` (http://localhost:3000) y `npm test`. `/api/health` muestra la versión publicada. Claves solo en `.env`, nunca en el repositorio.
