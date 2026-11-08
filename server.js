@@ -389,7 +389,14 @@ app.get('/ficha-producto.pdf', async (req, res) => {
   res.set('Cache-Control', 'public, max-age=3600');
   res.send(productSheet);
 });
-app.use(express.static(pub, { extensions: ['html'], maxAge: '5m' }));
+// Sin caché de 5 minutos: el navegador revalida (ETag) y siempre ve la última versión publicada.
+// Las imágenes y fuentes, que no cambian, sí se guardan un día.
+app.use(express.static(pub, {
+  extensions: ['html'],
+  setHeaders(res, file) {
+    res.set('Cache-Control', /\.(?:jpe?g|png|webp|svg|woff2?)$/i.test(file) ? 'public, max-age=86400' : 'no-cache');
+  },
+}));
 
 app.use((err, req, res, next) => {
   if (err instanceof ApiError) return res.status(err.status).json(err.toJSON());
