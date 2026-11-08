@@ -187,7 +187,7 @@ async function runScenario(browser, s) {
       if (e.zone) check(`zona ${e.zone}`, order.trip.zone === e.zone);
       if (e.start) check('fechas correctas', order.trip.start_date === e.start && order.trip.end_date === e.end);
       if (e.email) check('email correcto', order.holder?.email === e.email);
-      if (e.groupDiscount) check('descuento de grupo', order.quote.plans[order.plan].group_discount_pct > 0);
+      if (e.groupDiscount) check('descuento de grupo', order.plan && order.quote.plans[order.plan].group_discount_pct > 0);
       if (e.cardLast4) check(`pagó con ****${e.cardLast4}`, order.payment?.card_last4 === e.cardLast4);
       check('póliza enviada', ['sent', 'simulated'].includes(order.policy?.email?.status));
     }
