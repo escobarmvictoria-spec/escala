@@ -11,9 +11,11 @@ const TOOL_LABELS = {
   get_product_info: 'Consultando coberturas', get_quote: 'Calculando precios', select_plan: 'Eligiendo el plan',
   set_travelers: 'Guardando los datos', review_order: 'Preparando el resumen', accept_terms: 'Registrando que aceptas',
   pay: 'Pagando', get_policy: 'Recuperando la póliza', resend_policy_email: 'Reenviando la póliza',
-  save_quote: 'Enviando la cotización', request_human_callback: 'Pidiendo que te llamen', get_order_status: 'Revisando tu compra',
+  save_quote: 'Enviando la cotización', request_human_callback: 'Registrando tu solicitud', get_order_status: 'Revisando tu compra',
+  check_cancellation_start: 'Comprobando la cancelación',
 };
-const toolLine = (name, state = '') => `${state}${TOOL_LABELS[name] ?? 'Usando la web'} (${name})`;
+// En el chat, el progreso en lenguaje de usuario; el nombre técnico de la herramienta queda en el registro de la demo (?demo).
+const toolLine = (name, state = '') => (state.startsWith('…') ? `${TOOL_LABELS[name] ?? 'Consultando la web'}…` : `${state}${TOOL_LABELS[name] ?? 'Consultando la web'}`);
 
 let drawer, toggle, messages = [], running = false, passcode = null, autoOpened = false;
 

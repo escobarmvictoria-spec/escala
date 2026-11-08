@@ -51,5 +51,7 @@ test('teléfono: acepta espacios y el prefijo pegado sin duplicarlo, y explica q
   assert.equal(normalizePhone('61234567').message, 'Introduce los 9 dígitos del teléfono.');
   assert.equal(normalizePhone('').message, 'Introduce los 9 dígitos del teléfono.');
   assert.equal(normalizePhone('512345678').ok, false);
-  assert.equal(normalizePhone('+44 7911 123456').display, '+447911123456');
+  assert.equal(normalizePhone('+44 7911 123456').display, '+44 7911 123456');
+  assert.match(normalizePhone('+999612345678').message, /no corresponde a ningún país/);
+  assert.match(normalizePhone('+44 123').message, /no es válido para el prefijo \+44/);
 });

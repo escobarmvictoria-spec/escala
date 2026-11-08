@@ -393,7 +393,7 @@ const TOOLS = [
       type: 'object',
       properties: {
         full_name: { type: 'string' },
-        phone: { type: 'string', description: 'Phone number, e.g. "600 123 456".' },
+        phone: { type: 'string', description: 'Phone number as the user gave it. Spanish numbers without prefix; other countries with their international prefix (e.g. "+44 7911 123456").' },
         reason: { type: 'string', enum: ['enfermedad_previa', 'no_asegurable', 'dudas_coberturas', 'otro'] },
         summary: { type: 'string', description: 'What the person who calls should know, in one or two sentences.' },
         quote_id: { type: 'string', description: 'Optional: the current quote, so its details travel with the request.' },
@@ -402,7 +402,7 @@ const TOOLS = [
           description: 'Optional, when there is no quote_id: the trip the user tried to quote.',
           properties: { destinations: { type: 'array', items: { type: 'string' } }, start_date: { type: 'string' }, end_date: { type: 'string' }, ages: { type: 'array', items: { type: 'integer' } } },
         },
-        preferred_time: { type: 'string', enum: ['sin_preferencia', 'cuanto_antes', 'manana_manana', 'manana_tarde'], description: 'Optional.' },
+        preferred_time: { type: 'string', enum: ['sin_preferencia', 'cuanto_antes', 'manana_manana', 'manana_tarde'], description: 'Optional. Only if the user said it that clearly; "in the morning" without a day is sin_preferencia (put their words in summary).' },
         user_agreed: { type: 'boolean', description: 'True only if the user said yes to being called.' },
       },
       required: ['full_name', 'phone', 'reason', 'summary', 'user_agreed'],
@@ -413,7 +413,9 @@ const TOOLS = [
         ok: true,
         ticket: cb.ticket,
         when: cb.when,
-        tell_the_user: `Solicitud registrada (${cb.ticket}). Una persona del equipo le llamará ${cb.when} al ${cb.phone}.${cb.context_kind === 'cotizacion' ? ' Verá su cotización, así que no tendrá que repetir nada.' : cb.context_kind === 'intento' ? ' Verá los datos del viaje que intentó cotizar.' : ''} (Demo: es una solicitud de prueba, no llama nadie de verdad.)`,
+        tell_the_user: `Solicitud de prueba registrada. Tu referencia es ${cb.ticket}.${input.preferred_time && input.preferred_time !== 'sin_preferencia' ? ` Horario solicitado: ${{ cuanto_antes: 'cuanto antes', manana_manana: 'mañana por la mañana', manana_tarde: 'mañana por la tarde' }[input.preferred_time] ?? input.preferred_time}.` : ''}`,
+        demo_note: 'Es una solicitud de prueba: no llamará nadie. No la presentes como una cita confirmada.',
+        context_attached: cb.context_kind,
       };
     },
   },

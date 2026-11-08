@@ -8,6 +8,8 @@ let dialog;
 let lastTicket = null;
 
 // Mismo criterio que el servidor (src/callbacks.js): espacios y prefijo pegado aceptados; sin prefijo, España.
+// Para otros países, aquí se comprueba el prefijo (lista E.164) y la longitud; el servidor valida el formato completo.
+const CALLING_CODES = new Set('1,7,20,27,30,31,32,33,34,36,39,40,41,43,44,45,46,47,48,49,51,52,53,54,55,56,57,58,60,61,62,63,64,65,66,81,82,84,86,90,91,92,93,94,95,98,211,212,213,216,218,220,221,222,223,224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,256,257,258,260,261,262,263,264,265,266,267,268,269,290,291,297,298,299,350,351,352,353,354,355,356,357,358,359,370,371,372,373,374,375,376,377,378,380,381,382,383,385,386,387,389,420,421,423,500,501,502,503,504,505,506,507,508,509,590,591,592,593,594,595,596,597,598,599,670,672,673,674,675,676,677,678,679,680,681,682,683,685,686,687,688,689,690,691,692,850,852,853,855,856,880,886,960,961,962,963,964,965,966,967,968,970,971,972,973,974,975,976,977,992,993,994,995,996,998'.split(','));
 function normalizePhone(raw) {
   let digits = String(raw ?? '').trim().replace(/[\s().\-]/g, '');
   if (!digits) return { ok: false, message: 'Introduce los 9 dígitos del teléfono.' };
@@ -21,8 +23,11 @@ function normalizePhone(raw) {
     if (!/^[6789]/.test(digits)) return { ok: false, message: 'Un teléfono de España empieza por 6, 7, 8 o 9.' };
     return { ok: true, display: `+34 ${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}` };
   }
-  if (digits.length < 8 || digits.length > 15) return { ok: false, message: 'El número con prefijo internacional está incompleto.' };
-  return { ok: true, display: `+${digits}` };
+  const cc = [1, 2, 3].map((n) => digits.slice(0, n)).find((c) => CALLING_CODES.has(c));
+  if (!cc) return { ok: false, message: `Revisa el prefijo internacional: «+${digits.slice(0, 3)}» no corresponde a ningún país.` };
+  const national = digits.slice(cc.length);
+  if (national.length < 4 || digits.length > 15) return { ok: false, message: `Revisa el número: le faltan o le sobran cifras para el prefijo +${cc}.` };
+  return { ok: true, display: `+${cc} ${national}` };
 }
 
 function showPhone(form, { strict }) {
@@ -30,7 +35,7 @@ function showPhone(form, { strict }) {
   const err = $('#cb-phone-error', dialog);
   const preview = $('#cb-phone-preview', dialog);
   preview.hidden = !r.ok;
-  if (r.ok) preview.innerHTML = `Te llamaremos al <strong>${esc(r.display)}</strong>`;
+  if (r.ok) preview.innerHTML = `Número de contacto: <strong>${esc(r.display)}</strong>`;
   const showErr = !r.ok && (strict || form.phone.value.trim().length > 0 && form.phone.dataset.touched === '1');
   err.hidden = !showErr;
   err.textContent = showErr ? r.message : '';
@@ -122,7 +127,8 @@ export function initHumanDialog() {
         <a class="human-link" href="/#asistencia" data-close>Ver asistencia durante el viaje</a>
       </div>
       <div class="field" data-callback-only><label for="cb-name">Nombre</label><input id="cb-name" name="full_name" autocomplete="name" required></div>
-      <div class="field" data-callback-only><label for="cb-phone">¿En qué número podemos llamarte?</label><input id="cb-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="612 345 678" aria-describedby="cb-phone-error cb-phone-preview" required>
+      <div class="field" data-callback-only><label for="cb-phone">¿En qué número podemos llamarte?</label><input id="cb-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="612 345 678" aria-describedby="cb-phone-help cb-phone-error cb-phone-preview" required>
+        <p class="field-help" id="cb-phone-help">Si tu número es de otro país, incluye el prefijo internacional.</p>
         <p class="field-error" id="cb-phone-error" hidden></p><p class="cb-phone-preview" id="cb-phone-preview" hidden></p></div>
       <div class="field" data-callback-only><label for="cb-time">Cuándo te viene bien <span class="optional">(opcional)</span></label>
         <select id="cb-time" name="preferred_time"><option value="sin_preferencia">Sin preferencia</option><option value="cuanto_antes">Cuanto antes</option><option value="manana_manana">Mañana por la mañana</option><option value="manana_tarde">Mañana por la tarde</option></select></div>
@@ -130,7 +136,10 @@ export function initHumanDialog() {
       <p class="cb-context" id="cb-context" hidden></p>
       <label class="check" data-callback-only><input type="checkbox" name="user_agreed"> Acepto que Escala me llame para este tema</label>
       <p class="form-error" role="alert" hidden></p>
-      <div class="actions" data-callback-only><button class="btn-primary" type="submit">Solicitar llamada</button><p class="optional cb-demo">Solicitud de prueba. No recibirás una llamada real.</p></div>
+      <div class="cb-submit" data-callback-only>
+        <p class="cb-demo">Solicitud de prueba. No recibirás una llamada real.</p>
+        <div class="actions"><button class="btn-primary" type="submit">Solicitar llamada</button></div>
+      </div>
     </form>
     <div id="human-done" class="dialog-body" hidden aria-live="polite"></div>`;
   document.body.append(dialog);
@@ -228,7 +237,8 @@ export function initHumanDialog() {
         <p class="human-ok">Solicitud de prueba registrada</p>
         <dl class="cb-done">
           <div><dt>Número de solicitud</dt><dd>${esc(cb.ticket)}</dd></div>
-          <div><dt>Te llamaríamos al</dt><dd>${esc(cb.phone)}, ${esc(cb.when)}</dd></div>
+          <div><dt>Número de contacto</dt><dd>${esc(cb.phone)}</dd></div>
+          ${form.preferred_time.value !== 'sin_preferencia' ? `<div><dt>Horario solicitado</dt><dd>${esc(form.preferred_time.selectedOptions[0].textContent)}</dd></div>` : ''}
           <div><dt>Adjuntamos</dt><dd>${cb.context_kind === 'cotizacion' ? `Tu cotización (${esc(cb.quote_id)}) y el motivo` : cb.context_kind === 'intento' ? 'Los datos del viaje que intentaste cotizar y el motivo' : 'El motivo de tu consulta'}</dd></div>
         </dl>
         <p class="optional">Solicitud de prueba. No recibirás una llamada real.</p>

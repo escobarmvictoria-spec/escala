@@ -777,7 +777,7 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .cb-assist { display: grid; gap: 8px; padding: 14px 16px; border-radius: var(--r-s); background: var(--yellow-soft); }
 .cb-assist p { margin: 0; }
 .cb-phone { font-family: var(--font-head); font-size: var(--fs-md); font-weight: 700; }
-.cb-demo { margin: 0; font-size: var(--fs-xs); }
+.cb-demo { margin: 0; padding: 8px 12px; border-radius: var(--r-s); background: var(--yellow-soft); font-size: var(--fs-sm); font-weight: 500; }
 .field-error { margin: 0; font-size: var(--fs-sm); font-weight: 500; color: var(--error); }
 .cb-phone-preview { margin: 0; font-size: var(--fs-sm); color: var(--navy-soft); }
 .cb-phone-preview strong { color: var(--navy); }
@@ -788,6 +788,8 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .cb-receipt .btn-secondary { justify-self: start; }
 .cb-receipt-done { margin: 0; font-weight: 600; color: var(--teal-deep); }
 .human-dialog .actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+/* El aviso de demo y «Solicitar llamada» quedan siempre a la vista, al pie del formulario, aunque haya que desplazarse. */
+.human-dialog .cb-submit { position: sticky; bottom: 0; z-index: 1; display: grid; gap: var(--s-2); margin: 0 -20px -22px; padding: 12px 20px 16px; background: var(--white); border-top: 1px solid var(--line); }
 
 /* Tarjetas de plan en móvil: «Elegir…» justo después del precio y del motivo; las coberturas, debajo */
 @media (max-width: 960px) {

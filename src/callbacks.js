@@ -1,3 +1,4 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js/min';
 // Transferencia a una persona: la web o el agente piden que alguien del equipo llame al cliente,
 // con el contexto de la compra para que no tenga que repetir nada.
 import crypto from 'node:crypto';
@@ -136,7 +137,8 @@ export function publicCallback(cb) {
 }
 
 // Teléfono: acepta espacios, guiones, puntos y paréntesis, y el número pegado con prefijo (+34, 0034 o 34)
-// sin duplicarlo. Sin prefijo se entiende España. Devuelve el número formateado para mostrarlo antes de enviar.
+// sin duplicarlo. Sin prefijo se entiende España. Los números de otros países se validan por prefijo y formato
+// (plan de numeración E.164, con libphonenumber). Devuelve el número formateado para mostrarlo antes de enviar.
 export function normalizePhone(raw) {
   const input = String(raw ?? '').trim();
   let digits = input.replace(/[\s().\-]/g, '');
@@ -145,15 +147,16 @@ export function normalizePhone(raw) {
   if (digits.startsWith('+')) { intl = true; digits = digits.slice(1); }
   else if (digits.startsWith('00')) { intl = true; digits = digits.slice(2); }
   if (!/^\d+$/.test(digits)) return { ok: false, message: 'El teléfono solo puede llevar números, espacios y el prefijo con +.' };
-  // España: con prefijo 34 o sin prefijo.
-  if (digits.startsWith('34') && (intl || digits.length === 11)) digits = digits.slice(2), (intl = false);
+  if (digits.startsWith('34') && (intl || digits.length === 11)) { digits = digits.slice(2); intl = false; }
   if (!intl) {
     if (digits.length !== 9) return { ok: false, message: 'Introduce los 9 dígitos del teléfono.' };
     if (!/^[6789]/.test(digits)) return { ok: false, message: 'Un teléfono de España empieza por 6, 7, 8 o 9.' };
     return { ok: true, e164: `+34${digits}`, display: `+34 ${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}` };
   }
-  if (digits.length < 8 || digits.length > 15) return { ok: false, message: 'El número con prefijo internacional está incompleto.' };
-  return { ok: true, e164: `+${digits}`, display: `+${digits}` };
+  const n = parsePhoneNumberFromString(`+${digits}`);
+  if (!n || !n.countryCallingCode) return { ok: false, message: `Revisa el prefijo internacional: «+${digits.slice(0, 3)}» no corresponde a ningún país.` };
+  if (!n.isValid()) return { ok: false, message: `Revisa el número: no es válido para el prefijo +${n.countryCallingCode}.` };
+  return { ok: true, e164: n.number, display: n.formatInternational() };
 }
 
 // Comprobante opcional por email, solo si la persona lo pide después de enviar la solicitud.
