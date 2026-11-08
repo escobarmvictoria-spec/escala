@@ -109,6 +109,32 @@ function resolveDestinations(input) {
   return { destinations: resolved.map((r) => ({ code: r.code, name: r.name, ...(r.place ? { place: r.place, label: `${r.place}, ${r.name}` } : {}) })), zone };
 }
 
+// Escala solo asegura viajes que empiezan en España (condiciones: «Viajes que empiezan fuera de España»).
+// Se pregunta siempre antes de dar precios: vivir en España no garantiza que el viaje salga de España.
+function checkDeparture(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw)
+    throw new ApiError('missing_departure', 'Falta desde dónde empieza el viaje.', {
+      field: 'departure_country',
+      hint: 'Pregunta al usuario si el viaje empieza en España antes de cotizar; vivir en España no basta. Si sale de España (o de una ciudad española), envía departure_country "ES".',
+    });
+  const outside = ['otro', 'otro pais', 'otro país', 'fuera de espana', 'fuera de españa', 'extranjero'].includes(raw.toLowerCase());
+  const r = outside ? null : resolveDestination(raw);
+  if (r?.code === 'ES') return 'ES';
+  if (r?.error)
+    throw new ApiError('unknown_departure', `No reconozco el lugar de salida "${raw}".`, {
+      field: 'departure_country',
+      hint: 'Indica el país (o una ciudad) desde el que empieza el viaje, por ejemplo "ES" o "España".',
+    });
+  const from = r?.region ? null : r?.name ?? null;
+  throw new ApiError('departure_outside_spain', `Escala solo asegura viajes que empiezan en España${from ? `. Este viaje sale de ${from}` : ''}, así que no podemos cotizar este viaje.`, {
+    field: 'departure_country',
+    details: { departure: r?.code ?? null, final: true },
+    // Límite firme, como la edad: no hay nada que el equipo pueda resolver, así que no se ofrece llamada ni se dan precios.
+    hint: `No des precios ni ofrezcas una llamada. Explícalo y cierra. Texto sugerido: «Escala solo asegura viajes que empiezan en España${from ? ` y el tuyo sale de ${from}` : ''}, así que no podemos ofrecerte un seguro para este viaje. Si buscas otra póliza, comprueba que cubra viajes que empiezan fuera de tu país de residencia.»`,
+  });
+}
+
 function validateTrip({ start_date, end_date }) {
   if (!start_date) throw new ApiError('missing_start_date', 'Falta la fecha de salida.', { field: 'start_date', hint: 'Formato AAAA-MM-DD.' });
   if (!end_date) throw new ApiError('missing_end_date', 'Falta la fecha de vuelta.', { field: 'end_date', hint: 'Formato AAAA-MM-DD.' });
@@ -295,6 +321,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
             hint: 'Si el viajero reside en España, usa residence_country "ES" o no envíes este campo.',
           });
       }
+      checkDeparture(input.departure_country);
       const { destinations, zone } = resolveDestinations(input.destinations ?? input.destination);
       const dates = validateTrip(input);
       let travelers = input.travelers;
@@ -318,7 +345,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
         expires_at: new Date(now.getTime() + QUOTE_TTL_MINUTES * 60000).toISOString(),
         status: 'quoted',
         channel: actor === 'agent' ? 'agente_ia' : 'web',
-        trip: { destinations, zone, zone_name: ZONES[zone].name, ...dates, residence_country: 'ES' },
+        trip: { destinations, zone, zone_name: ZONES[zone].name, ...dates, residence_country: 'ES', departure_country: 'ES' },
         plan: null,
         holder: null,
         travelers: null,
@@ -377,7 +404,7 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
       let order = original;
       if (!fresh) {
         order = this.createQuote(
-          { destinations: original.trip.destinations.map((d) => d.place ?? d.code ?? d.name), start_date: original.trip.start_date, end_date: original.trip.end_date, travelers: original.quote_ages.map((age) => ({ age })) },
+          { destinations: original.trip.destinations.map((d) => d.place ?? d.code ?? d.name), start_date: original.trip.start_date, end_date: original.trip.end_date, travelers: original.quote_ages.map((age) => ({ age })), departure_country: 'ES' },
           actor
         );
         order.channel = original.channel;

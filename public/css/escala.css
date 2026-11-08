@@ -207,6 +207,8 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .f-start { grid-area: start; }
 .f-end { grid-area: end; }
 .f-help { grid-area: help; }
+.origin-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0; font-size: var(--fs-sm); font-weight: 500; }
+.origin-line select { width: auto; min-height: 40px; padding: 6px 32px 6px 10px; font-weight: 600; }
 .trip-fields input[type=date] { padding-left: 10px; padding-right: 8px; }
 .ages { gap: var(--s-2); }
 .ages-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2) var(--s-4); }

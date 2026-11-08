@@ -14,7 +14,7 @@ test('pedir que llame una persona: valida, guarda el contexto y avisa al equipo'
   const orders = createOrderService({ store, issuePolicy: () => ({}), sendPolicyEmail: async () => {} });
   const notified = [];
   const svc = createCallbackService({ store, notifyTeam: async (cb) => (notified.push(cb.id), { status: 'sent' }) });
-  const o = orders.createQuote({ destinations: ['Italia'], start_date: future(10), end_date: future(14), travelers: [{ age: 84 }] }, 'agent');
+  const o = orders.createQuote({ destinations: ['Italia'], start_date: future(10), end_date: future(14), travelers: [{ age: 84 }], departure_country: 'ES' }, 'agent');
   await assert.rejects(() => svc.create({ full_name: 'Clara Prieto', phone: '123', user_agreed: true }), { code: 'invalid_phone' });
   await assert.rejects(() => svc.create({ full_name: 'Clara Prieto', phone: '600 111 222' }), { code: 'consent_required' });
   const cb = await svc.create({ full_name: 'Clara Prieto', phone: '600 111 222', user_agreed: true, reason: 'enfermedad_previa', quote_id: o.id, summary: 'Abuelo con marcapasos' }, 'agent');

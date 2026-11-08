@@ -14,6 +14,9 @@ function service() {
     issuePolicy: () => ({ number: 'ESC-TEST-000001', issued_at: new Date().toISOString(), pdf_token: 'x', email: { status: 'pending' } }),
     sendPolicyEmail: async (o) => { sent.push(o.holder.email); o.policy.email = { status: 'sent', to: o.holder.email }; },
   });
+  // Todas las cotizaciones de estas pruebas salen de España salvo que la prueba diga otra cosa.
+  const createQuote = svc.createQuote.bind(svc);
+  svc.createQuote = (input, actor) => createQuote(input && typeof input === 'object' && !('departure_country' in input) ? { departure_country: 'ES', ...input } : input, actor);
   return { svc, sent };
 }
 
@@ -187,4 +190,18 @@ test('conserva la ciudad escrita y registra variante y dispositivo de la cotizac
   const j = svc.createQuote({ destinations: ['Japón'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }] }, 'agent');
   assert.equal(j.trip.destinations[0].label, undefined); // país escrito tal cual: sin duplicar
   assert.deepEqual(publicOrder(j).experiments, {});
+});
+
+test('solo se cotizan viajes que empiezan en España: sin origen, pregunta; desde Lisboa, no hay cotización', () => {
+  const { svc } = service();
+  const base = { destinations: ['Nueva York'], start_date: future(20), end_date: future(26), travelers: [{ age: 40 }] };
+  const err = (input) => { try { svc.createQuote(input, 'agent'); return null; } catch (e) { return e.toJSON().error; } };
+  assert.equal(err({ ...base, departure_country: undefined }).code, 'missing_departure');
+  const lisboa = err({ ...base, departure_country: 'Lisboa' });
+  assert.equal(lisboa.code, 'departure_outside_spain');
+  assert.match(lisboa.message, /Este viaje sale de Portugal/);
+  assert.equal(lisboa.details.final, true);
+  assert.equal(lisboa.human_help, undefined); // límite firme: sin llamada
+  assert.equal(err({ ...base, departure_country: 'otro país' }).code, 'departure_outside_spain');
+  for (const d of ['ES', 'España', 'Madrid', 'Barcelona']) assert.equal(svc.createQuote({ ...base, departure_country: d }, 'agent').trip.departure_country, 'ES');
 });

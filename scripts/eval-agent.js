@@ -65,7 +65,7 @@ const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid'
 
 function customerSystem(s) {
   return `Eres un cliente real que habla por chat con un asistente de IA que te contrata un seguro de viaje en la web de Escala (una demo, no se cobra dinero).
-Lo que sabes: ${s.facts}
+Lo que sabes: ${s.facts} ${s.departure ?? 'Vives en Madrid y el viaje empieza en España (sales desde Madrid).'}
 Cómo te comportas: ${s.behavior}
 Reglas: responde en español de España, breve (1 o 2 frases), como una persona normal. Da solo los datos que te pidan. No inventes datos que no estén arriba.
 Cuando el asistente diga que la compra está hecha (te da un número de póliza) o que no se puede hacer, o cuando ya te hayas despedido, responde exactamente: [FIN]`;
@@ -149,7 +149,7 @@ async function runScenario(browser, s) {
       break;
     }
     customerMsgs.push({ role: 'user', content: text || '(El asistente no dijo nada.)' });
-    const reply = await claude({ model: CUSTOMER_MODEL, max_tokens: 300, system: customerSystem(s), messages: customerMsgs });
+    const reply = await claude({ model: CUSTOMER_MODEL, max_tokens: 1000, system: customerSystem(s), messages: customerMsgs });
     const said = reply.content.filter((b) => b.type === 'text').map((b) => b.text).join(' ').trim();
     customerTurns++;
     if (!said || said.includes('[FIN]')) {
@@ -199,8 +199,9 @@ async function runScenario(browser, s) {
   const said = transcript.filter((t) => t.who === 'agente').map((t) => t.text);
   if (e.says) for (const w of e.says) check(`dijo «${w}»`, said.some((t) => t.toLowerCase().includes(w.toLowerCase())));
   if (e.notSays) for (const w of e.notSays) check(`no dijo «${w}»`, !said.some((t) => t.toLowerCase().includes(w.toLowerCase())));
-  if (e.noSelect) check('no eligió plan', !calls.some((c) => c.name === 'select_plan'));
-  if (e.noCallback) check('no ofreció una llamada ni pidió datos', !calls.some((c) => c.name === 'request_human_callback') && !transcript.some((t) => t.who === 'agente' && /que te llame|que le llame|tu (número de )?teléfono|un teléfono de contacto/i.test(t.text)));
+  if (e.noSelect) check('no eligió plan', !calls.some((c) => c.tool === 'select_plan'));
+  if (e.noQuote) check('no generó cotización', orders.length === 0 && !calls.some((c) => c.tool === 'get_quote' && c.ok));
+  if (e.noCallback) check('no ofreció una llamada ni pidió datos', !calls.some((c) => c.tool === 'request_human_callback') && !transcript.some((t) => t.who === 'agente' && /que te llame|que le llame|tu (número de )?teléfono|un teléfono de contacto/i.test(t.text)));
   if (e.mentions) check(`explicó el límite (${e.mentions})`, transcript.some((t) => t.who === 'agente' && t.text.includes(e.mentions)));
   if (e.callback) {
     let ok = false;

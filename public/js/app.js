@@ -141,6 +141,7 @@ function fillQuoteForm(order) {
   form.destination.value = order.trip.destinations.map((d) => d.place ?? d.name).join(', ');
   form.start_date.value = order.trip.start_date;
   form.end_date.value = order.trip.end_date;
+  form.departure_country.value = 'ES';
   const list = $('#ages-list');
   list.innerHTML = '';
   const ages = order.travelers?.map((t) => t.age) ?? order.quote.plans.completo.per_traveler.map((t) => t.age);
@@ -188,6 +189,7 @@ function initQuoteForm() {
         start_date: form.start_date.value,
         end_date: form.end_date.value,
         travelers: ages.map((a) => ({ age: Number(a) })),
+        departure_country: form.departure_country.value,
         device: matchMedia('(max-width: 640px)').matches ? 'movil' : 'escritorio',
       };
       try {

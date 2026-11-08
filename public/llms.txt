@@ -16,6 +16,7 @@
 - Si el cliente quiere pensarlo, save_quote le envía la cotización por email con un enlace para retomar la compra (un solo email, con su conformidad).
 - Si el caso no se puede contratar online o el cliente prefiere hablar con alguien, request_human_callback pide que una persona del equipo le llame.
 - Flujo: get_quote → select_plan → set_travelers → review_order → accept_terms → pay → get_policy.
+- get_quote exige departure_country: confirma con la persona que el viaje empieza en España (vivir en España no basta). Si empieza fuera, no hay cotización ni llamada.
 - Antes de pagar hay que enseñar el resumen al usuario y pedir confirmación. Pago solo con tarjetas de prueba (4242 4242 4242 4242).
 
 ## Enlaces

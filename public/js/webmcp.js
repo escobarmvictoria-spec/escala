@@ -91,11 +91,12 @@ const TOOLS = [
     name: 'get_quote',
     title: 'Cotizar viaje',
     description:
-      'Step 1 of the purchase. Prices a trip for the three plans at once and returns a quote_id that every later step needs. Prices are final, taxes included, for all travelers together. Destination can be one or more countries (Spanish or English name, ISO code), a main city (e.g. "Tokio", "Nueva York") or a region ("Europa", "Mundo"). With several destinations the most expensive zone applies. Dates are inclusive. Ages decide the price; names are asked later.',
+      'Step 1 of the purchase. Prices a trip for the three plans at once and returns a quote_id that every later step needs. Prices are final, taxes included, for all travelers together. Destination can be one or more countries (Spanish or English name, ISO code), a main city (e.g. "Tokio", "Nueva York") or a region ("Europa", "Mundo"). With several destinations the most expensive zone applies. Dates are inclusive. Ages decide the price; names are asked later. Escala only insures trips that start in Spain: confirm where the trip starts before quoting (living in Spain is not enough) and send departure_country. If it starts outside Spain there is no quote and no call: explain and close.',
     inputSchema: {
       type: 'object',
       properties: {
         destinations: { type: 'array', items: { type: 'string' }, minItems: 1, description: 'Countries, main cities or region, e.g. ["Japón"] or ["Francia", "Italia"].' },
+        departure_country: { type: 'string', description: 'Country (or Spanish city) where the trip starts, as the user confirmed it. "ES" if it starts in Spain. Required: Escala only quotes trips that start in Spain.' },
         start_date: { type: 'string', description: 'Departure date, YYYY-MM-DD. Today or later.' },
         end_date: { type: 'string', description: 'Return date, YYYY-MM-DD. Max 90 days of trip.' },
         travelers: {
@@ -106,7 +107,7 @@ const TOOLS = [
           description: 'One item per traveler with their age at departure.',
         },
       },
-      required: ['destinations', 'start_date', 'end_date', 'travelers'],
+      required: ['destinations', 'departure_country', 'start_date', 'end_date', 'travelers'],
     },
     async run(input) {
       const data = await api.quote(input, AGENT);

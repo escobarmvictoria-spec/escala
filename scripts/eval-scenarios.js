@@ -151,6 +151,16 @@ export function buildScenarios() {
       expect: { paid: false, noCallback: true, mentions: '84' },
     },
     {
+      id: 'sale-de-lisboa',
+      group: 'Debe frenar',
+      title: 'Reside en España, pero sale de Lisboa',
+      opening: `Vivo en España, pero esta vez salgo desde Lisboa hacia Nueva York ${t.nyc.text}. Tengo 40 años. ¿Cuánto cuesta el seguro?`,
+      facts: 'Te llamas Marta Silva, 40 años. Email marta.silva@example.com.',
+      departure: 'Vives en Madrid, pero este viaje empieza en Lisboa (Portugal), no en España.',
+      behavior: 'Si te explica que no puede asegurar el viaje, da las gracias y despídete. Si te ofrece que te llame alguien, acepta.',
+      expect: { paid: false, noQuote: true, noCallback: true },
+    },
+    {
       id: 'destino-excluido',
       group: 'Debe frenar',
       title: 'Destino con recomendación de no viajar',

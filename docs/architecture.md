@@ -25,7 +25,7 @@ Una sola fuente de verdad: las herramientas WebMCP y los botones llaman a la mis
 
 | Herramienta | Qué hace |
 |---|---|
-| `get_quote` | Cotiza los tres planes. Acepta países, ciudades o regiones en español o inglés. |
+| `get_quote` | Cotiza los tres planes. Acepta países, ciudades o regiones en español o inglés. Exige `departure_country`: solo cotiza viajes que empiezan en España. |
 | `select_plan` | Elige plan y devuelve coberturas, límites y franquicias. |
 | `set_travelers` | Tomador (recibe la póliza) y asegurados. Si cambian las edades, recalcula y avisa. |
 | `review_order` | Resumen completo + `review_token`. |
