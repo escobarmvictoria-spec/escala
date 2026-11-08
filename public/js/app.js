@@ -578,6 +578,12 @@ function initPayForm() {
         $('#compra').scrollIntoView({ behavior: 'smooth' });
       } catch (err) {
         showError(form, err);
+        // Tarjeta rechazada: el plan, los viajeros y el total se conservan; solo hay que cambiar la tarjeta.
+        if (['card_declined', 'insufficient_funds'].includes(err.body?.error?.code)) {
+          form.card_number.setAttribute('aria-invalid', 'true');
+          form.card_number.focus();
+          form.card_number.select();
+        }
       }
     });
   });
