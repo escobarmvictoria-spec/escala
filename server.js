@@ -329,7 +329,13 @@ api.get('/metrics', (req, res) => {
     paid_after_resume: resumed.filter((o) => o.status === 'paid').length,
     revenue_eur: Math.round(resumed.filter((o) => o.status === 'paid').reduce((a, o) => a + o.payment.amount_eur, 0) * 100) / 100,
   };
-  res.json({ ok: true, steps, channels, handoffs, recovery });
+  // Últimas compras (sin datos personales): para ver al momento la compra que acaba de hacer un agente.
+  const recent = all
+    .filter((o) => o.status === 'paid')
+    .sort((a, b) => String(b.payment.paid_at).localeCompare(String(a.payment.paid_at)))
+    .slice(0, 5)
+    .map((o) => ({ paid_at: o.payment.paid_at, channel: o.channel, policy: o.policy?.number, plan: o.plan, destinations: o.trip.destinations.map((d) => d.label ?? d.name).join(', '), travelers: o.travelers?.length ?? 0, total_eur: o.payment.amount_eur }));
+  res.json({ ok: true, steps, channels, handoffs, recovery, recent });
 });
 
 // ---------- Agente de demo (opcional): proxy a la API de Anthropic con la clave del servidor ----------

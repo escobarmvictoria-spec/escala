@@ -837,3 +837,4 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .cancel-result.is-ok { background: var(--teal-soft); color: var(--teal-deep); }
 .cancel-result.is-warn { background: var(--yellow-soft); color: var(--navy); }
 .cancel-result.is-error { background: var(--error-soft); color: var(--error); }
+#recent td small { display: block; font-weight: 400; color: var(--navy-soft); } #recent th[scope=row] { white-space: nowrap; }

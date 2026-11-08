@@ -14,7 +14,7 @@ const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 
 async function load() {
   const res = await fetch('/api/metrics');
-  const { steps, channels, handoffs = {}, recovery } = await res.json();
+  const { steps, channels, handoffs = {}, recovery, recent = [] } = await res.json();
   const keys = Object.keys(CHANNELS);
   const table = document.getElementById('funnel');
   const cell = (c, s) => {
@@ -35,6 +35,11 @@ async function load() {
   const rec = document.getElementById('recovery');
   if (rec && recovery)
     rec.innerHTML = `<strong>Recuperación de abandonos:</strong> ${recovery.saved} cotizaciones enviadas por email («Enviarme la cotización»), ${recovery.resumed} retomadas desde el email (${pct(recovery.resumed, recovery.saved)}) y ${recovery.paid_after_resume} compradas después (${eur(recovery.revenue_eur)}).`;
+  const when = (iso) => new Date(iso).toLocaleString('es-ES', { timeZone: 'Europe/Madrid', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  document.getElementById('recent').innerHTML = recent.length
+    ? `<thead><tr><th scope="col">Pagada</th><th scope="col">Canal</th><th scope="col">Póliza</th><th scope="col">Viaje</th><th scope="col">Total</th></tr></thead>
+      <tbody>${recent.map((o) => `<tr><th scope="row">${esc(when(o.paid_at))}</th><td>${esc(CHANNELS[o.channel] ?? o.channel)}</td><td>${esc(o.policy)}</td><td>${esc(o.destinations)}<small>${esc(o.plan)}, ${o.travelers} ${o.travelers === 1 ? 'viajero' : 'viajeros'}</small></td><td>${eur(o.total_eur)}</td></tr>`).join('')}</tbody>`
+    : '<tbody><tr><td>Todavía no hay pólizas.</td></tr></tbody>';
   document.getElementById('updated').textContent = `Actualizado a las ${new Date().toLocaleTimeString('es-ES')}. Se refresca cada 10 segundos.`;
 }
 
