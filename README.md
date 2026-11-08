@@ -15,7 +15,7 @@ Escala vende seguro de viaje con tres planes (Esencial, Completo y Total). Lo pu
 
 Node 22 + Express, HTML/CSS/JS sin compilar y un fichero JSON. Las herramientas WebMCP y los botones llaman a **la misma API**, y es el servidor quien decide si un paso vale: el agente no puede saltarse nada que una persona no pueda saltarse. Si el navegador trae WebMCP nativo (como ChatGPT) se usa ese; si no, un polyfill. Email con Brevo, póliza con pdfkit, publicado con un túnel de Cloudflare y un vigilante que avisa si algo cae.
 
-**Controles antes de pagar:** orden de pasos obligatorio; cualquier cambio tras el resumen obliga a revisarlo de nuevo; el agente debe parar tras el resumen y esperar el sí; `pay` exige el importe exacto y las palabras con las que el usuario confirmó (quedan en la póliza); solo tarjetas de prueba; no cobra dos veces. Cada error dice qué falló y cómo arreglarlo.
+**Qué valida el servidor antes de pagar:** orden de pasos obligatorio; cualquier cambio tras el resumen obliga a revisarlo de nuevo; `pay` exige el importe exacto y un texto de confirmación (queda en la póliza); solo tarjetas de prueba; no cobra dos veces. Aparte, como instrucción al agente: parar tras el resumen, esperar el sí y copiar las palabras del usuario. El servidor guarda la frase que recibe, pero no puede verificar quién la escribió. Cada error dice qué falló y cómo arreglarlo.
 
 ## Desplegar
 
@@ -28,7 +28,7 @@ En un Ubuntu: `git clone` del repositorio, `bash deploy/setup.sh` (instala Node 
 - **Medido, no supuesto:** `npm run eval` simula 19 clientes (compras, casos difíciles, casos en los que no hay que vender, como un viaje que sale de Lisboa, y una clienta que lo quiere pensar). Resultado: **19/19**, verificado contra el servidor. Y `npm run eval:pair` comprueba un contraste en la misma cotización: preguntar por Completo la deja sin plan, «Me quedo con Completo» inicia la contratación y el pago espera el sí después del resumen (19/19). `npm run eval:callback` comprueba la llamada con Alba (11/11) y `npm test` las reglas y el flujo (29/29).
 - **Humano cuando hace falta:** `request_human_callback` pasa el caso a una persona con el contexto (destino excluido, viaje de más de 90 días, enfermedad previa o si el cliente lo pide). La edad máxima (84 años en la fecha de salida) y que el viaje empiece en España son límites firmes: se explican y se cierran, sin ofrecer llamada ni dar precios.
 - **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran, y muestra las últimas pólizas con su canal.
-- **Sencillo antes que ambicioso:** sin base de datos ni frameworks. No apto para producción: sin aseguradora detrás y la consulta de pólizas no tiene autenticación.
+- **Sencillo antes que ambicioso:** frontend sin framework, API en Express y persistencia en JSON, sin base de datos. No apto para producción: sin aseguradora detrás y la consulta de pólizas no tiene autenticación.
 
 ## Cómo se hizo
 

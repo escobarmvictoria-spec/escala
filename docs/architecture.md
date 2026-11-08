@@ -5,7 +5,7 @@
 ```
 Navegador ─────────────────────────────────────────────┐
   index.html + app.js        (interfaz para personas)  │  mismo estado:
-  webmcp.js  → document.modelContext.registerTool ×12  │  la página muestra
+  webmcp.js  → document.modelContext.registerTool ×13  │  la página muestra
   agent.js   → asistente integrado (opcional)          │  lo que hace el agente
   polyfill @mcp-b/global (si el navegador no trae WebMCP)
         │  fetch /api/* (cabecera x-escala-actor: web | agent)
@@ -35,7 +35,7 @@ Una sola fuente de verdad: las herramientas WebMCP y los botones llaman a la mis
 | `request_human_callback` | Pide que una persona del equipo llame al cliente, con el contexto de la compra y aviso por email al equipo. |
 | `get_policy`, `get_order_status`, `get_product_info`, `resend_policy_email` | Consulta y soporte. |
 
-Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la revisión invalida el `review_token`; `review_order` obliga al agente a terminar su turno y esperar la respuesta; `pay` exige el importe exacto revisado y `user_confirmation` con las palabras del usuario, que se guardan como prueba de consentimiento y salen en la póliza (y se marca con `consequentialHint`); solo tarjetas de prueba; idempotente (no cobra dos veces); cotizaciones que caducan a las 2 h. Cada error devuelve `code`, `message` y `how_to_fix` para que el agente se corrija solo. Cada compra guarda su canal (web o agente) y `/panel` muestra el embudo por canal.
+Controles antes de pagar: orden de pasos obligatorio; cualquier cambio tras la revisión invalida el `review_token`; `pay` exige el importe exacto revisado y un `user_confirmation` no vacío, que se guarda y sale en la póliza (y se marca con `consequentialHint`); solo tarjetas de prueba; idempotente (no cobra dos veces); cotizaciones que caducan a las 2 h. Dos capas, dicho con precisión: lo anterior lo comprueba el servidor; esperar el turno tras `review_order` y copiar en `user_confirmation` las palabras reales del usuario son instrucciones al agente (en la descripción de las herramientas y en `next_step`). El servidor guarda la frase que recibe, pero no puede verificar quién la escribió; en producción haría falta una confirmación atribuible a la persona (un enlace o un código que confirme ella). Cada error devuelve `code`, `message` y `how_to_fix` para que el agente se corrija solo. Cada compra guarda su canal (web o agente) y `/panel` muestra el embudo por canal.
 
 ## Probado con ChatGPT (Site tools)
 
@@ -49,7 +49,7 @@ Lo que se aprendió por el camino: el polyfill envolvía el `document.modelConte
 
 ## Decisiones y límites
 
-- **Sencillo antes que ambicioso:** sin base de datos ni frameworks de frontend; un proceso, un fichero JSON y HTML/CSS/JS sin compilar.
+- **Sencillo antes que ambicioso:** frontend sin framework (HTML/CSS/JS sin compilar), API en Express y persistencia en un fichero JSON, sin base de datos.
 - **WebMCP estándar + polyfill:** las herramientas se registran con la API del W3C; el polyfill de MCP-B la aporta donde no existe y la expone también a extensiones MCP.
 - **Pago simulado:** se rechazan tarjetas reales y solo se guardan los 4 últimos dígitos.
 - **No apto para producción:** la consulta de pólizas no tiene autenticación, el túnel rápido cambia de URL si se reinicia y no hay aseguradora detrás.
