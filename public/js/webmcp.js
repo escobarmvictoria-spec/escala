@@ -137,7 +137,7 @@ const TOOLS = [
         })),
         ...(data.plans[0].group_discount_pct ? { group_discount: `${data.plans[0].group_discount_pct}% aplicado por ser 3 o más viajeros` } : {}),
         ...(o.recommendation ? { recommendation: o.recommendation } : {}),
-        next_step: 'Recomienda al usuario el plan de recommendation con su motivo (salvo que pida otro) y llama a select_plan.',
+        next_step: 'Enseña los precios y el plan de recommendation con su motivo. Si el usuario solo pidió precio, termina ahí. Si quiere contratar y ya eligió plan (o pidió que elijas tú), llama a select_plan; si quiere contratar sin haber elegido, pregúntale con qué plan se queda. Si solo pregunta por un plan, responde sin seleccionarlo.',
       };
     },
   },

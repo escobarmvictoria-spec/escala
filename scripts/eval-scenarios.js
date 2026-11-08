@@ -84,7 +84,7 @@ export function buildScenarios() {
       title: 'Escapada nacional a Mallorca',
       opening: `Escapada a Mallorca ${t.mallorca.text}, somos dos de 30 y 31. ¿Merece la pena un seguro?`,
       facts: 'Te llamas Irene Navas (30); viajas con Daniel Gil (31). Email irene.navas@example.com.',
-      behavior: 'Si te recomienda un plan, acéptalo. Da los nombres y el email cuando te los pida. Confirma el pago al ver el resumen.',
+      behavior: 'Cuando veas los precios, di que os quedáis con el plan recomendado y que lo contrate. Da los nombres y el email cuando te los pida. Confirma el pago al ver el resumen.',
       expect: { paid: true, travelers: 2, zone: 'espana', start: t.mallorca.start, end: t.mallorca.end, email: 'irene.navas@example.com' },
     },
     {
@@ -102,7 +102,7 @@ export function buildScenarios() {
       title: 'Dos meses en Australia',
       opening: `Me voy dos meses a Australia, ${t.australia.text}. 27 años.`,
       facts: 'Te llamas Nerea Castillo, 27 años. Email nerea.castillo@example.com.',
-      behavior: 'Acepta el plan recomendado. Confirma el pago.',
+      behavior: 'Cuando veas los precios, di que te quedas con el plan recomendado. Confirma el pago al ver el resumen.',
       expect: { paid: true, travelers: 1, zone: 'mundo', start: t.australia.start, end: t.australia.end, email: 'nerea.castillo@example.com' },
     },
     {
@@ -111,7 +111,7 @@ export function buildScenarios() {
       title: 'Faltan datos: no da nombre ni email',
       opening: `Quiero un seguro para Marruecos ${t.marruecos.text}.`,
       facts: 'Te llamas Omar Benali, 33 años. Viajas solo. Email omar.benali@example.com.',
-      behavior: 'No des datos hasta que te los pidan. Acepta el plan recomendado y confirma el pago.',
+      behavior: 'No des datos hasta que te los pidan. Cuando veas los precios, di que te quedas con el plan recomendado. Confirma el pago al ver el resumen.',
       expect: { paid: true, travelers: 1, zone: 'europa', start: t.marruecos.start, end: t.marruecos.end, email: 'omar.benali@example.com' },
     },
     {
