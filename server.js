@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 // Escala: servidor de la demo (web + API + PDF + email + agente opcional).
 import express from 'express';
 import crypto from 'node:crypto';
@@ -120,7 +121,12 @@ const actorOf = (req) => (req.get('x-escala-actor') === 'agent' ? 'agent' : 'web
 const api = express.Router();
 api.use(rateLimit(240, 60000));
 
-api.get('/health', (req, res) => res.json({ ok: true, today: todayMadrid(), email_provider: mailer.provider, agent: agentStatus() }));
+// Versión publicada (commit de git), para comprobar desde el navegador que el servidor tiene lo último.
+let VERSION = 'desconocida';
+try {
+  VERSION = execSync('git log -1 --format="%h %cd" --date=format:"%d/%m %H:%M"', { cwd: here }).toString().trim();
+} catch { /* sin git: se queda en «desconocida» */ }
+api.get('/health', (req, res) => res.json({ ok: true, version: VERSION, today: todayMadrid(), email_provider: mailer.provider, agent: agentStatus() }));
 
 api.get('/product', (req, res) => {
   res.json({

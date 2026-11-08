@@ -65,6 +65,9 @@ function contextNow() {
 function applyReason(form) {
   const reason = form.reason.value;
   const travel = reason === 'siniestro';
+  // Un problema durante el viaje no es una llamada comercial: el diálogo pasa a ser de asistencia.
+  $('#human-title', dialog).textContent = travel ? 'Asistencia durante el viaje' : 'Te llama una persona';
+  $('#cb-intro', dialog).hidden = travel;
   $('#cb-reason-text', dialog).textContent = REASON_TEXT[reason] ?? REASON_TEXT.otro;
   $('#cb-assist', dialog).hidden = !travel;
   const note = $('#cb-context', dialog);
@@ -111,7 +114,7 @@ export function initHumanDialog() {
       <button type="button" class="drawer-close" data-close aria-label="Cerrar">×</button>
     </div>
     <form id="human-form" class="dialog-body" novalidate>
-      <p class="sheet-help">Alguien del equipo te llama para ayudarte antes de contratar, de 9:00 a 21:00.</p>
+      <p class="sheet-help" id="cb-intro">Alguien del equipo te llama para ayudarte antes de contratar, de 9:00 a 21:00.</p>
       <p class="cb-reason-show" id="cb-reason-show"><span><span class="optional">Motivo:</span> <strong id="cb-reason-text"></strong></span> <button type="button" class="human-link" data-change-reason>Cambiar motivo</button></p>
       <div class="field" id="cb-reason-field"><label for="cb-reason">Para qué</label>
         <select id="cb-reason" name="reason">
