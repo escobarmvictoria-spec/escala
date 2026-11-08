@@ -576,7 +576,7 @@ function renderCoverageTable() {
   const plain = {
     'Gastos médicos en el extranjero': 'Médico, hospital y medicinas si enfermas o te lesionas.',
     'Repatriación o traslado sanitario': 'Te llevamos a casa o al hospital adecuado.',
-    'Cancelación del viaje': 'Lo que no recuperes si cancelas por una causa justificada.',
+    'Cancelación del viaje': 'Lo que no recuperes si cancelas por una de las causas cubiertas (lista cerrada en el apartado 6 de las condiciones).',
     'Robo, pérdida o daños del equipaje': 'Tus cosas, si se pierde o roban la maleta.',
     'Retraso del equipaje (más de 12 h)': 'Compras básicas mientras llega tu maleta.',
     'Retraso del vuelo (más de 6 h)': 'Un importe fijo para gastos durante la espera.',
