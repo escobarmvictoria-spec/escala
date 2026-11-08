@@ -20,6 +20,21 @@ let viewStep = null; // paso al que vuelve la persona al pulsar en la ruta
 let product = null;
 let lastRenderedStep = null;
 let loadingSummary = false;
+let browsingHome = false; // la persona abrió una sección de la portada (p. ej. Coberturas) en mitad de la compra
+
+// Durante la compra la portada se oculta; un enlace a una de sus secciones la vuelve a mostrar sin perder la compra.
+document.addEventListener('click', (ev) => {
+  const a = ev.target.closest('a[href^="#"], a[href^="/#"]');
+  if (!a || !document.body.classList.contains('is-checkout')) return;
+  const id = a.getAttribute('href').split('#')[1];
+  const target = id && document.getElementById(id);
+  if (!target || !target.closest('.home-section')) return;
+  ev.preventDefault();
+  browsingHome = true;
+  document.body.classList.remove('is-checkout');
+  history.pushState(null, '', `#${id}`);
+  target.scrollIntoView({ block: 'start' });
+});
 
 // ---------- utilidades de formulario ----------
 function showError(form, err) {
@@ -569,7 +584,8 @@ function render(state, reason, extra = {}) {
   if (step === 'pago') renderPay(order);
   if (step === 'poliza') renderPolicy(order);
   // Desde los datos hasta la póliza, la portada se aparta: solo la compra (y, al final, lo que toca hacer).
-  document.body.classList.toggle('is-checkout', ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
+  if (step !== lastRenderedStep) browsingHome = false;
+  document.body.classList.toggle('is-checkout', !browsingHome && ['viajeros', 'revision', 'pago', 'poliza'].includes(step));
   const moved = step !== lastRenderedStep && lastRenderedStep !== null;
   if ((extra.by === 'agent' && step !== lastRenderedStep) || (moved && reason !== 'restore')) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
   lastRenderedStep = step;
@@ -631,12 +647,27 @@ function initPlanSwitch(plans) {
   };
   sw.innerHTML = plans.map((p) => `<button type="button" data-show-plan="${esc(p.id)}" aria-pressed="false">${esc(p.name)}</button>`).join('');
   // Al cambiar de plan, la fila que se estaba mirando se queda en el mismo sitio de la pantalla.
+  // Algunos navegadores y agentes desplazan la página hasta la posición original del selector fijo
+  // justo antes del toque; por eso volvemos a la última posición estable (de hace más de 250 ms).
+  const positions = [];
+  addEventListener('scroll', () => {
+    positions.push([performance.now(), scrollY]);
+    while (positions.length > 40) positions.shift();
+  }, { passive: true });
+  const stableY = () => {
+    const now = performance.now();
+    for (let i = positions.length - 1; i >= 0; i--) if (now - positions[i][0] > 250) return positions[i][1];
+    return scrollY;
+  };
+  const jumpTo = (y) => window.scrollTo({ top: y, behavior: 'instant' });
   $$('button', sw).forEach((b) => b.addEventListener('click', () => {
+    const y = stableY();
+    if (Math.abs(scrollY - y) > 120) jumpTo(y);
     const edge = sw.getBoundingClientRect().bottom;
     const row = $$('#coverage-table tbody tr').find((tr) => tr.getBoundingClientRect().bottom > edge);
     const before = row?.getBoundingClientRect().top;
     show(b.dataset.showPlan);
-    if (row) window.scrollBy(0, row.getBoundingClientRect().top - before);
+    if (row) jumpTo(scrollY + row.getBoundingClientRect().top - before);
   }));
   sw.hidden = false;
   show((plans.find((p) => p.recommended) ?? plans[0]).id);
