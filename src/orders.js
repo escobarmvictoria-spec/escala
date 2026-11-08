@@ -180,11 +180,13 @@ function recommendationFor(order) {
   if (!plans[rec.plan]?.available || !plans[ref]?.available) return rec;
   const extra = Math.round((plans[rec.plan].total_eur - plans[ref].total_eur) * 100) / 100;
   const zone = order.trip.zone;
-  const from = formatEur(medicalLimit(zone, ref), 0);
-  const to = formatEur(medicalLimit(zone, rec.plan), 0);
+  // Frase corta: cabe bajo el precio sin abrir un hueco grande en las otras tarjetas.
+  const short = (n) => (n >= 1e6 ? `${String(n / 1e6).replace('.', ',')}\u00a0M€` : formatEur(n, 0));
+  const from = short(medicalLimit(zone, ref));
+  const to = short(medicalLimit(zone, rec.plan));
   const reason = rec.plan === 'total'
-    ? `Por ${formatEur(extra)} más que Completo en todo el viaje, tu límite médico sube de ${from} a ${to}.`
-    : `Por ${formatEur(extra)} más que Esencial en todo el viaje, añades cancelación, subes el límite médico de ${from} a ${to} y quitas la franquicia de ${formatEur(COVERAGES.find((x) => x.id === 'medical').deductible.esencial, 0)}.`;
+    ? `Por ${formatEur(extra)} más que Completo en todo el viaje: ${to} en gastos médicos, en lugar de ${from}.`
+    : `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${to} en gastos médicos, sin franquicia, y cobertura de cancelación.`;
   return { ...rec, compared_with: ref, extra_eur: extra, reason };
 }
 

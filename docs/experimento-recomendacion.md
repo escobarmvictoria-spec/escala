@@ -6,8 +6,8 @@ El plan recomendado depende del destino, con la misma regla para la web y para l
 
 | Viaje | Plan destacado | Texto debajo del sello |
 |---|---|---|
-| EE. UU. o Canadá | Total · Recomendado para tu destino | «Por X € más que Completo en todo el viaje, tu límite médico sube de 1.000.000 € a 5.000.000 €». |
-| Resto de destinos | Completo · Recomendado para tu viaje | «Por X € más que Esencial en todo el viaje, añades cancelación, subes el límite médico de 150.000 € a 1.000.000 € y quitas la franquicia de 75 €». |
+| EE. UU. o Canadá | Total · Recomendado para tu destino | «Por X € más que Completo en todo el viaje: 5 M€ en gastos médicos, en lugar de 1 M€». |
+| Resto de destinos | Completo · Recomendado para tu viaje | «Por X € más que Esencial en todo el viaje: 1 M€ en gastos médicos, sin franquicia, y cobertura de cancelación». |
 
 El sello siempre nombra el plan de referencia, el suplemento en todo el viaje (calculado con la cotización) y la mejora de cobertura, para que la persona decida sin reconstruir la comparación. Si el plan de referencia no está disponible (por ejemplo, Esencial para mayores de 69), el sello solo explica qué incluye.
 
