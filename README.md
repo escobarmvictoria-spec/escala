@@ -30,8 +30,14 @@ En un Ubuntu: `git clone` del repositorio, `bash deploy/setup.sh` (instala Node 
 - **Recuperación de abandonos:** «Enviarme la cotización» (y `save_quote` para agentes) manda los tres precios con un enlace para retomar; `/panel` mide cuántas vuelven y compran.
 - **Sencillo antes que ambicioso:** sin base de datos ni frameworks. No apto para producción: sin aseguradora detrás y la consulta de pólizas no tiene autenticación.
 
+## Cómo se hizo
+
+Construido con Claude como agente de programación: yo definí el producto, la marca, las reglas y las prioridades, y decidí cada cambio; Claude escribió el código y las pruebas. Qué cambié y por qué, en [docs/decisiones.md](docs/decisiones.md).
+
+Créditos: fuentes Inter y Manrope (SIL Open Font License), polyfill de WebMCP `@mcp-b/global` (MIT) y fotos de Unsplash (licencia Unsplash).
+
 ## Más detalle
 
-[Arquitectura, herramientas y controles](docs/architecture.md) · [Precios y calibración](docs/pricing.md) · [Prueba automática](docs/agent-eval.md) · [Experimento del plan recomendado](docs/experimento-recomendacion.md) · [Despliegue y operación](docs/deploy.md) · [Marca](docs/brand.md)
+[Arquitectura, herramientas y controles](docs/architecture.md) · [Precios y calibración](docs/pricing.md) · [Prueba automática](docs/agent-eval.md) · [Decisiones y cambios](docs/decisiones.md) · [Experimento del plan recomendado](docs/experimento-recomendacion.md) · [Despliegue y operación](docs/deploy.md) · [Marca](docs/brand.md)
 
 En local: `npm install && npm start` (http://localhost:3000) y `npm test`. Claves solo en `.env`, nunca en el repositorio.

@@ -254,6 +254,8 @@ function markdown(report) {
     ),
     '',
     'Cada escenario lo juega un cliente simulado por otro modelo, que solo conoce sus datos y su forma de comportarse. El agente solo puede usar las herramientas WebMCP de la página. El resultado se comprueba contra el servidor (estado del pedido, plan, asegurados, fechas, email y pago), no contra lo que dice el agente.',
+    '',
+    'Los escenarios cambian cuando cambia una regla, nunca para que un caso pase. Ejemplo: desde el 8/11, cotizar ya no equivale a querer comprar (Alba responde y no empuja a contratar), así que en los escenarios de compra el cliente simulado dice explícitamente que se queda con un plan. Los casos de solo consulta se comprueban aparte con `npm run eval:pair`: en la misma cotización, preguntar por Completo la deja sin plan y elegirlo inicia la contratación.',
   ];
   return lines.join('\n') + '\n';
 }
