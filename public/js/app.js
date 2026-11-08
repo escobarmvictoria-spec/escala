@@ -585,8 +585,8 @@ function renderCoverageTable() {
   const plain = {
     'Gastos médicos en el extranjero': 'Médico, hospital y medicinas si enfermas o te lesionas.',
     'Repatriación o traslado sanitario': 'Te llevamos a casa o al hospital adecuado.',
-    'Cancelación del viaje': 'Si cancelas por una causa cubierta, te reembolsamos la parte de tus reservas que no te devuelvan, hasta el límite de tu plan. Consulta las causas cubiertas en el apartado 6 de las condiciones.',
-    'Robo, pérdida o daños del equipaje': 'Tus cosas, si se pierde o roban la maleta.',
+    'Cancelación del viaje': 'Reembolso de reservas no recuperables por una causa cubierta.',
+    'Robo, pérdida o daños del equipaje': 'Tus cosas, si la maleta se pierde, te la roban o llega dañada.',
     'Retraso del equipaje (más de 12 h)': 'Compras básicas mientras llega tu maleta.',
     'Retraso del vuelo (más de 6 h)': 'Un importe fijo para gastos durante la espera.',
     'Responsabilidad civil privada': 'Si sin querer causas daños a otra persona.',
@@ -596,17 +596,28 @@ function renderCoverageTable() {
   $('#coverage-table').innerHTML = `
     <thead><tr><th scope="col">Cobertura</th>${plans.map((p) => `<th scope="col" class="${col(p)}">${esc(p.name)}</th>`).join('')}</tr></thead>
     <tbody>${names
-      .map((n) => `<tr><th scope="row">${esc(n)}<small>${esc(plain[n] ?? '')}</small></th>${plans
+      .map((n) => `<tr><th scope="row">${esc(n)}<small>${esc(plain[n] ?? '')}${n === 'Cancelación del viaje' ? ' <a href="/condiciones#cancelacion">Ver las 10 causas y cuándo empieza a cubrir</a>' : ''}</small></th>${plans
         .map((p) => {
           const c = p.coverages.find((x) => x.coverage === n);
           if (!c) return `<td class="${col(p)} is-missing">No incluido</td>`;
-          return `<td class="${col(p)}">${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? `<br><small>Franquicia ${esc(c.deductible)}</small>` : ''}</td>`;
+          // En gastos médicos la franquicia se ve en los tres planes, también cuando no hay.
+          const ded = c.deductible !== 'Sin franquicia' ? `Franquicia ${esc(c.deductible)}` : n.startsWith('Gastos médicos') ? 'Sin franquicia' : '';
+          return `<td class="${col(p)}">${esc(c.limit)}${ded ? `<br><small>${ded}</small>` : ''}</td>`;
         })
         .join('')}</tr>`)
       .join('')}
-      <tr><th scope="row">Edad máxima</th>${plans.map((p) => `<td class="${col(p)}">${p.max_age} años</td>`).join('')}</tr>
     </tbody>`;
-  $('#exclusions-list').innerHTML = product.main_exclusions.map((e) => `<li>${esc(e)}</li>`).join('');
+  // Requisitos para contratar, separados de las coberturas y de las exclusiones.
+  const reqs = $('#coverage-reqs');
+  if (reqs) {
+    const ages = plans.map((p) => p.max_age);
+    const limits = product.limits ?? {};
+    reqs.innerHTML = `<h3>Para contratar</h3><ul>
+      <li>Edad máxima: ${ages[0]} años en ${esc(plans[0].name)} y ${Math.max(...ages)} en ${plans.slice(1).map((p) => esc(p.name)).join(' y ')}.</li>
+      <li>Vivir en España y que el viaje empiece en España.</li>
+      <li>Viajes de hasta ${limits.max_trip_days ?? 90} días y hasta ${limits.max_travelers ?? 6} viajeros por póliza.</li></ul>`;
+  }
+  $('#exclusions-list').innerHTML = product.main_exclusions.filter((e) => !/empiezan fuera de España/.test(e)).map((e) => `<li>${esc(e)}</li>`).join('');
   initPlanSwitch(plans);
 }
 
@@ -619,7 +630,14 @@ function initPlanSwitch(plans) {
     plans.forEach((p) => $$(`#coverage-table .plan-${p.id}`).forEach((cell) => cell.classList.toggle('is-off', p.id !== id)));
   };
   sw.innerHTML = plans.map((p) => `<button type="button" data-show-plan="${esc(p.id)}" aria-pressed="false">${esc(p.name)}</button>`).join('');
-  $$('button', sw).forEach((b) => b.addEventListener('click', () => show(b.dataset.showPlan)));
+  // Al cambiar de plan, la fila que se estaba mirando se queda en el mismo sitio de la pantalla.
+  $$('button', sw).forEach((b) => b.addEventListener('click', () => {
+    const edge = sw.getBoundingClientRect().bottom;
+    const row = $$('#coverage-table tbody tr').find((tr) => tr.getBoundingClientRect().bottom > edge);
+    const before = row?.getBoundingClientRect().top;
+    show(b.dataset.showPlan);
+    if (row) window.scrollBy(0, row.getBoundingClientRect().top - before);
+  }));
   sw.hidden = false;
   show((plans.find((p) => p.recommended) ?? plans[0]).id);
 }

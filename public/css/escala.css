@@ -362,12 +362,10 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .coverage-table { width: 100%; border-collapse: collapse; min-width: 640px; }
 .coverage-table th, .coverage-table td { padding: 14px 18px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
 .coverage-table thead th { font-family: var(--font-head); font-size: var(--fs-md); font-weight: 700; border-bottom: 1px solid var(--line-strong); }
-.coverage-table thead th.is-recommended { background: var(--yellow-soft); }
 .coverage-table tbody th { font-weight: 600; }
 .coverage-table tbody th small { display: block; font-weight: 400; color: var(--navy-soft); font-size: var(--fs-xs); margin-top: 2px; max-width: 46ch; }
 .coverage-table td { font-weight: 600; white-space: nowrap; }
 .coverage-table td small { font-weight: 400; color: var(--navy-soft); }
-.coverage-table td.is-recommended { background: #FFFBEF; }
 .coverage-table td.is-missing { color: #8A8F9C; font-weight: 400; }
 .coverage-table tr:last-child > * { border-bottom: 0; }
 .plan-switch { display: none; }
@@ -747,3 +745,13 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 
 .plan-list li > span:nth-of-type(2) { font-weight: 600; text-align: right; white-space: nowrap; }
 .plan-list li.is-missing > span:nth-of-type(2) { font-weight: 400; }
+
+/* Qué cubre cada plan: requisitos aparte, enlace de cancelación en su fila y, en móvil, selector siempre a mano */
+.coverage-table tbody th small a { font-weight: 600; color: var(--navy); white-space: normal; }
+.coverage-reqs { margin-top: var(--s-4); padding: var(--s-4) var(--s-5); background: var(--white); border: 1px solid var(--line); border-radius: var(--r-l); }
+.coverage-reqs h3 { font-size: var(--fs-md); }
+.coverage-reqs ul { margin: 8px 0 0; padding-left: 1.2em; display: grid; gap: 4px; font-size: var(--fs-sm); color: var(--navy-soft); }
+@media (max-width: 960px) {
+  .plan-switch:not([hidden]) { position: sticky; top: var(--band-h, 0px); z-index: 5; box-shadow: 0 6px 12px -8px rgba(25, 35, 63, .25); }
+  #coberturas { padding-bottom: calc(var(--s-6) + 88px); }
+}
