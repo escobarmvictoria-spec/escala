@@ -316,7 +316,9 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 #docs-list { display: grid; gap: var(--s-3); }
 .actions { display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: center; }
 .test-card { background: var(--teal-soft); border-radius: var(--r-m); padding: 12px 14px; font-size: var(--fs-sm); }
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px 24px; margin: 0; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 14px 24px; margin: 0; }
+.summary-grid > div, .pay-summary dl > div { min-width: 0; }
+.summary-grid dd, .pay-summary dd, .status-pill, .email { overflow-wrap: anywhere; }
 .summary-grid dt { font-size: var(--fs-xs); color: var(--navy-soft); font-weight: 500; }
 .summary-grid dd { margin: 2px 0 0; font-weight: 600; }
 .summary-total { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); border-top: 2px solid var(--navy); padding-top: var(--s-3); }
@@ -327,6 +329,10 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .mini-table td { padding: 8px 8px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .mini-table td.num, .mini-table th.num { text-align: right; padding-right: 0; white-space: nowrap; }
 .mini-table td.num + td.num, .mini-table th.num + th.num { padding-left: 12px; }
+.mini-table th.num { white-space: normal; }
+/* En móvil la tabla de coberturas se adapta al ancho: «Sin franquicia» puede bajar de línea antes que desbordar el recuadro. */
+@media (max-width: 480px) { .mini-table td.num { white-space: normal; } .mini-table td.num + td.num, .mini-table th.num + th.num { padding-left: 8px; } }
+#review-sheet > * { min-width: 0; }
 .terms-box { background: var(--ivory); border-radius: var(--r-m); padding: 14px 16px; font-size: var(--fs-sm); }
 .terms-box ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 .policy-hero { display: grid; gap: 6px; }

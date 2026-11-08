@@ -7,6 +7,8 @@ import { initHumanDialog } from './human.js';
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+// Email que, si no cabe, se parte por la arroba en vez de salirse del recuadro.
+const escEmail = (e) => esc(e).replace(/\./g, '.<wbr>').replace('@', '<wbr>@');
 
 const STEPS = ['plan', 'viajeros', 'revision', 'pago', 'poliza'];
 // Resumen de la cancelación dentro de la cotización: decide si compensa pagar más sin salir de los resultados.
@@ -461,7 +463,7 @@ function renderReview(order) {
       <div><dt>Plan</dt><dd>${esc(s.plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
       <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}<br><span class="optional">Zona de cobertura: ${esc(s.trip.zone)}</span></dd></div>
       <div><dt>Fechas</dt><dd>${fmtDate(s.trip.start_date)} – ${fmtDate(s.trip.end_date)} (${s.trip.days} días)</dd></div>
-      <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional">${esc(s.holder.email)}</span></dd></div>
+      <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional email">${escEmail(s.holder.email)}</span></dd></div>
     </dl>
     <div class="review-head"><h4>Asegurados</h4><button type="button" class="edit-link" data-goto="viajeros">Editar viajeros</button></div>
     <table class="mini-table"><thead><tr><th>Asegurado</th><th>Edad</th><th class="num">Precio</th></tr></thead><tbody>
@@ -590,10 +592,10 @@ function initPayForm() {
 }
 
 function emailPill(email) {
-  if (email.status === 'sent') return `<span class="status-pill ok">Enviada a ${esc(email.to)}</span>`;
-  if (email.status === 'simulated') return `<span class="status-pill warn">Envío simulado a ${esc(email.to)} (servidor sin email configurado)</span>`;
-  if (email.status === 'pending') return `<span class="status-pill warn">Enviando a ${esc(email.to)}…</span>`;
-  return `<span class="status-pill bad">No se ha podido enviar a ${esc(email.to)}</span>`;
+  if (email.status === 'sent') return `<span class="status-pill ok">Enviada a ${escEmail(email.to)}</span>`;
+  if (email.status === 'simulated') return `<span class="status-pill warn">Envío simulado a ${escEmail(email.to)} (servidor sin email configurado)</span>`;
+  if (email.status === 'pending') return `<span class="status-pill warn">Enviando a ${escEmail(email.to)}…</span>`;
+  return `<span class="status-pill bad">No se ha podido enviar a ${escEmail(email.to)}</span>`;
 }
 
 function renderPolicy(order) {
