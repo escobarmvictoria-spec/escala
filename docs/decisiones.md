@@ -1,6 +1,6 @@
 # Decisiones y cambios: qué pedí y por qué
 
-Construí Escala del 6 al 8 de noviembre de 2026 con Claude como agente de programación. Yo definí el producto, la marca, las reglas y las prioridades, revisé cada pantalla y cada texto, y decidí qué cambiar. Claude escribió el código y las pruebas, y me propuso alternativas. Para revisar la web desde fuera usé ChatGPT con dos roles, experto en CRO y especialista en seguros de viaje, y probé la compra con cinco agentes reales. Cada cambio de esta lista lo pedí o lo aprobé yo. Los commits del repositorio llevan a Claude como coautor.
+Construí Escala del 6 al 8 de noviembre de 2026 con Claude como agente de programación. Yo definí el producto, la marca, las reglas y las prioridades, revisé cada pantalla y cada texto, y decidí qué cambiar. Claude escribió el código y las pruebas, y me propuso alternativas. Las revisiones de conversión y de producto fueron iniciativa mía: yo elegí qué mirar (el sello, la cancelación, la edad máxima, la llamada…), usé ChatGPT como segunda opinión para contrastarlas y decidí qué aplicar. También probé la compra con cinco agentes reales. Cada cambio de esta lista lo pedí o lo aprobé yo. Los commits del repositorio llevan a Claude como coautor.
 
 Ordenado por tema. Cada punto dice qué cambió y por qué.
 
@@ -57,7 +57,7 @@ Ordenado por tema. Cada punto dice qué cambió y por qué.
 
 - **Móvil:** el cotizador en la primera pantalla, la compra sin distracciones y «Elegir…» justo después del precio. *Por qué:* en una pantalla pequeña, el botón tiene que estar donde se decide.
 - **«Retomar mi cotización» siempre a mano** y la recuperación de abandonos: «Enviarme la cotización» manda los tres precios con un enlace para volver. *Por qué:* el seguro de viaje se compara y se piensa. Recuperar al que se fue es growth.
-- **Auditoría de CRO con ChatGPT:** de 5 hallazgos apliqué 3 (sello comparativo, «Continuar al pago» en la revisión, «Copiar enlace para retomar» y «Cambiar email»). Dejé para después la aseguradora real y un formulario de viajeros más corto. *Por qué:* priorizar lo que mejora la decisión sin rehacer el flujo antes de la entrega.
+- **Revisión de conversión del flujo, contrastada con ChatGPT:** de 5 mejoras posibles apliqué 3 (sello comparativo, «Continuar al pago» en la revisión, «Copiar enlace para retomar» y «Cambiar email»). Dejé para después la aseguradora real y un formulario de viajeros más corto. *Por qué:* priorizar lo que mejora la decisión sin rehacer el flujo antes de la entrega.
 - **Tarjetas de plan alineadas fila a fila.** *Por qué:* comparar es leer en horizontal. Nombre, precio y coberturas tienen que quedar a la misma altura.
 - **Selector de coberturas fijo en móvil** que conserva la fila al cambiar de plan. *Por qué:* al cambiar de plan, la página saltaba arriba y se perdía lo que estabas comparando.
 - **Cabecera fija bien calculada en las páginas secundarias.** *Por qué:* quedaba tapada por la banda de demo.
