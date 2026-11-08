@@ -114,3 +114,32 @@ Fuentes de los artículos: [Capture the Atlas, Europa](https://capturetheatlas.c
 | Victoria, 7/11/2026 | usa_canada | 11 | 1 | InterMundial Totaltravel mini | 69.21 € | esencial | 54.85 € | -21 % |
 | Victoria, 7/11/2026 | usa_canada | 11 | 1 | InterMundial Totaltravel | 83.26 € | completo | 76.90 € | -8 % |
 | Victoria, 7/11/2026 | usa_canada | 11 | 1 | InterMundial Totaltravel premium | 134.99 € | total | 99.60 € | -26 % |
+
+## ¿Son precios sostenibles? Desglose de la prima (hipótesis de trabajo)
+
+Escala no tiene datos de siniestralidad: estos porcentajes son **hipótesis razonables para un seguro de viaje online en España**, no datos de ninguna aseguradora. Sirven para ver dónde está el riesgo del precio, no para fijarlo.
+
+Supuestos:
+
+- **IPS:** 8 % incluido en el precio final (prima neta = precio / 1,08).
+- **Siniestralidad esperada** (sobre la prima neta, incluida la cancelación): España 30 %, Europa 35 %, resto del mundo 45 %, EE. UU. y Canadá 55 %, porque allí un ingreso hospitalario cuesta varias veces más.
+- **Asistencia 24 h** (proveedor externo): 1,50 € por póliza + 4 % de la prima neta.
+- **Adquisición:** 25 % (marketing, comparadores y afiliados).
+- **Operación:** 7 % (pagos, emisión, atención, plataforma).
+- **Margen:** lo que queda.
+
+| Viaje · plan | Precio | IPS | Siniestros esperados | Asistencia | Adquisición | Operación | Margen | Margen si la siniestralidad sube 10 puntos |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Mallorca, 4 días, 30 años · Completo | 13,40 € | 0,99 € | 3,72 € (30 %) | 2,00 € | 3,10 € | 0,87 € | **2,72 €** (22 %) | 12 % |
+| Italia, 7 días, 35 años · Completo | 27,30 € | 2,02 € | 8,85 € (35 %) | 2,51 € | 6,32 € | 1,77 € | **5,83 €** (23 %) | 13 % |
+| Japón, 15 días, pareja · Completo | 158,00 € | 11,70 € | 65,83 € (45 %) | 7,35 € | 36,57 € | 10,24 € | **26,30 €** (18 %) | 8 % |
+| Nueva York, 8 días, 35 años · Completo | 65,20 € | 4,83 € | 33,20 € (55 %) | 3,91 € | 15,09 € | 4,23 € | **3,93 €** (7 %) | −3 % |
+| Nueva York, 8 días, 35 años · Total | 82,80 € | 6,13 € | 42,17 € (55 %) | 4,57 € | 19,17 € | 5,37 € | **5,40 €** (7 %) | −3 % |
+
+Lo que dice la tabla:
+
+1. **Europa y España aguantan bien.** Incluso con 10 puntos más de siniestralidad queda margen. Ahí el precio puede competir.
+2. **EE. UU. es el riesgo.** Con estas hipótesis el margen es fino y una mala racha de siniestros lo vuelve negativo. Antes de lanzar, es la zona que validaría con datos reales de siniestralidad; si hace falta, subiría la tarifa de EE. UU. antes que la de Europa.
+3. **En viajes cortos pesa el coste fijo.** En Mallorca la asistencia es el 15 % del precio. Por eso la tarifa tiene una parte base además de la diaria: sin ella, los viajes de pocos días perderían dinero.
+4. **La adquisición es la palanca de growth.** Es la partida más grande después de los siniestros. Un canal que baje el coste de adquisición (recuperación de cotizaciones, recomendación, agentes de IA que compran sin pasar por comparadores) mejora el margen sin tocar el precio.
+5. **La cancelación hay que separarla.** En un producto real, su coste esperado se mediría aparte, porque depende del importe de las reservas y no de los días ni del destino.
