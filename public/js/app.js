@@ -545,7 +545,7 @@ function renderPay(order) {
       render(store.state, 'nav');
     })
   );
-  $('#pay-button').textContent = `Pagar ${eur(order.total_eur)}`;
+  $('#pay-button').textContent = `Simular pago de ${eur(order.total_eur)}`;
 }
 
 function initPayForm() {
@@ -575,7 +575,7 @@ function initPayForm() {
     }
     await busy($('#pay-button'), async () => {
       try {
-        const data = await api.pay(order.quote_id, { amount_eur: order.total_eur, card_number: form.card_number.value, user_confirmation: `Pulsó el botón Pagar (${eur(order.total_eur)}) en la web` });
+        const data = await api.pay(order.quote_id, { amount_eur: order.total_eur, card_number: form.card_number.value, user_confirmation: `Pulsó «Simular pago de ${eur(order.total_eur)}» en la web` });
         viewStep = null;
         form.reset();
         store.apply(data, 'paid', { by: 'web' });

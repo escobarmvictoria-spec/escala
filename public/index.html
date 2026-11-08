@@ -172,16 +172,17 @@
 
         <div class="step" id="step-pago" data-step="pago" hidden>
           <form id="pay-form" class="sheet" novalidate>
-            <h3>Pago</h3>
+            <h3>Pago único de prueba</h3>
             <div class="pay-summary" id="pay-summary" aria-label="Lo que vas a contratar"></div>
-            <p class="test-card">Es una demo: no se cobra nada. Usa la tarjeta de prueba <strong>4242 4242 4242 4242</strong>, cualquier fecha futura y cualquier CVC. La <strong>4000 0000 0000 0002</strong> sale rechazada.</p>
+            <p class="test-card">Usa la tarjeta de prueba <strong>4242 4242 4242 4242</strong>. No se realizará ningún cargo. Si el pago simulado se aprueba, recibirás la póliza de prueba en el correo que has indicado.</p>
             <div class="field"><label for="c-number">Número de tarjeta</label><input id="c-number" name="card_number" inputmode="numeric" autocomplete="cc-number" placeholder="4242 4242 4242 4242" required></div>
             <div class="field-row">
               <div class="field"><label for="c-exp">Caducidad</label><input id="c-exp" name="card_exp" placeholder="MM/AA" autocomplete="cc-exp" required></div>
               <div class="field"><label for="c-cvc">CVC</label><input id="c-cvc" name="card_cvc" inputmode="numeric" autocomplete="cc-csc" placeholder="123" required></div>
             </div>
+            <p class="field-help">Vale cualquier fecha futura y cualquier CVC de 3 cifras.</p>
             <p class="form-error" role="alert" hidden></p>
-            <div class="actions"><button class="btn-primary" type="submit" id="pay-button">Pagar</button></div>
+            <div class="actions"><button class="btn-primary" type="submit" id="pay-button">Simular pago</button></div>
           </form>
         </div>
 
