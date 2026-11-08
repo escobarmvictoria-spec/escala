@@ -177,7 +177,9 @@ function recommendationFor(order) {
   const rec = recommendPlan({ zone: order.trip.zone });
   const plans = order.quote.plans;
   const ref = rec.plan === 'total' ? 'completo' : 'esencial';
-  if (!plans[rec.plan]?.available || !plans[ref]?.available) return rec;
+  if (!plans[rec.plan]?.available) return rec;
+  if (!plans[ref]?.available)
+    return { ...rec, label: 'Recomendado para tu edad', reason: 'La opción disponible de menor precio para tu edad, con gastos médicos sin franquicia y cobertura de cancelación.' };
   const extra = Math.round((plans[rec.plan].total_eur - plans[ref].total_eur) * 100) / 100;
   const zone = order.trip.zone;
   // Frase corta: cabe bajo el precio sin abrir un hueco grande en las otras tarjetas.
@@ -186,7 +188,9 @@ function recommendationFor(order) {
   const to = short(medicalLimit(zone, rec.plan));
   const reason = rec.plan === 'total'
     ? `Por ${formatEur(extra)} más que Completo en todo el viaje: ${to} en gastos médicos, en lugar de ${from}.`
-    : `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${to} en gastos médicos, sin franquicia, y cobertura de cancelación.`;
+    : zone === 'espana'
+      ? `Por ${formatEur(extra)} más que Esencial en todo el viaje: cobertura de cancelación y gastos médicos sin franquicia.`
+      : `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${to} en gastos médicos, sin franquicia, y cobertura de cancelación.`;
   return { ...rec, compared_with: ref, extra_eur: extra, reason };
 }
 

@@ -207,13 +207,14 @@ function renderPlans(order) {
     const missing = meta?.not_included ?? [];
     const perPerson = p.per_traveler.length > 1 ? `${eur(p.total_eur / p.per_traveler.length)} por persona de media` : `${eur(p.total_eur / order.trip.days)} al día`;
     const el = document.createElement('article');
-    el.className = `plan${isRec ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}`;
+    el.className = `plan${isRec ? ' is-recommended' : ''}${order.plan === id ? ' is-selected' : ''}${p.available ? '' : ' is-unavailable'}`;
     el.innerHTML = `
       <span class="plan-flag${isRec ? '' : ' is-empty'}">${isRec ? esc(order.recommendation?.label ?? 'Recomendado') : 'Recomendado'}</span>
       <h3>${esc(p.name)}</h3>
       <p class="plan-tagline">${esc(meta?.description ?? '')}</p>
-      <p class="plan-price">${eur(p.total_eur)}</p>
-      <p class="plan-price-note">Total para ${p.per_traveler.length === 1 ? '1 viajero' : `${p.per_traveler.length} viajeros`}, impuestos incluidos. ${perPerson}.${p.group_discount_pct ? ` Incluye ${p.group_discount_pct} % de descuento de grupo.` : ''}</p>
+      ${p.available ? `<p class="plan-price">${eur(p.total_eur)}</p>
+      <p class="plan-price-note">Total para ${p.per_traveler.length === 1 ? '1 viajero' : `${p.per_traveler.length} viajeros`}, impuestos incluidos. ${perPerson}.${p.group_discount_pct ? ` Incluye ${p.group_discount_pct} % de descuento de grupo.` : ''}</p>` : `<p class="plan-price is-na">No disponible</p>
+      <p class="plan-price-note">${esc(p.unavailable_reason)}</p>`}
       ${isRec && order.recommendation?.reason ? `<p class="plan-why">${esc(order.recommendation.reason)}</p>` : '<div class="plan-why is-empty" aria-hidden="true"></div>'}
       <ul class="plan-list">
         ${COVERAGE_ORDER.map((name) => {
@@ -222,7 +223,7 @@ function renderPlans(order) {
           return `<li><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span></li>`;
         }).join('')}
       </ul>
-      ${p.available ? '<div class="plan-unavailable is-empty" aria-hidden="true"></div>' : `<p class="plan-unavailable">${esc(p.unavailable_reason)}</p>`}
+      <div class="plan-unavailable is-empty" aria-hidden="true"></div>
       <button class="${order.plan === id ? 'btn-navy' : isRec ? 'btn-primary' : 'btn-secondary'}" type="button" data-plan="${id}" ${p.available ? '' : 'disabled'}>${order.plan === id ? `${esc(p.name)} elegido` : `Elegir ${esc(p.name)}`}</button>`;
     grid.append(el);
   }

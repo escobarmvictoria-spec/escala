@@ -130,7 +130,7 @@ export function renderProductSheet() {
       `Franquicia: el plan Esencial tiene ${formatEur(med.deductible.esencial, 0)} de franquicia en gastos médicos por siniestro. Completo y Total no tienen franquicia.`,
       `Edad: de 0 a ${MAX_AGE} años; el plan Esencial, hasta ${PLANS.find((p) => p.id === 'esencial').max_age} años.`,
       `Duración máxima del viaje: ${MAX_DAYS} días. Máximo ${MAX_TRAVELERS} viajeros por póliza.`,
-      'La cancelación del viaje solo cubre causas justificadas (enfermedad grave, accidente o fallecimiento del asegurado o de un familiar directo, despido, citación judicial y otras de la lista de las condiciones).',
+      'La cancelación del viaje solo cubre las causas de la lista cerrada de las condiciones (enfermedad grave, accidente u hospitalización, fallecimiento de un familiar, despido y otras). Si contratas más de 7 días después de tu primera reserva, cubre desde 72 horas tras la contratación.',
     ]);
 
     heading('¿Dónde estoy cubierto?');

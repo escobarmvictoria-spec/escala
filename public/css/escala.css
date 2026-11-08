@@ -727,3 +727,7 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
   .plan .plan-list { order: 2; margin-top: var(--s-4); margin-bottom: 0; }
   .plan > button[data-plan] { margin-top: var(--s-3); }
 }
+
+/* Plan que no se puede contratar (p. ej. Esencial con un viajero de 70 o más): sin precio que ancle la decisión */
+.plan.is-unavailable { background: var(--ivory); }
+.plan-price.is-na { font-size: var(--fs-lg); color: var(--navy-soft); }

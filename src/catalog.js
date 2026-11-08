@@ -62,7 +62,7 @@ export const COVERAGES = [
   {
     id: 'cancellation',
     name: 'Cancelación del viaje',
-    plain: 'Te devolvemos lo que no puedas recuperar si cancelas por una causa justificada (enfermedad, accidente, fallecimiento de un familiar y otras de la lista).',
+    plain: 'Hasta el límite por persona, los gastos que no puedas recuperar si cancelas por una causa cubierta. La lista cerrada de causas está en las condiciones.',
     limits: { esencial: null, completo: 1500, total: 5000 },
     deductible: { esencial: 0, completo: 0, total: 0 },
   },
