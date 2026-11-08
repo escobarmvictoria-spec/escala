@@ -55,9 +55,9 @@ export function cancellationStart({ firstBookingDate, departureDate, now = new D
   if (!before)
     message = 'Si contratas ahora, la cancelación empezaría a cubrir después de tu salida. Para estas fechas, esa cobertura no llegaría a activarse antes del viaje. Puedes seguir comparando los gastos médicos y el equipaje de cada plan.';
   else if (immediate)
-    message = `Si contratas ahora, la cancelación cubre desde el momento de contratar: tu primera reserva fue hace ${daysSinceBooking === 0 ? 'menos de un día' : daysSinceBooking === 1 ? '1 día' : `${daysSinceBooking} días`}, dentro de los ${CANCEL_GRACE_DAYS} días.`;
+    message = 'Si contratas ahora, la cobertura de cancelación se activa desde la compra y hasta que empiece el viaje. Se aplica a las causas cubiertas por el plan.';
   else
-    message = `Si contratas ahora, la cancelación empezaría a cubrir ${formatMadrid(startsAt)}, ${CANCEL_WAIT_HOURS} horas después de contratar, porque tu primera reserva fue hace más de ${CANCEL_GRACE_DAYS} días. Eso es antes de tu salida.`;
+    message = `Si contratas ahora, la cobertura de cancelación se activa ${formatMadrid(startsAt)}, ${CANCEL_WAIT_HOURS} horas después de la compra, y dura hasta que empiece el viaje. Se aplica a las causas cubiertas por el plan.`;
   return {
     rule,
     days_since_first_booking: daysSinceBooking,

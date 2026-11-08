@@ -251,6 +251,13 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .stub-plans .is-recommended span { color: var(--navy); font-weight: 600; }
 .stub-plans .is-recommended span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); border: 2px solid var(--navy); flex: none; }
 .stub-note { font-size: var(--fs-xs); color: var(--navy-soft); }
+@media (max-width: 480px) {
+  .stub-plans { grid-template-columns: 1fr; gap: 0; }
+  .stub-plans li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--s-3); padding: 8px 0; border-top: 1px solid var(--line); }
+  .stub-plans li:first-child { border-top: 0; padding-top: 0; }
+  .stub-plans span { font-size: var(--fs-sm); }
+  .stub-plans strong { font-size: var(--fs-md); }
+}
 
 /* Compra */
 .purchase { padding: 0 0 var(--s-8); }

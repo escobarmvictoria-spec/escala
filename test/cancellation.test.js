@@ -10,7 +10,7 @@ test('primera reserva hace menos de 7 días: cubre desde que contratas', () => {
   assert.equal(r.rule, 'desde_contratacion');
   assert.equal(r.covered_before_departure, true);
   assert.equal(r.days_since_first_booking, 5);
-  assert.match(r.message, /cubre desde el momento de contratar/);
+  assert.match(r.message, /^Si contratas ahora, la cobertura de cancelación se activa desde la compra y hasta que empiece el viaje\. Se aplica a las causas cubiertas por el plan\.$/);
 });
 
 test('primera reserva hace más de 7 días: empieza 72 horas después, antes de salir', () => {
@@ -19,6 +19,7 @@ test('primera reserva hace más de 7 días: empieza 72 horas después, antes de 
   assert.equal(r.covered_before_departure, true);
   assert.equal(r.starts_at, '2026-11-11T12:00:00.000Z');
   assert.match(r.message, /miércoles, 11 de noviembre a las 13:00/);
+  assert.match(r.message, /Se aplica a las causas cubiertas por el plan\.$/);
 });
 
 test('si las 72 horas acaban después de la salida, avisa de que no llegaría a activarse', () => {
