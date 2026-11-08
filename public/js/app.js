@@ -194,7 +194,7 @@ function renderPlans(order) {
     const help = document.createElement('p');
     help.id = 'plans-help';
     help.className = 'plans-help';
-    help.innerHTML = '¿Dudas entre dos planes? Alba te ayuda a comparar coberturas. <button type="button" class="human-link" data-open-agent>Hablar con Alba</button><br>¿Tienes una enfermedad previa? Su cobertura está por confirmar: una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button>';
+    help.innerHTML = '<span class="help-line">¿Dudas entre dos planes? Alba te ayuda a comparar coberturas. <button type="button" class="human-link" data-open-agent>Hablar con Alba</button></span><span class="help-line">¿Tienes una enfermedad previa? Su cobertura está por confirmar: una persona del equipo puede revisar tu caso. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button></span><span class="help-line">Cómo se usa el seguro: <a class="human-link" href="/condiciones#urgencia">Tengo una urgencia</a>, <a class="human-link" href="/condiciones#reembolso">He pagado un gasto</a> y <a class="human-link" href="/condiciones#desistir">Quiero desistir</a>.</span>';
     grid.after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';
@@ -502,7 +502,7 @@ function renderPolicy(order) {
     <div class="actions">
       <a class="btn-primary" href="${esc(p.pdf_url)}" target="_blank" rel="noopener">Descargar la póliza (PDF)</a>
       <button class="btn-secondary" type="button" data-new-quote>Cotizar otro viaje</button>
-      <a class="human-link" href="/#asistencia">¿Problemas en el viaje? Asistencia 24 h</a>
+      <a class="human-link" href="/condiciones#urgencia">¿Problemas en el viaje? Asistencia 24 h</a>
     </div>
     <form class="resend" id="resend-form" novalidate>
       <div class="field"><label for="r-email">¿No te ha llegado? Reenvíala</label><input id="r-email" type="email" value="${esc(order.holder.email)}"></div>

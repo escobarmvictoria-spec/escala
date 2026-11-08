@@ -731,3 +731,6 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 /* Plan que no se puede contratar (p. ej. Esencial con un viajero de 70 o más): sin precio que ancle la decisión */
 .plan.is-unavailable { background: var(--ivory); }
 .plan-price.is-na { font-size: var(--fs-lg); color: var(--navy-soft); }
+
+.plans-help .help-line { display: block; }
+.plans-help .help-line + .help-line { margin-top: 8px; }
