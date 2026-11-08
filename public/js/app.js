@@ -296,7 +296,7 @@ function renderPlans(order) {
     const assist = document.createElement('div');
     assist.id = 'plans-assist';
     assist.className = 'assist-note';
-    assist.innerHTML = '<h3>Si necesitas ir al médico durante el viaje</h3><p>Llama a asistencia 24 horas. Te indicaremos a qué centro acudir y, si el gasto está cubierto, pagaremos directamente al hospital. <a href="/condiciones#urgencia" target="_blank" rel="noopener">Qué hacer en una urgencia</a></p>';
+    assist.innerHTML = '<h3>Si necesitas ir al médico durante el viaje</h3><p>Llama a asistencia 24 horas y te indicaremos a qué centro acudir. Si asistencia coordina tu atención, pagamos directamente al hospital los gastos cubiertos. Con Esencial, tú pagas los primeros 75 € de cada siniestro médico. <a href="/condiciones#urgencia" target="_blank" rel="noopener">Qué hacer en una urgencia</a></p>';
     grid.after(assist);
   }
   if (!$('#plans-help')) {

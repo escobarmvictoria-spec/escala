@@ -1,4 +1,5 @@
 // Genera la póliza en PDF (A4) con la identidad de Escala.
+import { medicalDeductibleText } from './orders.js';
 import PDFDocument from 'pdfkit';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -132,20 +133,20 @@ export function renderPolicyPdf(order) {
     });
 
     // Pie: asistencia y aviso
-    let fy = Math.max(y + 8, doc.page.height - 124);
-    if (fy + 92 > doc.page.height) {
+    let fy = Math.max(y + 8, doc.page.height - 134);
+    if (fy + 102 > doc.page.height) {
       // Pólizas con muchos asegurados: el pie pasa a una segunda página, con su aviso de demo.
       doc.addPage();
       doc.rect(0, 0, W, 26).fill(C.ink);
       doc.font('bold').fontSize(10).fillColor(C.signal).text('Demo — no es un seguro real. Este documento no tiene validez.', L, 8, { width: R - L, align: 'center' });
       fy = 48;
     }
-    doc.roundedRect(L, fy, R - L, 62, 8).fill(C.tealSoft);
+    doc.roundedRect(L, fy, R - L, 74, 8).fill(C.tealSoft);
     doc.font('display').fontSize(12).fillColor(C.ink).text('Asistencia 24 horas', L + 14, fy + 9);
-    doc.font('body').fontSize(9.5).text('Si necesitas ir al médico, llama antes: te indicaremos a qué centro acudir y, si el gasto está cubierto, pagamos directamente al hospital. En la demo el teléfono es ficticio: +34 900 000 000.', L + 14, fy + 27, { width: R - L - 28 });
+    doc.font('body').fontSize(9.5).text(`Llama antes de ir al médico. Si asistencia coordina tu atención, pagamos directamente al hospital los gastos cubiertos. ${medicalDeductibleText(order)} En la demo el teléfono es ficticio: +34 900 000 000.`, L + 14, fy + 27, { width: R - L - 28 });
     doc.font('body').fontSize(7.5).fillColor(C.grey).text(
       `Condiciones generales ${TERMS_VERSION}. Escala es una marca inventada para una prueba técnica: no es una aseguradora, no está registrada en la DGSFP y este documento no da derecho a ninguna prestación.`,
-      L, fy + 70, { width: R - L, align: 'center' }
+      L, fy + 82, { width: R - L, align: 'center' }
     );
     doc.end();
   });

@@ -663,6 +663,15 @@ export function createOrderService({ store, issuePolicy, sendPolicyEmail }) {
   };
 }
 
+// Qué parte de la factura médica sigue a cargo del viajero con el plan elegido.
+export function medicalDeductibleText(order) {
+  const name = order.quote.plans[order.plan].name;
+  const med = keyCoverages(order.plan, order.trip.zone).find((c) => c.coverage.startsWith('Gastos médicos'));
+  return med && med.deductible !== 'Sin franquicia'
+    ? `Con ${name}, tú pagas los primeros ${med.deductible} de cada siniestro médico.`
+    : `Con ${name} no hay franquicia en gastos médicos.`;
+}
+
 export function summaryOf(order) {
   const p = order.quote.plans[order.plan];
   return {
@@ -698,7 +707,7 @@ export function summaryOf(order) {
           ? 'Cobertura durante el viaje, desde la fecha de salida hasta la de vuelta (ambas incluidas). La cancelación cubre antes de salir: cuándo empieza depende de tu primera reserva.'
           : 'Cobertura desde la fecha de salida hasta la de vuelta, ambas incluidas.',
         'Desistimiento: 14 días desde la contratación si el viaje no ha empezado.',
-        'Asistencia 24 horas: si necesitas ir al médico durante el viaje, llama y te indicaremos a qué centro acudir. Si el gasto está cubierto, pagamos directamente al hospital.',
+        `Asistencia 24 horas: si necesitas ir al médico durante el viaje, llama y te indicaremos a qué centro acudir. Si asistencia coordina tu atención, pagamos directamente al hospital los gastos cubiertos. ${medicalDeductibleText(order)}`,
       ],
     },
   };
