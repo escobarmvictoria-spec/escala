@@ -168,6 +168,10 @@ function keyCoverages(planId, zone) {
   }));
 }
 
+// Si la persona comprobó sus fechas y la cancelación no llegaría a activarse antes de salir, no se usa como argumento.
+export const CANCEL_NOT_ACTIVE_TEXT = 'Para tus fechas, la cobertura de cancelación no se activaría antes de salir.';
+const cancelInactive = (order) => order.cancellation_check?.covered_before_departure === false;
+
 // El sello compara con el plan de referencia: cuánto más cuesta en todo el viaje y qué se gana.
 const medicalLimit = (zone, plan) => {
   const c = COVERAGES.find((x) => x.id === 'medical');
@@ -179,18 +183,21 @@ function recommendationFor(order) {
   const ref = rec.plan === 'total' ? 'completo' : 'esencial';
   if (!plans[rec.plan]?.available) return rec;
   if (!plans[ref]?.available)
-    return { ...rec, label: 'Recomendado para tu edad', reason: 'La opción disponible de menor precio para tu edad, con gastos médicos sin franquicia y cobertura de cancelación.' };
+    return { ...rec, label: 'Recomendado para tu edad', reason: cancelInactive(order) ? `La opción disponible de menor precio para tu edad, con gastos médicos sin franquicia. ${CANCEL_NOT_ACTIVE_TEXT}` : 'La opción disponible de menor precio para tu edad, con gastos médicos sin franquicia y cobertura de cancelación.' };
   const extra = Math.round((plans[rec.plan].total_eur - plans[ref].total_eur) * 100) / 100;
   const zone = order.trip.zone;
   // Frase corta: cabe bajo el precio sin abrir un hueco grande en las otras tarjetas.
   const short = (n) => (n >= 1e6 ? `${String(n / 1e6).replace('.', ',')}\u00a0M€` : formatEur(n, 0));
   const from = short(medicalLimit(zone, ref));
   const to = short(medicalLimit(zone, rec.plan));
+  const noCancel = cancelInactive(order);
   const reason = rec.plan === 'total'
     ? `Por ${formatEur(extra)} más que Completo en todo el viaje: ${to} en gastos médicos, en lugar de ${from}.`
-    : zone === 'espana'
-      ? `Por ${formatEur(extra)} más que Esencial en todo el viaje: cobertura de cancelación y gastos médicos sin franquicia.`
-      : `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${to} en gastos médicos, sin franquicia, y cobertura de cancelación.`;
+    : noCancel
+      ? `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${zone === 'espana' ? 'gastos médicos sin franquicia' : `${to} en gastos médicos, sin franquicia`}. ${CANCEL_NOT_ACTIVE_TEXT}`
+      : zone === 'espana'
+        ? `Por ${formatEur(extra)} más que Esencial en todo el viaje: cobertura de cancelación y gastos médicos sin franquicia.`
+        : `Por ${formatEur(extra)} más que Esencial en todo el viaje: ${to} en gastos médicos, sin franquicia, y cobertura de cancelación.`;
   return { ...rec, compared_with: ref, extra_eur: extra, reason };
 }
 
@@ -206,6 +213,7 @@ export function publicOrder(order) {
     plan: order.plan,
     quote: order.quote,
     recommendation: order.quote ? recommendationFor(order) : null,
+    cancellation_check: order.cancellation_check ?? null,
     holder: order.holder,
     travelers: order.travelers,
     total_eur: order.plan ? order.quote.plans[order.plan].total_eur : null,
@@ -636,7 +644,8 @@ export function summaryOf(order) {
     total_text: formatEur(p.total_eur),
     taxes_included_eur: p.taxes_eur,
     ...(p.group_discount_pct ? { group_discount_pct: p.group_discount_pct } : {}),
-    coverages: keyCoverages(order.plan, order.trip.zone),
+    coverages: keyCoverages(order.plan, order.trip.zone).map((c) => (cancelInactive(order) && c.coverage === 'Cancelación del viaje' ? { ...c, note: CANCEL_NOT_ACTIVE_TEXT } : c)),
+    ...(cancelInactive(order) && keyCoverages(order.plan, order.trip.zone).some((c) => c.coverage === 'Cancelación del viaje') ? { cancellation_warning: CANCEL_NOT_ACTIVE_TEXT } : {}),
     main_exclusions: EXCLUSIONS,
     terms: {
       version: TERMS_VERSION,

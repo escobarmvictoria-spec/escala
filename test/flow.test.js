@@ -154,3 +154,25 @@ test('edad máxima: 90 años se rechaza sin ofrecer llamada; 84 y 72 se pueden c
   assert.equal(demasiado.code, 'trip_too_long');
   assert.equal(demasiado.human_help.tool, 'request_human_callback', 'la duración mantiene la derivación');
 });
+
+test('si la cancelación no llegaría a activarse, la recomendación y el resumen no la usan como argumento', async () => {
+  const { svc } = service();
+  const { summaryOf } = await import('../src/orders.js');
+  const o = svc.createQuote({ destinations: ['Italia'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }] }, 'web');
+  assert.match(publicOrder(o).recommendation.reason, /y cobertura de cancelación\.$/);
+  o.cancellation_check = { first_booking_date: '2026-01-01', covered_before_departure: false };
+  const rec = publicOrder(o).recommendation;
+  assert.doesNotMatch(rec.reason, /y cobertura de cancelación/);
+  assert.match(rec.reason, /Para tus fechas, la cobertura de cancelación no se activaría antes de salir\.$/);
+  assert.equal(publicOrder(o).cancellation_check.covered_before_departure, false);
+  o.plan = 'completo';
+  o.travelers = [{ full_name: 'Ana Demo', age: 35 }];
+  const s = summaryOf(o);
+  assert.equal(s.cancellation_warning, 'Para tus fechas, la cobertura de cancelación no se activaría antes de salir.');
+  assert.equal(s.coverages.find((c) => c.coverage === 'Cancelación del viaje').note, s.cancellation_warning);
+  o.plan = 'esencial';
+  assert.equal(summaryOf(o).cancellation_warning, undefined); // Esencial no incluye cancelación: no hay nada que avisar
+  o.cancellation_check.covered_before_departure = true;
+  o.plan = 'completo';
+  assert.equal(summaryOf(o).cancellation_warning, undefined);
+});

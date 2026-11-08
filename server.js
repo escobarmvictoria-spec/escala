@@ -193,6 +193,8 @@ api.post('/quotes/:id/cancellation-check', rateLimit(30, 60000), (req, res) => {
   const order = orders.load(req.params.id);
   const check = cancellationStart({ firstBookingDate: req.body?.first_booking_date, departureDate: order.trip.start_date });
   order.events.push({ at: new Date().toISOString(), actor: actorOf(req), action: 'cancellation_checked', detail: check.covered_before_departure ? check.rule : 'despues_de_salir' });
+  // Se guarda en el pedido: la recomendación y el resumen dejan de usar la cancelación como argumento si no llegaría a activarse.
+  order.cancellation_check = { first_booking_date: req.body.first_booking_date, covered_before_departure: check.covered_before_departure, rule: check.rule, message: check.message, checked_at: new Date().toISOString() };
   store.putOrder(order);
   res.json({ ok: true, quote_id: order.id, departure_date: order.trip.start_date, ...check });
 });

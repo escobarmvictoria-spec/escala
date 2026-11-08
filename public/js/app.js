@@ -10,15 +10,20 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 
 const STEPS = ['plan', 'viajeros', 'revision', 'pago', 'poliza'];
 // Resumen de la cancelación dentro de la cotización: decide si compensa pagar más sin salir de los resultados.
-const CANCEL_DETAILS = `<details class="cov-more"><summary>Ver causas y cuándo empieza a cubrir</summary>
+let keepCancelOpen = false; // tras comprobar, el desplegable sigue abierto con el resultado
+const cancelDetails = (order) => {
+  const c = order.cancellation_check;
+  const cls = c ? (c.covered_before_departure ? 'is-ok' : 'is-warn') : '';
+  return `<details class="cov-more"${c && keepCancelOpen ? ' open' : ''}><summary>Ver causas y cuándo empieza a cubrir</summary>
   <div><p>Cubre 10 causas concretas, entre ellas enfermedad grave, accidente u hospitalización tuya o de un familiar cercano, fallecimiento de un familiar, despido o una citación judicial.</p>
   <p>Si contratas en los 7 días siguientes a tu primera reserva, cubre desde que contratas. Si contratas más tarde, empieza a cubrir 72 horas después. Termina al empezar el viaje.</p>
   <form class="cancel-check" novalidate>
-    <label>¿Cuándo hiciste tu primera reserva? <span class="optional">(opcional)</span><input type="date" name="first_booking" required></label>
+    <label>¿Cuándo hiciste tu primera reserva? <span class="optional">(opcional)</span><input type="date" name="first_booking" required value="${esc(c?.first_booking_date ?? '')}"></label>
     <button type="submit" class="btn-secondary btn-small">Comprobar para mis fechas</button>
-    <p class="cancel-result" role="status" hidden></p>
+    <p class="cancel-result ${cls}" role="status"${c ? '' : ' hidden'}>${esc(c?.message ?? '')}</p>
   </form>
   <p><a href="/condiciones#cancelacion" target="_blank" rel="noopener">Ver las 10 causas en las condiciones</a></p></div></details>`;
+};
 const COVERAGE_ORDER = ['Gastos médicos en el extranjero', 'Repatriación o traslado sanitario', 'Cancelación del viaje', 'Robo, pérdida o daños del equipaje', 'Retraso del equipaje (más de 12 h)', 'Retraso del vuelo (más de 6 h)', 'Responsabilidad civil privada', 'Accidentes (fallecimiento o invalidez)'];
 const STEP_OF = { quoted: 'plan', plan_selected: 'viajeros', travelers_set: 'revision', reviewed: 'revision', terms_accepted: 'pago', paid: 'poliza' };
 let viewStep = null; // paso al que vuelve la persona al pulsar en la ruta
@@ -26,6 +31,7 @@ let product = null;
 let lastRenderedStep = null;
 let loadingSummary = false;
 let browsingHome = false;
+let stalePurchase = false; // la persona cambió el viaje y la nueva cotización falló: la compra anterior queda en pausa
 
 // «¿Cuándo hiciste tu primera reserva?»: aplica la regla de la cancelación a las fechas de esta cotización.
 // La web y los agentes consultan la misma regla en el servidor (check_cancellation_start).
@@ -44,11 +50,13 @@ document.addEventListener('submit', async (ev) => {
   }
   await busy($('button', form), async () => {
     try {
-      const r = await api.cancellationCheck(order.quote_id, form.first_booking.value);
-      out.textContent = r.message;
-      out.className = `cancel-result ${r.covered_before_departure ? 'is-ok' : 'is-warn'}`;
-      // La misma respuesta en Completo y en Total: la regla no depende del plan.
-      $$('.cancel-check').forEach((f) => { if (f !== form) { f.first_booking.value = form.first_booking.value; const o = $('.cancel-result', f); o.textContent = r.message; o.className = out.className; o.hidden = false; } });
+      await api.cancellationCheck(order.quote_id, form.first_booking.value);
+      // El resultado queda en el pedido: la misma respuesta en Completo y en Total, y si la cancelación
+      // no llegaría a activarse, la recomendación y la revisión dejan de usarla como argumento.
+      keepCancelOpen = true;
+      store.state.summary = null;
+      store.apply(await api.getQuote(order.quote_id), 'cancellation', { by: 'web' });
+      return;
     } catch (err) {
       out.textContent = humanError(err);
       out.className = 'cancel-result is-error';
@@ -181,6 +189,7 @@ function initQuoteForm() {
       };
       try {
         const data = await api.quote(input);
+        stalePurchase = false;
         store.state.attempt = null;
         viewStep = null;
         store.apply(data, 'quote', { by: 'web' });
@@ -192,9 +201,21 @@ function initQuoteForm() {
           ? { destinations: input.destinations, start_date: input.start_date, end_date: input.end_date, ages: input.travelers.map((t) => t.age) }
           : null;
         showError(form, err);
+        // Si había una compra abierta, no puede seguir con datos distintos de los que acaba de escribir.
+        const open = store.state.order;
+        if (open && open.status !== 'paid') {
+          stalePurchase = true;
+          render(store.state, 'stale');
+        }
       }
     });
   });
+}
+
+function tripLabel(order) {
+  const ages = order.travelers?.map((t) => t.age) ?? order.quote.plans.completo.per_traveler.map((t) => t.age);
+  const who = ages.length === 1 ? `1 viajero de ${ages[0]} años` : `${ages.length} viajeros (${ages.join(', ')} años)`;
+  return `${order.trip.destinations.map((d) => d.name).join(', ')} · ${who}`;
 }
 
 // ---------- pasos de compra ----------
@@ -277,7 +298,7 @@ function renderPlans(order) {
           // La fila de cancelación lleva un desplegable en los planes que la incluyen; en el que no, se reserva el mismo alto para que las filas sigan alineadas.
           const spacer = name === 'Cancelación del viaje' ? '<span class="cov-more-spacer" aria-hidden="true">No incluida en este plan</span>' : '';
           if (!c) return missing.includes(name) ? `<li class="is-missing${spacer ? ' has-more' : ''}"><span>${esc(shortName(name))}</span><span>No incluido</span>${spacer}</li>` : '';
-          const more = name === 'Cancelación del viaje' ? CANCEL_DETAILS : '';
+          const more = name === 'Cancelación del viaje' ? cancelDetails(order) : '';
           return `<li${more ? ' class="has-more"' : ''}><span>${esc(shortName(c.coverage))}</span><span>${esc(c.limit)}${c.deductible !== 'Sin franquicia' ? ` <small>(franquicia ${esc(c.deductible)})</small>` : ''}</span>${more}</li>`;
         }).join('')}
       </ul>
@@ -412,7 +433,7 @@ function renderReview(order) {
       ${s.insured.map((t) => `<tr><td>${esc(t.full_name)}</td><td>${t.age}</td><td class="num">${eur(t.price_eur)}</td></tr>`).join('')}
     </tbody></table>
     <table class="mini-table"><thead><tr><th>Cobertura</th><th class="num">Límite por persona</th><th class="num">Franquicia</th></tr></thead><tbody>
-      ${s.coverages.map((c) => `<tr><td>${esc(c.coverage)}</td><td class="num">${esc(c.limit)}</td><td class="num">${esc(c.deductible)}</td></tr>`).join('')}
+      ${s.coverages.map((c) => `<tr><td>${esc(c.coverage)}${c.note ? `<small class="cov-note">${esc(c.note)}</small>` : ''}</td><td class="num">${esc(c.limit)}</td><td class="num">${esc(c.deductible)}</td></tr>`).join('')}
     </tbody></table>
     <div class="terms-box">
       <strong>Condiciones (versión ${esc(s.terms.version)})</strong>
@@ -605,7 +626,31 @@ function render(state, reason, extra = {}) {
   }
   if (reason === 'activity') return;
   section.hidden = false;
-  if (extra.by === 'agent') viewStep = null;
+  if (extra.by === 'agent') { viewStep = null; stalePurchase = false; }
+  let stale = $('#stale-note');
+  if (!stale) {
+    stale = document.createElement('div');
+    stale.id = 'stale-note';
+    stale.className = 'stale-note';
+    stale.setAttribute('role', 'status');
+    $('#trip-line').before(stale);
+  }
+  section.classList.toggle('is-stale', stalePurchase);
+  stale.hidden = !stalePurchase;
+  if (stalePurchase) {
+    stale.innerHTML = `<p><strong>Tu compra anterior está en pausa.</strong> El nuevo viaje no se ha podido cotizar, así que no puedes seguir con una compra hecha con otros datos. Revisa el aviso del cotizador o vuelve a tu cotización anterior.</p>
+      <button type="button" class="btn-secondary" data-back-quote>Volver a la cotización anterior · ${esc(tripLabel(order))}</button>`;
+    $('[data-back-quote]', stale).addEventListener('click', () => {
+      stalePurchase = false;
+      fillQuoteForm(order);
+      showError($('#quote-form'), null);
+      render(store.state, 'nav');
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.body.classList.remove('is-checkout');
+    lastRenderedStep = null;
+    return;
+  }
   const step = currentStep(order);
   const resumeNote = $('#resume-note');
   if (resumeNote.dataset.for !== order.quote_id) resumeNote.hidden = true;

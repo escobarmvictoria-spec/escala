@@ -317,6 +317,7 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .mini-table th { text-align: left; font-weight: 600; color: var(--navy-soft); padding: 0 8px 6px 0; border-bottom: 1px solid var(--line-strong); font-size: var(--fs-xs); }
 .mini-table td { padding: 8px 8px 7px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .mini-table td.num, .mini-table th.num { text-align: right; padding-right: 0; white-space: nowrap; }
+.mini-table td.num + td.num, .mini-table th.num + th.num { padding-left: 12px; }
 .terms-box { background: var(--ivory); border-radius: var(--r-m); padding: 14px 16px; font-size: var(--fs-sm); }
 .terms-box ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
 .policy-hero { display: grid; gap: 6px; }
@@ -614,6 +615,11 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .save-fields button { white-space: nowrap; }
 .save-quote .form-error, .save-done { grid-column: 1 / -1; }
 .save-done { font-size: var(--fs-sm); color: var(--teal-deep); font-weight: 500; }
+.stale-note { margin-bottom: var(--s-4); padding: var(--s-4); border-radius: var(--r-m); background: var(--yellow-soft); display: grid; gap: var(--s-3); justify-items: start; }
+.stale-note p { margin: 0; }
+.stale-note .btn-secondary { white-space: normal; text-align: left; }
+.purchase.is-stale .route, .purchase.is-stale .trip-line, .purchase.is-stale .step, .purchase.is-stale .agent-notice, .purchase.is-stale .resume-note { display: none !important; }
+.mini-table .cov-note { display: block; margin-top: 2px; font-size: var(--fs-xs); color: var(--navy); background: var(--yellow-soft); padding: 2px 6px; border-radius: var(--r-s); width: fit-content; }
 .resume-note { margin-bottom: var(--s-4); padding: var(--s-3) var(--s-4); border-radius: var(--r-m); background: var(--teal-soft); font-size: var(--fs-sm); font-weight: 500; }
 @media (max-width: 720px) {
   .save-quote { grid-template-columns: 1fr; }
