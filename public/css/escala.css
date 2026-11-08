@@ -170,6 +170,11 @@ input, textarea, select {
 input:hover, textarea:hover, select:hover { border-color: var(--navy-soft); }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--navy); box-shadow: 0 0 0 3px var(--yellow-soft), 0 0 0 4px var(--yellow); }
 input::placeholder, textarea::placeholder { color: #8A8F9C; }
+/* Safari en iPhone da a los campos de fecha un ancho mínimo propio y centra el texto: en dos columnas,
+   «Vuelta» se salía de la tarjeta. Se quita el aspecto nativo (el selector de fecha sigue funcionando). */
+input[type=date] { -webkit-appearance: none; appearance: none; display: block; max-width: 100%; text-align: left; line-height: 1.4; }
+input[type=date]::-webkit-date-and-time-value { text-align: left; margin: 0; }
+input[type=date]::-webkit-datetime-edit { padding: 0; }
 input[aria-invalid="true"] { border-color: var(--error); background: var(--error-soft); }
 .check { display: flex; gap: 10px; align-items: center; font-weight: 500; min-height: 44px; font-size: var(--fs-sm); }
 .check input { width: 20px; height: 20px; min-height: 0; accent-color: var(--navy); flex: none; }
