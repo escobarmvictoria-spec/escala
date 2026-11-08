@@ -29,11 +29,20 @@ El dato clave: Heymondo destaca para EE. UU. un plan con 5 millones de euros, el
 
 ## Cómo lo mediría
 
-- **Empezar en EE. UU. y Canadá**, que es donde cambia el plan destacado.
-- **A, control:** Completo recomendado. **B, variante:** Total recomendado, con el sello explicativo y la diferencia de precio.
-- Mismos precios, mismo orden y mismo diseño de tarjetas.
-- **Métrica principal:** pólizas emitidas por cada 100 cotizaciones. **Secundaria:** ingreso por cotización.
-- **Lectura:** la proporción que elige Total dice cómo cambió la elección; la tasa de emisión dice si se vendió más. Si sube Total pero cae la emisión, el sello cambió qué plan se elige a costa de perder compradores.
+**Hipótesis:** explicar el suplemento total y la mejora de cobertura en el sello aumenta el porcentaje de cotizaciones que avanzan a Viajeros, porque la persona puede decidir sin reconstruir la comparación entre tarjetas.
+
+- **A, control:** el sello solo («Recomendado para tu viaje» o «para tu destino»).
+- **B, variante:** el sello con la frase («Por 7,55 € más que Esencial en todo el viaje: 1 M€ en gastos médicos, sin franquicia, y cobertura de cancelación»).
+- Todo lo demás igual: mismo plan recomendado, mismos precios, mismo orden y diseño de tarjetas.
+- **Métrica principal:** % de cotizaciones que llegan a Viajeros (eligen un plan). Ya se registra: es el paso `plan_selected` del embudo de `/panel`, por canal.
+- **Métrica de control:** pólizas emitidas por cotización. Si B sube el avance a Viajeros pero baja la emisión, la frase empuja a elegir sin convencer de comprar.
+- **Lectura por segmento:** EE. UU. y Canadá (el salto es a Total) separado del resto (el salto es desde Esencial), y la proporción que elige cada plan.
+- **Decisión:** si B mejora el avance a Viajeros sin empeorar la emisión, se queda la frase. Si no mueve el avance, se simplifica a solo el sello. Si sube la mezcla de Total pero cae la emisión, se revisa el texto de EE. UU.
+- **Lo único que faltaría implementar:** asignar la variante A o B a cada cotización y guardarla en el pedido, para cortar el embudo por variante.
+
+## Primera versión del experimento
+
+Antes de tener la frase, el planteamiento era A = Completo recomendado siempre, B = Total recomendado en EE. UU. y Canadá, con métrica principal de pólizas por cada 100 cotizaciones. Esa decisión ya se tomó a favor de B (recomendar según el destino); lo que queda por medir es si la frase del sello ayuda.
 
 ## Hipótesis para después
 
