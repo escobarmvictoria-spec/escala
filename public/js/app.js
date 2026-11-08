@@ -691,7 +691,7 @@ async function renderExamplePrice() {
       <ul class="stub-plans">${plans
         .map((p) => `<li class="${p.recommended ? 'is-recommended' : ''}"><span>${esc(p.name)}</span><strong>${eur(p.total_eur)}</strong></li>`)
         .join('')}</ul>
-      <p class="stub-note">Precio final, con impuestos. El de tu viaje lo ves en un minuto.</p>`;
+      <p class="stub-note">Precios finales con impuestos. Cotiza tu viaje para ver cuánto cuesta asegurarlo.</p>`;
     box.hidden = false;
     box.closest('.ticket')?.classList.add('has-stub');
   } catch {
