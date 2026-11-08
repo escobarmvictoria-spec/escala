@@ -51,9 +51,12 @@ const HUMAN_ERRORS = {
   },
   destination_excluded: (e) => e.message,
   invalid_age: () => 'Revisa la edad: escribe los años con un número, por ejemplo 34.',
-  age_not_insurable: (e) => (e.details?.travelers ?? 1) > 1
-    ? `${e.message.split(';')[0]}. Puedes quitar a ese viajero y cotizar al resto, o pedir que una persona del equipo revise tu consulta.`
-    : `${e.message.split(';')[0]}. Si quieres, una persona del equipo puede revisar tu consulta.`,
+  age_not_insurable: (e) => {
+    const age = e.details?.age;
+    const max = e.details?.max_age ?? 84;
+    const who = (e.details?.travelers ?? 1) > 1 ? `Uno de los viajeros tiene ${age}` : `El viajero tiene ${age}`;
+    return `Escala cubre a viajeros de hasta ${max} años en la fecha de salida. ${who}, así que no podemos ofrecerle un seguro para este viaje.${(e.details?.travelers ?? 1) > 1 ? ' Puedes quitarlo de la cotización y cotizar al resto.' : ''} Si buscáis otra póliza, comprobad que admita su edad y qué límite de gastos médicos se le aplica.`;
+  },
   missing_start_date: () => 'Elige la fecha de salida.',
   missing_end_date: () => 'Elige la fecha de vuelta.',
   invalid_date: () => 'Revisa las fechas: alguna no es válida.',

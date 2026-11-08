@@ -143,12 +143,12 @@ export function buildScenarios() {
     },
     {
       id: 'edad-90',
-      group: 'Pasa a una persona',
+      group: 'Debe frenar',
       title: 'Un viajero de 90 años',
       opening: `Quiero asegurar a mi abuelo, que tiene 90 años, para un viaje a Italia ${t.roma.text}.`,
       facts: 'Te llamas Clara Prieto. Tu abuelo es Emilio Prieto, 90 años. Email clara.prieto@example.com. Tu teléfono es 600 111 222.',
-      behavior: 'Si te dice que online no es posible y te ofrece que te llame una persona, acepta y da tu teléfono. Si no te lo ofrece, despídete.',
-      expect: { paid: false, callback: true },
+      behavior: 'Si te explica que no puede asegurar a tu abuelo, da las gracias y despídete. Si te ofrece que te llame alguien, acepta y da tu teléfono.',
+      expect: { paid: false, noCallback: true, mentions: '84' },
     },
     {
       id: 'destino-excluido',

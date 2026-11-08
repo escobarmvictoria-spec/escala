@@ -6,7 +6,7 @@ import { formatEur } from './catalog.js';
 
 export const CALLBACK_REASONS = {
   enfermedad_previa: 'Enfermedad previa o tratamiento médico',
-  no_asegurable: 'Su caso no se puede contratar online (edad, destino o duración)',
+  no_asegurable: 'Su caso no se puede contratar online (destino o duración)',
   dudas_coberturas: 'Dudas sobre coberturas o qué plan elegir',
   siniestro: 'Tiene un problema durante el viaje o quiere declarar un siniestro',
   otro: 'Otro motivo',

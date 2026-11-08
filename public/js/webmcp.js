@@ -368,7 +368,7 @@ const TOOLS = [
     name: 'request_human_callback',
     title: 'Pedir que llame una persona',
     description:
-      "Asks a person from Escala's team to phone the user, with the context of the purchase so the user does not repeat anything. Offer it when the user asks for a human, when the case cannot be bought online (traveler over 84, excluded destination, trip over 90 days), or for pre-existing medical conditions (coverage to be confirmed), or after two failed attempts. If there is no quote (e.g. the quote was rejected for age), send trip_attempt so the team sees the trip. Needs the user's name and phone and their yes to being called. Not for problems during a trip: for those, give the 24 h assistance phone printed on the policy (+34 900 000 000 in this demo). Not needed for a normal purchase.",
+      "Asks a person from Escala's team to phone the user, with the context of the purchase so the user does not repeat anything. Offer it when the user asks for a human, when the case cannot be bought online (excluded destination, trip over 90 days), or for pre-existing medical conditions (coverage to be confirmed), or after two failed attempts. If there is no quote (e.g. the trip was rejected), send trip_attempt so the team sees the trip. Needs the user's name and phone and their yes to being called. Not for travelers over 84: that limit is final for every plan and channel, so explain it and close without offering a call. Not for problems during a trip: for those, give the 24 h assistance phone printed on the policy (+34 900 000 000 in this demo). Not needed for a normal purchase.",
     inputSchema: {
       type: 'object',
       properties: {

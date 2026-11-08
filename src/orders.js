@@ -65,13 +65,13 @@ function parseAge(value, field, startDate, travelerCount = 1) {
       hint: 'Indica la edad en años como número entero (por ejemplo 34), o la fecha de nacimiento en birth_date.',
     });
   if (age > MAX_AGE)
-    throw new ApiError('age_not_insurable', `La edad máxima es ${MAX_AGE} años; ${travelerCount > 1 ? 'uno de los viajeros' : 'el viajero'} tiene ${age}.`, {
+    throw new ApiError('age_not_insurable', `Escala cubre a viajeros de hasta ${MAX_AGE} años en la fecha de salida; ${travelerCount > 1 ? 'uno de los viajeros' : 'el viajero'} tiene ${age}.`, {
       field,
-      details: { travelers: travelerCount, age, max_age: MAX_AGE },
-      // Con un solo viajero, «quítalo» es un callejón sin salida: la salida es una persona del equipo.
+      details: { travelers: travelerCount, age, max_age: MAX_AGE, final: true },
+      // Límite firme en todos los planes y canales: no hay nada que el equipo pueda resolver, así que no se ofrece llamada.
       hint: travelerCount > 1
-        ? `Puedes quitar a ese viajero y cotizar al resto, o ofrecer que una persona del equipo revise la consulta (human_help).`
-        : `No hay plan online para mayores de ${MAX_AGE} años. Dile: «La edad máxima es ${MAX_AGE} años. Si quieres, una persona del equipo puede revisar tu consulta» y ofrece «Pedir que me llamen» (human_help).`,
+        ? `Ningún plan de Escala cubre a ese viajero. Explícalo y, si quieren, cotiza al resto del grupo sin él. No ofrezcas una llamada ni pidas datos.`
+        : `Ningún plan de Escala cubre a ese viajero, en ningún canal. Explícalo y cierra, sin ofrecer una llamada ni pedir datos. Texto sugerido, adaptando edad y parentesco: «Escala cubre a viajeros de hasta ${MAX_AGE} años en la fecha de salida. Como tu padre tiene ${age}, no podemos ofrecerle un seguro para este viaje. Si buscáis otra póliza, comprobad que admita su edad y qué límite de gastos médicos se le aplica.»`,
     });
   return age;
 }

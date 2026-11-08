@@ -48,7 +48,7 @@ function showError(form, err) {
   }
   const e = err instanceof ApiFailure ? err.body.error : { message: err.message };
   box.textContent = humanError(err);
-  if (['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(e.code)) {
+  if (['destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(e.code)) {
     box.append(' ');
     const b = document.createElement('button');
     b.type = 'button';
@@ -153,7 +153,7 @@ function initQuoteForm() {
       } catch (err) {
         // Si el viaje no se puede contratar online, guardamos lo que intentó cotizar para la llamada.
         const code = err instanceof ApiFailure ? err.body?.error?.code : null;
-        store.state.attempt = ['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(code)
+        store.state.attempt = ['destination_excluded', 'trip_too_long', 'residence_not_supported'].includes(code)
           ? { destinations: input.destinations, start_date: input.start_date, end_date: input.end_date, ages: input.travelers.map((t) => t.age) }
           : null;
         showError(form, err);

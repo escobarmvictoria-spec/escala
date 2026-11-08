@@ -1,7 +1,8 @@
 // Errores pensados para que un agente (o una persona) sepa exactamente qué corregir.
 // Casos que no se pueden contratar online. La web ofrece una persona en estos casos;
 // el agente recibe la misma oferta en el propio error, para no depender de que encuentre la herramienta.
-export const NOT_INSURABLE_ONLINE = ['age_not_insurable', 'destination_excluded', 'trip_too_long', 'residence_not_supported'];
+// La edad máxima no está aquí: es un límite firme, sin nada que el equipo pueda resolver por teléfono.
+export const NOT_INSURABLE_ONLINE = ['destination_excluded', 'trip_too_long', 'residence_not_supported'];
 const HUMAN_HELP = {
   tool: 'request_human_callback',
   reason: 'no_asegurable',

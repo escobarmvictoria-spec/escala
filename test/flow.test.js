@@ -113,7 +113,6 @@ test('en EE. UU. se recomienda Total y el sello compara con el plan de referenci
 test('si no se puede contratar online, el error le dice al agente que ofrezca una persona', () => {
   const { svc } = service();
   const cases = [
-    { destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 90 }] },
     { destinations: ['Italia'], start_date: future(20), end_date: future(139), travelers: [{ age: 35 }] },
   ];
   for (const input of cases) {
@@ -129,14 +128,29 @@ test('si no se puede contratar online, el error le dice al agente que ofrezca un
   try { svc.createQuote({ destinations: [] }, 'agent'); } catch (e) { assert.equal(e.toJSON().error.human_help, undefined); }
 });
 
-test('90 años y viaja solo: la salida es una persona, no «quitar al viajero»', () => {
+test('edad máxima: 90 años se rechaza sin ofrecer llamada; 84 y 72 se pueden cotizar; 90 días de viaje no es la edad', () => {
   const { svc } = service();
-  const solo = (() => { try { svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 90 }] }, 'agent'); } catch (e) { return e.toJSON().error; } })();
-  assert.match(solo.message, /^La edad máxima es 84 años/);
-  assert.doesNotMatch(solo.how_to_fix, /Quita/);
-  assert.match(solo.how_to_fix, /Pedir que me llamen/);
-  assert.equal(solo.human_help.option_label, 'Pedir que me llamen');
-  const grupo = (() => { try { svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(26), travelers: [{ age: 40 }, { age: 90 }] }, 'agent'); } catch (e) { return e.toJSON().error; } })();
-  assert.match(grupo.how_to_fix, /quitar a ese viajero/);
-  assert.equal(grupo.details.travelers, 2);
+  const err = (input) => { try { svc.createQuote(input, 'agent'); return null; } catch (e) { return e.toJSON().error; } };
+  const base = { destinations: ['Italia'], start_date: future(20), end_date: future(26) };
+  const solo = err({ ...base, travelers: [{ age: 90 }] });
+  assert.equal(solo.code, 'age_not_insurable');
+  assert.match(solo.message, /^Escala cubre a viajeros de hasta 84 años en la fecha de salida/);
+  assert.equal(solo.human_help, undefined, 'sin oferta de llamada');
+  assert.doesNotMatch(solo.how_to_fix, /llamen|request_human_callback/);
+  assert.match(solo.how_to_fix, /sin ofrecer una llamada/);
+  assert.equal(solo.details.final, true);
+  const grupo = err({ ...base, travelers: [{ age: 40 }, { age: 90 }] });
+  assert.match(grupo.how_to_fix, /cotiza al resto/);
+  const o84 = svc.createQuote({ ...base, travelers: [{ age: 84 }] }, 'agent');
+  assert.equal(o84.quote.plans.esencial.available, false);
+  assert.equal(o84.quote.plans.completo.available, true);
+  assert.equal(o84.quote.plans.total.available, true);
+  const o72 = svc.createQuote({ ...base, travelers: [{ age: 72 }] }, 'agent');
+  assert.equal(o72.quote.plans.esencial.available, false);
+  assert.ok(o72.quote.plans.completo.available && o72.quote.plans.total.available);
+  const largo = svc.createQuote({ destinations: ['Italia'], start_date: future(20), end_date: future(109), travelers: [{ age: 35 }] }, 'agent');
+  assert.equal(largo.trip.days, 90, '90 días de viaje están dentro del máximo');
+  const demasiado = err({ destinations: ['Italia'], start_date: future(20), end_date: future(110), travelers: [{ age: 35 }] });
+  assert.equal(demasiado.code, 'trip_too_long');
+  assert.equal(demasiado.human_help.tool, 'request_human_callback', 'la duración mantiene la derivación');
 });

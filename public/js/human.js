@@ -10,7 +10,7 @@ let openedFromQuote = false;
 const REASON_TEXT = {
   dudas_coberturas: 'Dudas sobre coberturas o qué plan elegir',
   enfermedad_previa: 'Tengo una enfermedad previa o tratamiento',
-  no_asegurable: 'Mi caso no encaja (edad, destino o duración)',
+  no_asegurable: 'Mi caso no encaja (destino o duración)',
   siniestro: 'Tengo un problema durante el viaje',
   otro: 'Otro motivo',
 };
