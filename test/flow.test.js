@@ -140,7 +140,7 @@ test('edad máxima: 90 años se rechaza sin ofrecer llamada; 84 y 72 se pueden c
   assert.match(solo.how_to_fix, /sin ofrecer una llamada/);
   assert.equal(solo.details.final, true);
   const grupo = err({ ...base, travelers: [{ age: 40 }, { age: 90 }] });
-  assert.match(grupo.how_to_fix, /cotiza al resto/);
+  assert.match(grupo.how_to_fix, /quedaría fuera de la póliza\. ¿Quieres que siga\?/);
   const o84 = svc.createQuote({ ...base, travelers: [{ age: 84 }] }, 'agent');
   assert.equal(o84.quote.plans.esencial.available, false);
   assert.equal(o84.quote.plans.completo.available, true);

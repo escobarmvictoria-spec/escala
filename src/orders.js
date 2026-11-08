@@ -70,7 +70,7 @@ function parseAge(value, field, startDate, travelerCount = 1) {
       details: { travelers: travelerCount, age, max_age: MAX_AGE, final: true },
       // Límite firme en todos los planes y canales: no hay nada que el equipo pueda resolver, así que no se ofrece llamada.
       hint: travelerCount > 1
-        ? `Ningún plan de Escala cubre a ese viajero. Explícalo y, si quieren, cotiza al resto del grupo sin él. No ofrezcas una llamada ni pidas datos.`
+        ? `Ningún plan de Escala cubre a ese viajero. Explícalo y, antes de cotizar al resto, deja clara la exclusión y espera su sí: «Puedo cotizar para el resto del grupo. Tu padre quedaría fuera de la póliza. ¿Quieres que siga?» (adapta el parentesco). Así nadie toma el precio como cobertura para todos. No ofrezcas una llamada ni pidas datos.`
         : `Ningún plan de Escala cubre a ese viajero, en ningún canal. Explícalo y cierra, sin ofrecer una llamada ni pedir datos. Texto sugerido, adaptando edad y parentesco: «Escala cubre a viajeros de hasta ${MAX_AGE} años en la fecha de salida. Como tu padre tiene ${age}, no podemos ofrecerle un seguro para este viaje. Si buscáis otra póliza, comprobad que admita su edad y qué límite de gastos médicos se le aplica.»`,
     });
   return age;

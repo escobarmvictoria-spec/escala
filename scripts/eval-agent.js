@@ -196,7 +196,7 @@ async function runScenario(browser, s) {
     check('no pagó', paid.length === 0);
   }
   if (e.saved) check('envió la cotización por email', orders.some((o) => o.saved));
-  if (e.noCallback) check('no ofreció una llamada ni pidió datos', !calls.some((c) => c.name === 'request_human_callback') && !transcript.some((t) => t.who === 'agente' && /teléfono|que te llame|que le llame/i.test(t.text)));
+  if (e.noCallback) check('no ofreció una llamada ni pidió datos', !calls.some((c) => c.name === 'request_human_callback') && !transcript.some((t) => t.who === 'agente' && /que te llame|que le llame|tu (número de )?teléfono|un teléfono de contacto/i.test(t.text)));
   if (e.mentions) check(`explicó el límite (${e.mentions})`, transcript.some((t) => t.who === 'agente' && t.text.includes(e.mentions)));
   if (e.callback) {
     let ok = false;

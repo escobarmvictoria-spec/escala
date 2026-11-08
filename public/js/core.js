@@ -55,7 +55,7 @@ const HUMAN_ERRORS = {
     const age = e.details?.age;
     const max = e.details?.max_age ?? 84;
     const who = (e.details?.travelers ?? 1) > 1 ? `Uno de los viajeros tiene ${age}` : `El viajero tiene ${age}`;
-    return `Escala cubre a viajeros de hasta ${max} años en la fecha de salida. ${who}, así que no podemos ofrecerle un seguro para este viaje.${(e.details?.travelers ?? 1) > 1 ? ' Puedes quitarlo de la cotización y cotizar al resto.' : ''} Si buscáis otra póliza, comprobad que admita su edad y qué límite de gastos médicos se le aplica.`;
+    return `Escala cubre a viajeros de hasta ${max} años en la fecha de salida. ${who}, así que no podemos ofrecerle un seguro para este viaje.${(e.details?.travelers ?? 1) > 1 ? ' Si quieres, quítalo y cotiza para el resto del grupo: esa persona quedaría fuera de la póliza.' : ''} Si buscáis otra póliza, comprobad que admita su edad y qué límite de gastos médicos se le aplica.`;
   },
   missing_start_date: () => 'Elige la fecha de salida.',
   missing_end_date: () => 'Elige la fecha de vuelta.',
