@@ -116,6 +116,7 @@ export const api = {
   policy: (number, actor) => request('GET', `/api/policies/${encodeURIComponent(number)}`, null, actor),
   resend: (number, email, actor) => request('POST', `/api/policies/${encodeURIComponent(number)}/resend`, email ? { email } : {}, actor),
   callback: (input, actor) => request('POST', '/api/callbacks', input, actor),
+  callbackReceipt: (ticket, email) => request('POST', `/api/callbacks/${encodeURIComponent(ticket)}/receipt`, { email }),
   cancellationCheck: (id, firstBookingDate, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/cancellation-check`, { first_booking_date: firstBookingDate }, actor),
   saveQuote: (id, input, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/save`, input, actor),
   resumeQuote: (id, actor) => request('POST', `/api/quotes/${encodeURIComponent(id)}/resume`, {}, actor),

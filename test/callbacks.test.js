@@ -43,3 +43,13 @@ test('sin cotización se adjunta el viaje que intentó cotizar; un problema en v
   assert.equal(publicCallback(cb).context_kind, 'intento');
   await assert.rejects(() => svc.create({ full_name: 'Ramón Gil', phone: '600 111 222', user_agreed: true, reason: 'siniestro' }), { code: 'use_assistance_phone' });
 });
+
+test('teléfono: acepta espacios y el prefijo pegado sin duplicarlo, y explica qué falta', async () => {
+  const { normalizePhone } = await import('../src/callbacks.js');
+  for (const raw of ['612345678', '612 345 678', '+34 612 345 678', '0034612345678', '34612345678', '+34-612-345-678', '(+34) 612.345.678'])
+    assert.equal(normalizePhone(raw).display, '+34 612 345 678', raw);
+  assert.equal(normalizePhone('61234567').message, 'Introduce los 9 dígitos del teléfono.');
+  assert.equal(normalizePhone('').message, 'Introduce los 9 dígitos del teléfono.');
+  assert.equal(normalizePhone('512345678').ok, false);
+  assert.equal(normalizePhone('+44 7911 123456').display, '+447911123456');
+});

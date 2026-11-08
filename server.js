@@ -16,7 +16,7 @@ import { PLANS, COVERAGES, EXCLUSIONS, ZONES, TERMS_VERSION, MAX_DAYS, MAX_TRAVE
 import { RATES, AGE_BANDS, GROUP_DISCOUNT, GROUP_MIN, LONG_TRIP_FACTOR, LONG_TRIP_THRESHOLD, priceTrip } from './src/pricing.js';
 import { agentSystemPrompt } from './src/agent-prompt.js';
 import { cancellationStart } from './src/cancellation.js';
-import { createCallbackService, publicCallback, teamEmail, CALLBACK_REASONS } from './src/callbacks.js';
+import { createCallbackService, publicCallback, teamEmail, receiptEmail, CALLBACK_REASONS } from './src/callbacks.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 loadDotEnv(path.join(here, '.env'));
@@ -277,6 +277,22 @@ api.post('/callbacks', rateLimit(10, 60000), async (req, res) => {
   res.status(201).json({ ok: true, callback: publicCallback(cb) });
 });
 api.get('/callbacks/:id', (req, res) => res.json({ ok: true, callback: publicCallback(callbacks.get(req.params.id)) }));
+// «Enviarme un comprobante»: el email solo se pide si la persona elige esta opción después de enviar.
+api.post('/callbacks/:id/receipt', rateLimit(5, 60000), async (req, res) => {
+  const cb = callbacks.get(req.params.id);
+  const to = String(req.body?.email ?? '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) throw new ApiError('invalid_email', `El email "${to}" no es válido.`, { field: 'email', hint: 'Escribe un email completo, por ejemplo nombre@ejemplo.com.' });
+  const mail = receiptEmail(cb);
+  let email;
+  try {
+    const r = await mailer.send({ to, subject: mail.subject, text: mail.text, html: mail.html });
+    email = { status: r.provider === 'outbox' ? 'simulated' : 'sent', to };
+  } catch (err) {
+    console.error('[email] comprobante de llamada', cb.id, err.message);
+    email = { status: 'failed', to };
+  }
+  res.json({ ok: true, ticket: cb.id, email });
+});
 
 // Métricas del embudo por canal: web frente a agentes de IA.
 api.get('/metrics', (req, res) => {

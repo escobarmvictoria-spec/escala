@@ -773,6 +773,15 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .cb-assist p { margin: 0; }
 .cb-phone { font-family: var(--font-head); font-size: var(--fs-md); font-weight: 700; }
 .cb-demo { margin: 0; font-size: var(--fs-xs); }
+.field-error { margin: 0; font-size: var(--fs-sm); font-weight: 500; color: var(--error); }
+.cb-phone-preview { margin: 0; font-size: var(--fs-sm); color: var(--navy-soft); }
+.cb-phone-preview strong { color: var(--navy); }
+.cb-done { display: grid; gap: var(--s-2); margin: 0; }
+.cb-done dt { font-size: var(--fs-xs); color: var(--navy-soft); }
+.cb-done dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.cb-receipt { display: grid; gap: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); }
+.cb-receipt .btn-secondary { justify-self: start; }
+.cb-receipt-done { margin: 0; font-weight: 600; color: var(--teal-deep); }
 .human-dialog .actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
 
 /* Tarjetas de plan en móvil: «Elegir…» justo después del precio y del motivo; las coberturas, debajo */

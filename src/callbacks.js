@@ -40,13 +40,13 @@ export function createCallbackService({ store, notifyTeam }) {
       const name = String(input.full_name ?? input.name ?? '').trim();
       if (name.length < 2)
         throw new ApiError('missing_name', 'Falta el nombre de la persona a la que hay que llamar.', { field: 'full_name' });
-      const phone = String(input.phone ?? '').trim();
-      const digits = phone.replace(/[^\d]/g, '');
-      if (digits.length < 9 || digits.length > 15)
-        throw new ApiError('invalid_phone', `El teléfono "${phone}" no es válido.`, {
+      const parsed = normalizePhone(input.phone);
+      if (!parsed.ok)
+        throw new ApiError('invalid_phone', parsed.message, {
           field: 'phone',
-          hint: 'Pide un teléfono de 9 cifras (o con prefijo internacional), por ejemplo 600 123 456.',
+          hint: 'Pide el teléfono completo. En España, 9 cifras que empiezan por 6, 7, 8 o 9 (por ejemplo 612 345 678); con o sin +34 y con o sin espacios.',
         });
+      const phone = parsed.display;
       if (input.user_agreed !== true)
         throw new ApiError('consent_required', 'Falta que la persona acepte que la llamen.', {
           field: 'user_agreed',
@@ -132,6 +132,48 @@ export function publicCallback(cb) {
     context_attached: Boolean(cb.context),
     context_kind: cb.context ? (cb.context.quote_id ? 'cotizacion' : 'intento') : null,
     quote_id: cb.context?.quote_id ?? null,
+  };
+}
+
+// Teléfono: acepta espacios, guiones, puntos y paréntesis, y el número pegado con prefijo (+34, 0034 o 34)
+// sin duplicarlo. Sin prefijo se entiende España. Devuelve el número formateado para mostrarlo antes de enviar.
+export function normalizePhone(raw) {
+  const input = String(raw ?? '').trim();
+  let digits = input.replace(/[\s().\-]/g, '');
+  if (!digits) return { ok: false, message: 'Introduce los 9 dígitos del teléfono.' };
+  let intl = false;
+  if (digits.startsWith('+')) { intl = true; digits = digits.slice(1); }
+  else if (digits.startsWith('00')) { intl = true; digits = digits.slice(2); }
+  if (!/^\d+$/.test(digits)) return { ok: false, message: 'El teléfono solo puede llevar números, espacios y el prefijo con +.' };
+  // España: con prefijo 34 o sin prefijo.
+  if (digits.startsWith('34') && (intl || digits.length === 11)) digits = digits.slice(2), (intl = false);
+  if (!intl) {
+    if (digits.length !== 9) return { ok: false, message: 'Introduce los 9 dígitos del teléfono.' };
+    if (!/^[6789]/.test(digits)) return { ok: false, message: 'Un teléfono de España empieza por 6, 7, 8 o 9.' };
+    return { ok: true, e164: `+34${digits}`, display: `+34 ${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}` };
+  }
+  if (digits.length < 8 || digits.length > 15) return { ok: false, message: 'El número con prefijo internacional está incompleto.' };
+  return { ok: true, e164: `+${digits}`, display: `+${digits}` };
+}
+
+// Comprobante opcional por email, solo si la persona lo pide después de enviar la solicitud.
+export function receiptEmail(cb) {
+  const lines = [
+    'Hola:',
+    '',
+    `Hemos registrado tu solicitud de llamada ${cb.id}. Es una solicitud de prueba: no recibirás una llamada real.`,
+    `Teléfono: ${cb.phone}`,
+    `Motivo: ${cb.reason_text}`,
+    `Cuándo: ${cb.when}`,
+    cb.context ? (cb.context.quote_id ? `Hemos incluido tu cotización (${cb.context.quote_id}): ${cb.context.trip}.` : `Hemos incluido el viaje que intentaste cotizar: ${cb.context.trip}.`) : null,
+    '',
+    'Escala — demo de seguro de viaje. No es un seguro real.',
+  ].filter((l) => l !== null);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  return {
+    subject: `Tu solicitud de llamada ${cb.id} (prueba)`,
+    text: lines.join('\n'),
+    html: `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#19233F">${lines.map((l) => (l ? `<p style="margin:0 0 8px">${esc(l)}</p>` : '')).join('')}</div>`,
   };
 }
 
