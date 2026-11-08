@@ -57,7 +57,9 @@ document.addEventListener('submit', async (ev) => {
       // no llegaría a activarse, la recomendación y la revisión dejan de usarla como argumento.
       keepCancelOpen = true;
       store.state.summary = null;
-      store.apply(await api.getQuote(order.quote_id), 'cancellation', { by: 'web' });
+      const fresh = await api.getQuote(order.quote_id);
+      if (form.closest('#review-sheet')) await ensureSummary(fresh.order);
+      store.apply(fresh, 'cancellation', { by: 'web' });
       return;
     } catch (err) {
       out.textContent = humanError(err);
@@ -278,12 +280,20 @@ function renderPlans(order) {
   }
   const grid = $('#plans-grid');
   grid.innerHTML = '';
+  if (!$('#plans-assist')) {
+    // Lo que pasa después de comprar, justo donde se decide: quién paga el hospital si te pones enfermo.
+    const assist = document.createElement('div');
+    assist.id = 'plans-assist';
+    assist.className = 'assist-note';
+    assist.innerHTML = '<h3>Si necesitas ir al médico durante el viaje</h3><p>Llama a asistencia 24 horas. Te indicaremos a qué centro acudir y, si el gasto está cubierto, pagaremos directamente al hospital. <a href="/condiciones#urgencia" target="_blank" rel="noopener">Qué hacer en una urgencia</a></p>';
+    grid.after(assist);
+  }
   if (!$('#plans-help')) {
     const help = document.createElement('p');
     help.id = 'plans-help';
     help.className = 'plans-help';
     help.innerHTML = '<span class="help-line">¿Dudas entre planes? <button type="button" class="human-link" data-open-agent>Hablar con Alba</button></span><span class="help-line">¿Dudas sobre una enfermedad previa? La cobertura está por confirmar. <button type="button" class="human-link" data-open-human="enfermedad_previa">Pedir que me llamen</button></span>';
-    grid.after(help);
+    $('#plans-assist').after(help);
   }
   const rec = order.recommendation?.plan ?? 'completo';
   $('#plans-reason')?.remove();
@@ -465,18 +475,19 @@ function renderReview(order) {
       <div><dt>Plan</dt><dd>${esc(s.plan.name)} <button type="button" class="edit-link" data-goto="plan">Cambiar plan</button></dd></div>
       <div><dt>Destino</dt><dd>${esc(s.trip.destinations)}<br><span class="optional">Zona de cobertura: ${esc(s.trip.zone)}</span></dd></div>
       <div><dt>Fechas</dt><dd>${fmtDate(s.trip.start_date)} – ${fmtDate(s.trip.end_date)} (${s.trip.days} días)</dd></div>
-      <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional email">${escEmail(s.holder.email)}</span></dd></div>
+      <div><dt>Póliza a nombre de</dt><dd>${esc(s.holder.full_name)}<br><span class="optional email">${escEmail(s.holder.email)}</span><br><span class="optional">Aquí recibirás la póliza de prueba.</span></dd></div>
     </dl>
     <div class="review-head"><h4>Asegurados</h4><button type="button" class="edit-link" data-goto="viajeros">Editar viajeros</button></div>
     <table class="mini-table"><thead><tr><th>Asegurado</th><th>Edad</th><th class="num">Precio</th></tr></thead><tbody>
       ${s.insured.map((t) => `<tr><td>${esc(t.full_name)}</td><td>${t.age}</td><td class="num">${eur(t.price_eur)}</td></tr>`).join('')}
     </tbody></table>
     <table class="mini-table"><thead><tr><th>Cobertura</th><th class="num">Límite por persona</th><th class="num">Franquicia</th></tr></thead><tbody>
-      ${s.coverages.map((c) => `<tr><td>${esc(c.coverage)}${c.note ? `<small class="cov-note">${esc(c.note)}</small>` : ''}</td><td class="num">${esc(c.limit)}</td><td class="num">${esc(c.deductible)}</td></tr>`).join('')}
+      ${s.coverages.map((c) => `<tr><td>${esc(c.coverage)}${c.note ? `<small class="cov-note${c.note_kind === 'ok' ? ' is-ok' : ''}">${esc(c.note)}</small>` : ''}${c.check_pending ? `<button type="button" class="edit-link cov-check-open" data-cov-check>Comprueba cuándo empieza a cubrir la cancelación</button>
+        <form class="cancel-check cov-check" hidden novalidate><label>¿Cuándo hiciste tu primera reserva?<input type="date" name="first_booking" required></label><button type="submit" class="btn-secondary btn-small">Comprobar para mis fechas</button><p class="cancel-result" role="status" hidden></p></form>` : ''}</td><td class="num">${esc(c.limit)}</td><td class="num">${esc(c.deductible)}</td></tr>`).join('')}
     </tbody></table>
     <div class="terms-box">
       <strong>Condiciones (versión ${esc(s.terms.version)})</strong>
-      <ul>${s.terms.key_points.map((k) => `<li>${esc(k)}${/^Desistimiento/.test(k) ? ' <a href="/condiciones#desistir" target="_blank" rel="noopener">Cómo desistir</a>' : ''}</li>`).join('')}</ul>
+      <ul>${s.terms.key_points.map((k) => `<li>${esc(k)}${/^Desistimiento/.test(k) ? ' <a href="/condiciones#desistir" target="_blank" rel="noopener">Cómo desistir</a>' : /^Asistencia/.test(k) ? ' <a href="/condiciones#urgencia" target="_blank" rel="noopener">Qué hacer en una urgencia</a>' : ''}</li>`).join('')}</ul>
       <p style="margin-top:8px"><a href="/ficha-producto.pdf" target="_blank" rel="noopener">Ficha del producto (PDF)</a> y <a href="/condiciones" target="_blank" rel="noopener">condiciones completas</a></p>
     </div>
     <div class="summary-total"><span>Total, impuestos incluidos</span><span>${esc(s.total_text)}</span></div>
@@ -485,6 +496,12 @@ function renderReview(order) {
       <button class="btn-primary" type="submit">Continuar al pago</button>
       <p class="form-error" role="alert" hidden></p>
     </form>`;
+  $('[data-cov-check]', sheet)?.addEventListener('click', (ev) => {
+    const f = ev.target.nextElementSibling;
+    f.hidden = false;
+    ev.target.hidden = true;
+    f.first_booking.focus();
+  });
   // Corregir donde se detecta el error: vuelve al paso sin perder lo ya escrito.
   $$('[data-goto]', sheet).forEach((b) =>
     b.addEventListener('click', () => {
@@ -1121,6 +1138,11 @@ async function main() {
   initTravelersForm();
   initPayForm();
   initHumanDialog();
+  // Desde el pie de otras páginas: /#pedir-llamada abre directamente «Pedir que me llamen».
+  if (location.hash === '#pedir-llamada') {
+    history.replaceState(null, '', '/');
+    $('[data-open-human]')?.click();
+  }
   initMenu();
   initPhotos();
   initQuoteLinks();

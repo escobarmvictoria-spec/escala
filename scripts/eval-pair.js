@@ -103,7 +103,7 @@ async function order() {
 }
 
 // 1. Cotizar
-let r = await turn('Hola. Vivo en Madrid y me voy a Italia del 10 al 17 de diciembre, viajo sola y tengo 35 años. ¿Cuánto me costaría el seguro?');
+let r = await turn('Hola. Salgo desde Madrid hacia Italia del 10 al 17 de diciembre, viajo sola y tengo 35 años. ¿Cuánto me costaría el seguro?');
 let o = await order();
 check('cotización creada en el servidor', Boolean(o), quoteId ?? 'sin id');
 check('tras cotizar: sin plan seleccionado', o && !o.plan, `estado ${o?.status}`);

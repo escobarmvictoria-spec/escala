@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { createStore } from './src/store.js';
 import { createOrderService, publicOrder, summaryOf, planSummary, keyCoverages, todayMadrid } from './src/orders.js';
 import { renderPolicyPdf } from './src/pdf.js';
+import { samplePolicyPdf } from './src/sample-policy.js';
 import { createMailer, buildPolicyEmail, buildQuoteEmail } from './src/email.js';
 import { renderProductSheet } from './src/ipid.js';
 import { structuredData } from './src/structured-data.js';
@@ -379,6 +380,7 @@ app.use('/api', (req, res) => res.status(404).json(new ApiError('not_found', `No
 // ---------- Web ----------
 const pub = path.join(here, 'public');
 app.get('/condiciones', (req, res) => res.sendFile(path.join(pub, 'condiciones.html')));
+app.get('/sobre', (req, res) => res.sendFile(path.join(pub, 'sobre.html')));
 app.get('/panel', (req, res) => res.sendFile(path.join(pub, 'panel.html')));
 app.get('/agentes', (req, res) => res.sendFile(path.join(pub, 'agentes.html')));
 app.get('/privacidad', (req, res) => res.sendFile(path.join(pub, 'privacidad.html')));
@@ -400,6 +402,13 @@ app.get('/ficha-producto.pdf', async (req, res) => {
   res.set('Content-Disposition', 'inline; filename="escala-ficha-producto.pdf"');
   res.set('Cache-Control', 'public, max-age=3600');
   res.send(productSheet);
+});
+// Póliza de ejemplo con datos ficticios: el documento que recibe el cliente, antes de comprar.
+app.get('/poliza-ejemplo.pdf', async (req, res) => {
+  res.set('Content-Type', 'application/pdf');
+  res.set('Content-Disposition', 'inline; filename="escala-poliza-ejemplo.pdf"');
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.send(await samplePolicyPdf());
 });
 // Sin caché de 5 minutos: el navegador revalida (ETag) y siempre ve la última versión publicada.
 // Las imágenes y fuentes, que no cambian, sí se guardan un día.

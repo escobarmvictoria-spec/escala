@@ -205,3 +205,17 @@ test('solo se cotizan viajes que empiezan en España: sin origen, pregunta; desd
   assert.equal(err({ ...base, departure_country: 'otro país' }).code, 'departure_outside_spain');
   for (const d of ['ES', 'España', 'Madrid', 'Barcelona']) assert.equal(svc.createQuote({ ...base, departure_country: d }, 'agent').trip.departure_country, 'ES');
 });
+
+test('el resumen lleva la cancelación con su fecha de activación, o invita a comprobarla', async () => {
+  const { svc } = service();
+  const { summaryOf } = await import('../src/orders.js');
+  const o = svc.createQuote({ destinations: ['Italia'], start_date: future(30), end_date: future(36), travelers: [{ age: 35 }] }, 'web');
+  o.plan = 'completo';
+  o.travelers = [{ full_name: 'Ana Demo', age: 35 }];
+  const cancel = (s) => s.coverages.find((c) => c.coverage === 'Cancelación del viaje');
+  assert.equal(cancel(summaryOf(o)).check_pending, true);
+  o.cancellation_check = { covered_before_departure: true, message: 'Si contratas ahora, la cobertura de cancelación se activa desde la compra y hasta que empiece el viaje. Se aplica a las causas cubiertas por el plan.' };
+  assert.equal(cancel(summaryOf(o)).note_kind, 'ok');
+  assert.match(cancel(summaryOf(o)).note, /se activa desde la compra/);
+  assert.match(summaryOf(o).terms.key_points.join(' '), /pagamos directamente al hospital/);
+});

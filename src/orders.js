@@ -676,7 +676,13 @@ export function summaryOf(order) {
     total_text: formatEur(p.total_eur),
     taxes_included_eur: p.taxes_eur,
     ...(p.group_discount_pct ? { group_discount_pct: p.group_discount_pct } : {}),
-    coverages: keyCoverages(order.plan, order.trip.zone).map((c) => (cancelInactive(order) && c.coverage === 'Cancelación del viaje' ? { ...c, note: CANCEL_NOT_ACTIVE_TEXT } : c)),
+    // Cancelación: el resultado de la comprobación de la primera reserva llega hasta el resumen; si no se hizo, se invita a hacerla.
+    coverages: keyCoverages(order.plan, order.trip.zone).map((c) => {
+      if (c.coverage !== 'Cancelación del viaje') return c;
+      const chk = order.cancellation_check;
+      if (!chk) return { ...c, check_pending: true };
+      return chk.covered_before_departure ? { ...c, note: chk.message, note_kind: 'ok' } : { ...c, note: CANCEL_NOT_ACTIVE_TEXT, note_kind: 'warn' };
+    }),
     ...(cancelInactive(order) && keyCoverages(order.plan, order.trip.zone).some((c) => c.coverage === 'Cancelación del viaje') ? { cancellation_warning: CANCEL_NOT_ACTIVE_TEXT } : {}),
     main_exclusions: EXCLUSIONS,
     terms: {
@@ -684,9 +690,11 @@ export function summaryOf(order) {
       url: '/condiciones',
       key_points: [
         'Demo: no es un seguro real y no se cobra dinero real.',
-        'Cobertura desde la fecha de salida hasta la de vuelta, ambas incluidas.',
+        keyCoverages(order.plan, order.trip.zone).some((c) => c.coverage === 'Cancelación del viaje')
+          ? 'Cobertura durante el viaje, desde la fecha de salida hasta la de vuelta (ambas incluidas). La cancelación cubre antes de salir: cuándo empieza depende de tu primera reserva.'
+          : 'Cobertura desde la fecha de salida hasta la de vuelta, ambas incluidas.',
         'Desistimiento: 14 días desde la contratación si el viaje no ha empezado.',
-        'Asistencia 24 horas por teléfono durante todo el viaje.',
+        'Asistencia 24 horas: si necesitas ir al médico durante el viaje, llama y te indicaremos a qué centro acudir. Si el gasto está cubierto, pagamos directamente al hospital.',
       ],
     },
   };
