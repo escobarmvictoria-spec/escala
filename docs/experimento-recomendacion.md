@@ -60,7 +60,7 @@ Salió de una auditoría del flujo en móvil a 390 px. Guardar la cotización fu
 - **Métrica principal:** pólizas emitidas en los 7 días siguientes, por cotización hecha en móvil.
 - **Lecturas aparte:** cuántas cotizaciones se guardan y cuántas avanzan a Viajeros en la misma sesión. Así se distingue si el atajo recupera compras que se iban a perder o si solo aplaza compras que habrían ocurrido en el momento.
 
-Ya está implementado. Cada cotización web guarda su variante (`experiments.guardar_atajo`) y el dispositivo (`device`: `movil` o `escritorio`). Al guardar, se registra si fue desde el atajo o desde el formulario (`saved.source`). Por defecto todas las cotizaciones ven B. Con `AB_GUARDAR_ATAJO=on` en `.env`, se reparten 50/50. Lo que falta es el informe del A/B en `/panel`: los datos ya quedan en cada pedido.
+Ya está implementado. Cada cotización web guarda su variante (`experiments.guardar_atajo`) y el dispositivo (`device`: `movil` o `escritorio`). Al guardar, se registra si fue desde el atajo o desde el formulario (`saved.source`). Por defecto todas las cotizaciones ven B. Con `AB_GUARDAR_ATAJO=on` en `.env`, se reparten 50/50. El experimento está instrumentado pero todavía no está en marcha: hoy todas las cotizaciones ven B, así que no le atribuyo ningún aumento de conversión. Falta el informe en `/panel`, aunque los datos ya quedan en cada pedido. Cuando lo haga, compararé solo las cotizaciones del reparto 50/50 que ya hayan completado los 7 días de seguimiento.
 
 ## Primera versión del experimento
 
