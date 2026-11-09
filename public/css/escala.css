@@ -252,11 +252,13 @@ input[aria-invalid="true"] { border-color: var(--error); background: var(--error
 .stub-title { font-family: var(--font-head); font-weight: 700; font-size: var(--fs-md); }
 .stub-trip { font-size: var(--fs-sm); color: var(--navy-soft); }
 .stub-plans { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-3); }
-.stub-plans li { display: grid; gap: 2px; }
+.stub-plans li { display: grid; grid-template-rows: 1fr auto; gap: 2px; }
+.stub-plans li span { align-self: start; }
 .stub-plans span { font-size: var(--fs-xs); font-weight: 500; color: var(--navy-soft); display: inline-flex; align-items: center; gap: 6px; }
 .stub-plans strong { font-family: var(--font-head); font-weight: 800; font-size: var(--fs-lg); letter-spacing: -0.02em; line-height: 1.1; }
 .stub-plans .is-recommended span { color: var(--navy); font-weight: 600; }
-.stub-plans .is-recommended span::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--yellow); border: 2px solid var(--navy); flex: none; }
+.stub-plans span { flex-wrap: wrap; }
+.stub-flag { font-style: normal; background: var(--yellow); color: var(--navy); font-weight: 600; font-size: var(--fs-xs); line-height: 1.3; padding: 1px 8px; border-radius: 999px; white-space: nowrap; }
 .stub-note { font-size: var(--fs-xs); color: var(--navy-soft); }
 @media (max-width: 480px) {
   .stub-plans { grid-template-columns: 1fr; gap: 0; }

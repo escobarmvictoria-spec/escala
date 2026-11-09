@@ -846,7 +846,7 @@ async function renderExamplePrice() {
         <p class="stub-trip">${length} en ${esc(trip.destination)}, una persona de ${trip.travelers[0].age} años</p>
       </div>
       <ul class="stub-plans">${plans
-        .map((p) => `<li class="${p.recommended ? 'is-recommended' : ''}"><span>Plan ${esc(p.name)}</span><strong>${eur(p.total_eur)}</strong></li>`)
+        .map((p) => `<li class="${p.recommended ? 'is-recommended' : ''}"><span>Plan ${esc(p.name)}${p.recommended ? ' <em class="stub-flag">Recomendado</em>' : ''}</span><strong>${eur(p.total_eur)}</strong></li>`)
         .join('')}</ul>
       <p class="stub-note">Precios finales con impuestos. Cotiza tu viaje para ver cuánto cuesta asegurarlo.</p>`;
     box.hidden = false;

@@ -47,6 +47,7 @@ Ordenado por tema. Cada punto dice qué cambió y por qué.
 - **Precios calibrados con el mercado:** 41 precios publicados y 26 cotizaciones que hice a mano el 7/11 en Heymondo, IATI e InterMundial. El error medio es del 9,2 % y Escala queda un 4 % por debajo de la mediana. *Por qué:* un precio inventado no aguanta la pregunta «¿y esto de dónde sale?».
 - **Desglose de la prima con hipótesis** (siniestralidad, asistencia, adquisición, operación, margen). *Por qué:* para mostrar dónde está el margen y qué validaría con datos reales. La adquisición es la palanca de growth.
 - **«Precios de ejemplo por plan»** en la portada, con «Plan Esencial», «Plan Completo» y «Plan Total», y en móvil una fila por plan. *Por qué:* «Total 40,10 €» podía leerse como la suma de los precios anteriores.
+- **El plan recomendado lleva la etiqueta «Recomendado» también en los precios de ejemplo.** *Por qué:* estaba en negrita y con un punto, pero sin decir por qué; quien lo veía no sabía qué significaba el destacado.
 - **«Precios finales con impuestos. Cotiza tu viaje para ver cuánto cuesta asegurarlo.»** *Por qué:* «El de tu viaje lo ves en un minuto» obligaba a recuperar «precio» de la frase anterior y prometía un tiempo que no hacía falta.
 
 ## 5. Cancelación, explicada
