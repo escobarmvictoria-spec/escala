@@ -27,10 +27,9 @@ function setMode(mode) {
   drawer.classList.toggle('is-external', external);
   $('#agent-title').textContent = external ? 'Actividad de un asistente externo' : 'Alba, asistente virtual de Escala';
   $('#agent-sub').textContent = external
-    ? 'Otro asistente de IA está usando las herramientas de la web. Alba no participa.'
+    ? 'Un asistente de IA está usando las herramientas de Escala. Abajo ves cada paso que da.'
     : 'Asistente con inteligencia artificial. Te ayuda a comparar planes y resolver dudas.';
   $('.drawer-close').setAttribute('aria-label', external ? 'Cerrar el registro de actividad' : 'Cerrar la conversación con Alba');
-  $('#external-note').hidden = !external;
   $('#chat').hidden = external || !chatReady;
   $('#agent-off').hidden = external || chatReady;
   if (external) $('#activity').open = true;

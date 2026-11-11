@@ -734,7 +734,6 @@ body.quote-visible .float-cta, body.is-checkout .float-cta, body.drawer-open .fl
 .alba-avatar .stop { fill: var(--yellow); stroke: var(--navy); stroke-width: 3; }
 .drawer-title { display: grid; gap: 2px; }
 .drawer-title p { font-size: var(--fs-xs); color: var(--navy-soft); }
-.external-note { margin: 0; padding: 10px 18px; font-size: var(--fs-xs); background: var(--yellow-soft, #FCF1D2); border-bottom: 1px solid var(--line); }
 .quick-replies { display: flex; flex-wrap: wrap; gap: 8px; }
 .quick-replies button { border: 1px solid var(--navy); background: var(--white); color: var(--navy); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: var(--fs-sm); font-weight: 600; cursor: pointer; min-height: 40px; }
 .quick-replies button:hover { background: var(--navy); color: var(--white); }
