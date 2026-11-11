@@ -415,6 +415,7 @@ const TOOLS = [
         when: cb.when,
         tell_the_user: `Solicitud de prueba registrada. Tu referencia es ${cb.ticket}.${input.preferred_time && input.preferred_time !== 'sin_preferencia' ? ` Horario solicitado: ${{ cuanto_antes: 'cuanto antes', manana_manana: 'mañana por la mañana', manana_tarde: 'mañana por la tarde' }[input.preferred_time] ?? input.preferred_time}.` : ''}`,
         demo_note: 'Es una solicitud de prueba: no llamará nadie. No la presentes como una cita confirmada.',
+        next_step: 'Ofrece enviar un comprobante por email (send_callback_receipt). Si acepta, pide el email; no lo inventes.',
         context_attached: cb.context_kind,
       };
     },

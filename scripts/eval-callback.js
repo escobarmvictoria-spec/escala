@@ -121,7 +121,8 @@ check('«a la mañana» no se convierte en «mañana por la mañana»', call.pre
 check('guarda su preferencia con sus palabras', /mañana/i.test(call.summary ?? ''), call.summary);
 check('confirma con la referencia', /Solicitud de prueba registrada\. Tu referencia es LL-/.test(r.text));
 check('no promete una llamada', !/te llamar[áa]|le llamar[áa]|te llamaremos|entre las \d/i.test(r.text));
-r = await turn('¿Me puedes enviar un comprobante al mail?');
+check('ofrece el comprobante por email', /comprobante por email\?/i.test(r.text));
+r = await turn('Sí, por favor.');
 check('comprobante: pide el email sin inventarlo', !r.used.includes('send_callback_receipt') && /email|correo/i.test(r.text));
 r = await turn('rosa.ibanez@example.com');
 const rec = msgs.flatMap((m) => (Array.isArray(m.content) ? m.content : [])).filter((b) => b.type === 'tool_use' && b.name === 'send_callback_receipt').pop()?.input ?? {};
