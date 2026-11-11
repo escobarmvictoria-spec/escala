@@ -420,6 +420,33 @@ const TOOLS = [
     },
   },
   {
+    name: 'send_callback_receipt',
+    title: 'Enviar comprobante de la solicitud de llamada',
+    description:
+      'Emails the user a receipt of a callback request they already made (the same as the "Enviarme un comprobante" button on the web). Use it only if the user asks for it after request_human_callback. Needs the ticket and an email the user gave you in this conversation: ask for it, never invent or reuse one they did not give for this.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        ticket: { type: 'string', description: 'The reference returned by request_human_callback (e.g. "LL-8434EB").' },
+        email: { type: 'string', description: 'Email the user asked to receive the receipt at.' },
+      },
+      required: ['ticket', 'email'],
+    },
+    async run({ ticket, email }) {
+      const data = await api.callbackReceipt(ticket, email);
+      const e = data.email;
+      return {
+        ok: e.status !== 'failed',
+        ticket: data.ticket,
+        email: e,
+        tell_the_user:
+          e.status === 'failed'
+            ? `No he podido enviar el comprobante a ${e.to}. Tu referencia sigue siendo ${data.ticket}.`
+            : `${e.status === 'simulated' ? 'Envío simulado del' : 'Te he enviado el'} comprobante a ${e.to}. Tu referencia es ${data.ticket}.`,
+      };
+    },
+  },
+  {
     name: 'get_order_status',
     title: 'Estado de la compra',
     description: 'Read-only. Returns where a quote is in the purchase flow, what is already set and the next step. Use it if you lose track.',

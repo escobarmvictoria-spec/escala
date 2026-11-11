@@ -29,7 +29,7 @@
   </header>
   <main class="doc">
     <h1>Escala para agentes de IA</h1>
-    <p>La página principal registra 13 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
+    <p>La página principal registra 14 herramientas con WebMCP (<code>document.modelContext.registerTool</code>, también accesibles como <code>navigator.modelContext</code>). Si el navegador no trae WebMCP de serie, el polyfill de MCP-B lo aporta y además publica las herramientas como servidor MCP para extensiones puente.</p>
 
     <h2 id="contratar-con-tu-asistente">Contratar con tu propio asistente de IA</h2>
     <p>Si tu asistente admite WebMCP, puede contratar por ti usando las herramientas de Escala, sin tocar los formularios:</p>
@@ -44,7 +44,7 @@
 
     <h2>El flujo de compra</h2>
     <pre>get_quote → select_plan → set_travelers → review_order → accept_terms → pay → get_policy</pre>
-    <p>Herramientas de apoyo: <code>get_product_info</code> (coberturas y exclusiones), <code>get_order_status</code> (dónde está la compra y qué falta), <code>check_cancellation_start</code> (si la cancelación empezaría a cubrir antes de salir, según la fecha de la primera reserva), <code>resend_policy_email</code>, <code>save_quote</code> (envía la cotización por email con un enlace para retomarla, si el cliente quiere pensarlo) y <code>request_human_callback</code>, que pide que una persona del equipo llame al cliente con el contexto de la compra cuando el caso no se puede resolver online.</p>
+    <p>Herramientas de apoyo: <code>get_product_info</code> (coberturas y exclusiones), <code>get_order_status</code> (dónde está la compra y qué falta), <code>check_cancellation_start</code> (si la cancelación empezaría a cubrir antes de salir, según la fecha de la primera reserva), <code>resend_policy_email</code>, <code>save_quote</code> (envía la cotización por email con un enlace para retomarla, si el cliente quiere pensarlo) y <code>request_human_callback</code>, que pide que una persona del equipo llame al cliente con el contexto de la compra cuando el caso no se puede resolver online, y <code>send_callback_receipt</code>, que envía por email el comprobante de esa solicitud si el cliente lo pide.</p>
 
     <h2>Controles antes de pagar</h2>
     <ul>

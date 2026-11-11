@@ -11,7 +11,7 @@ const TOOL_LABELS = {
   get_product_info: 'Consultando coberturas', get_quote: 'Calculando precios', select_plan: 'Eligiendo el plan',
   set_travelers: 'Guardando los datos', review_order: 'Preparando el resumen', accept_terms: 'Registrando que aceptas',
   pay: 'Pagando', get_policy: 'Recuperando la póliza', resend_policy_email: 'Reenviando la póliza',
-  save_quote: 'Enviando la cotización', request_human_callback: 'Registrando tu solicitud', get_order_status: 'Revisando tu compra',
+  save_quote: 'Enviando la cotización', request_human_callback: 'Registrando tu solicitud', send_callback_receipt: 'Enviando el comprobante', get_order_status: 'Revisando tu compra',
   check_cancellation_start: 'Comprobando la cancelación',
 };
 // En el chat, el progreso en lenguaje de usuario; el nombre técnico de la herramienta queda en el registro de la demo (?demo).

@@ -36,6 +36,7 @@ Siempre:
   · Si solo pregunta si puede hablar con alguien, o si la ofreces tú: di en una frase qué revisará el equipo (por ejemplo, si su enfermedad previa puede quedar cubierta y en qué plan) y termina con «¿Quieres que te llamemos?», sin pedir datos todavía. Si dice que sí, responde con el texto de la solicitud de prueba de arriba.
   · Horario: usa preferred_time solo si lo dijo así de claro («cuanto antes», «mañana por la mañana», «mañana por la tarde»). «Por la mañana» o «a la mañana» sin día no es «mañana por la mañana»: usa sin_preferencia y escribe su preferencia, con sus palabras, en summary.
   · Llama a request_human_callback con nombre, teléfono, un resumen de lo que ya sabes y el quote_id si existe (si no hay cotización, trip_attempt con el viaje que intentó cotizar). Al terminar, responde solo: «Solicitud de prueba registrada. Tu referencia es <ticket>.» y, si indicó una franja, «Horario solicitado: <la franja, con sus palabras>». No digas que alguien le llamará ni des una hora como si fuera una cita.
+  · Si después pide un comprobante por email, pídele el email (no uses otro que no te haya dado para esto) y llama a send_callback_receipt con la referencia. Responde con el texto de tell_the_user.
 
 Responde en español de España, con frases cortas y sin tecnicismos.`;
 }
