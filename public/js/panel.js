@@ -54,7 +54,7 @@ async function loadEval() {
     document.getElementById('eval-table').innerHTML = `
       <thead><tr><th scope="col">Escenario</th><th scope="col">Esperado</th><th scope="col">Resultado</th><th scope="col">Herramientas</th><th scope="col">Segundos</th></tr></thead>
       <tbody>${r.results
-        .map((x) => `<tr><th scope="row">${esc(x.title)}<small>${esc(x.group)}</small></th><td>${esc(x.expected)}</td><td class="${x.passed ? '' : 'is-missing'}">${x.passed ? 'Superado' : 'Fallido'}${x.plan ? `<br><small>${esc(x.plan)}, ${x.total_eur} €</small>` : ''}</td><td>${x.tool_calls}</td><td>${x.seconds}</td></tr>`)
+        .map((x) => `<tr><th scope="row">${esc(x.title)}<small>${esc(x.group)}</small></th><td>${esc(x.expected)}</td><td class="${x.passed ? '' : 'is-missing'}">${x.passed ? 'Superado' : 'Fallido'}${x.plan ? `<br><small>${esc(x.plan)}, ${eur(x.total_eur)}</small>` : ''}</td><td>${x.tool_calls}</td><td>${x.seconds}</td></tr>`)
         .join('')}</tbody>`;
     document.getElementById('eval-note').textContent = `Ejecutada el ${new Date(r.ran_at).toLocaleDateString('es-ES')} con ${r.agent_model} como agente y ${r.customer_model} como cliente simulado. Cada resultado se comprueba contra el servidor, no contra lo que dice el agente.`;
   } catch {

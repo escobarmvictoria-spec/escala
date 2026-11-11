@@ -2,7 +2,7 @@
 // Si el navegador trae WebMCP nativo (por ejemplo, el navegador integrado de ChatGPT), las herramientas
 // se registran directamente en él y NO se carga el polyfill: envolver el objeto nativo rompe su enumerador.
 // Si no lo trae, se carga el polyfill @mcp-b/global, que aporta document.modelContext (y el puente MCP-B).
-import { api, store, ApiFailure } from './core.js';
+import { api, store, ApiFailure, eur } from './core.js';
 
 const AGENT = 'agent';
 const PLAN_ENUM = ['esencial', 'completo', 'total'];
@@ -449,10 +449,10 @@ function summarize(result) {
   if (!result.ok) return result.error?.message || 'Error';
   if (result.policy_number) return `Póliza ${result.policy_number}`;
   if (result.ticket) return `Llamada pedida: ${result.ticket}, ${result.when}`;
-  if (result.plans) return result.plans.map((p) => `${p.name} ${p.total_eur} €`).join(' · ');
+  if (result.plans) return result.plans.map((p) => `${p.name} ${eur(p.total_eur)}`).join(' · ');
   if (result.summary) return `Resumen: ${result.summary.plan.name}, ${result.summary.total_text}`;
-  if (result.total_eur) return `Total ${result.total_eur} €`;
-  if (result.amount_to_pay_eur) return `A pagar ${result.amount_to_pay_eur} €`;
+  if (result.total_eur) return `Total ${eur(result.total_eur)}`;
+  if (result.amount_to_pay_eur) return `A pagar ${eur(result.amount_to_pay_eur)}`;
   return 'Hecho';
 }
 
