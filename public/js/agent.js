@@ -19,6 +19,22 @@ const toolLine = (name, state = '') => (state.startsWith('…') ? `${TOOL_LABELS
 
 let drawer, toggle, messages = [], running = false, passcode = null, autoOpened = false;
 
+// El panel tiene dos caras: Alba (chat) o el registro de un asistente externo (ChatGPT u otro),
+// que usa las mismas herramientas pero no habla con Alba. Así no parece que Alba participe.
+let chatReady = false;
+function setMode(mode) {
+  const external = mode === 'external';
+  drawer.classList.toggle('is-external', external);
+  $('#agent-title').textContent = external ? 'Actividad de un asistente externo' : 'Alba, asistente virtual de Escala';
+  $('#agent-sub').textContent = external
+    ? 'Otro asistente de IA está usando las herramientas de la web. Alba no participa.'
+    : 'Asistente con inteligencia artificial. Te ayuda a comparar planes y resolver dudas.';
+  $('.drawer-close').setAttribute('aria-label', external ? 'Cerrar el registro de actividad' : 'Cerrar la conversación con Alba');
+  $('#external-note').hidden = !external;
+  $('#chat').hidden = external || !chatReady;
+  $('#agent-off').hidden = external || chatReady;
+  if (external) $('#activity').open = true;
+}
 function open(focus = true) {
   drawer.hidden = false;
   toggle.setAttribute('aria-expanded', 'true');
@@ -187,7 +203,8 @@ async function runAgent(userText) {
 }
 
 function initChat(status) {
-  $('#chat').hidden = false;
+  chatReady = true;
+  $('#chat').hidden = drawer.classList.contains('is-external');
   try {
     passcode = sessionStorage.getItem('escala.passcode');
   } catch {
@@ -246,11 +263,20 @@ function initChat(status) {
 export async function initAgentDrawer(toolsPromise) {
   drawer = $('#agent-drawer');
   toggle = $('.agent-toggle');
-  toggle.addEventListener('click', () => (drawer.hidden ? open() : close()));
+  // Quien abre el panel a mano quiere hablar con Alba.
+  toggle.addEventListener('click', () => {
+    if (drawer.hidden || drawer.classList.contains('is-external')) {
+      setMode('alba');
+      open();
+    } else close();
+  });
   $('.drawer-close').addEventListener('click', close);
   // Delegado: también sirve para los botones que se crean después (la ayuda bajo los planes).
   document.addEventListener('click', (ev) => {
-    if (ev.target.closest('[data-open-agent]')) open();
+    if (ev.target.closest('[data-open-agent]')) {
+      setMode('alba');
+      open();
+    }
   });
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape' && !drawer.hidden) close();
@@ -262,11 +288,12 @@ export async function initAgentDrawer(toolsPromise) {
     if (!running) externalActivity = true;
     renderActivity();
     if (!running) {
-      $('#external-note').hidden = false;
-      $('#activity').open = true;
       if (!autoOpened && drawer.hidden) {
         autoOpened = true;
+        setMode('external');
         open(false);
+      } else if (drawer.classList.contains('is-external')) {
+        $('#activity').open = true;
       }
     }
     const dot = toggle.querySelector('.agent-dot');
@@ -294,7 +321,7 @@ export async function initAgentDrawer(toolsPromise) {
   if (status.enabled && tools.ok) initChat(status);
   else {
     const off = $('#agent-off');
-    off.hidden = false;
+    off.hidden = drawer.classList.contains('is-external');
     off.innerHTML = `
       <p>Alba no está disponible ahora mismo en esta web.</p>
       <p><strong>Usa tu propio agente.</strong> Esta página expone sus herramientas con WebMCP. Un agente compatible (por ejemplo, Chrome con WebMCP activado o la extensión MCP-B) puede cotizar y comprar sin tocar la interfaz.</p>
